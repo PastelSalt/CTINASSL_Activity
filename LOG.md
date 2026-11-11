@@ -1,0 +1,136 @@
+# Development Log
+
+This file records actions made in the repository. Entries are chronological; each entry includes the date, affected paths, action, and result.
+
+## 2026-11-11
+
+- **Created** `INSTRUCTIONS.md` with repository rules for maintaining the development log, code map, and project documentation.
+- **Created** `LOG.md` to record repository actions going forward.
+- **Updated** `README.md` to describe the repository's current Vite React client and server package accurately.
+- **Created** `CODEMAP.md` as the current developer and agent index.
+- **Validation:** Documentation-only changes; no build or test command was required.
+- **Analyzed** `PROJECT-SPECS.md` and updated `README.md` with the Tsumugi product vision, planned capabilities, routes, target architecture, and current implementation status.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Implemented** the approved GSAP motion upgrade in `client/src/App.jsx` and `client/src/index.css`, including GSAP/ScrollTrigger, scoped cleanup, responsive matchMedia conditions, hero staging, preview/thread motion, narrative section scenes, and reduced-motion behavior.
+- **Installed** `gsap` in `client/package.json` and updated `client/package-lock.json`.
+- **Updated** `PLAN-A-01.md`, `README.md`, and `CODEMAP.md` to reflect the completed motion system.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed. Playwright confirmed the page title, mobile structure, no-overflow behavior, visible fallback content, and reduced-motion stability.
+- **Added** a legal-reference requirement to `PLAN-A-01.md` for Privacy Policy, Terms of Service, and Cookie & Local Storage Policy links in the landing-page footer. The UI work remains pending approval and implementation.
+- **Created** draft legal documents in `docs/`: `privacy-policy.md`, `terms-of-service.md`, and `cookie-and-local-storage-policy.md`.
+- **Updated** `README.md` and `CODEMAP.md` to index the new draft-document folder.
+- **Validation:** Documentation-only change; legal drafts are explicitly marked for owner and qualified legal review before publication.
+- **Implemented** the landing-page legal reference group in `client/src/App.jsx` and `client/src/index.css`, linking to the Privacy Policy, Terms of Service, and Cookie & Local Storage draft documents.
+- **Updated** `PLAN-A-01.md` to mark the legal-reference implementation and validation items complete while retaining legal review as a publication prerequisite.
+- **Created** `PLAN-A-02.md` with the implementation plan for three standalone, design-adapted legal policy pages.
+- **Updated** `README.md` and `CODEMAP.md` to index the new plan and landing-page legal references.
+- **Validation:** Client lint, production build, link-label inspection, and `git diff --check` passed. Policy-page implementation remains pending approval under PLAN-A-02.
+- **Executed** `PLAN-A-02.md` by adding route-selected static policy pages for `/privacy-policy`, `/terms-of-service`, and `/cookie-and-local-storage-policy` in `client/src/App.jsx`.
+- **Added** a shared policy-page shell, responsive document layout, draft status, return-to-home navigation, and footer policy switcher in `client/src/index.css` and `client/src/App.jsx`.
+- **Updated** the landing-page footer links to reference the website routes instead of Markdown files.
+- **Updated** `PLAN-A-02.md`, `README.md`, and `CODEMAP.md` to reflect the implemented pages and remaining legal-review requirements.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed. Direct route, cross-link, responsive, focus, and no-overflow browser checks completed.
+- **Refined** policy-page document titles so each route exposes its specific policy name in the browser title.
+- **Validation:** Browser checks confirmed all four routes render with distinct titles, expected headings, working policy links, and no horizontal overflow at the mobile viewport.
+- **Refactored** the three legal pages out of `client/src/App.jsx` into `client/src/pages/PolicyPage.jsx`, keeping route data, shared rendering, document titles, and policy navigation together in a maintainable page module.
+- **Updated** `CODEMAP.md` and `PLAN-A-02.md` to document the page-module structure.
+- **Separated** route-keyed policy content into `client/src/pages/policyPages.js` after lint identified the React Fast Refresh export constraint.
+- **Added** individual page entry components for Privacy Policy, Terms of Service, and Cookie & Local Storage Policy, plus `client/src/pages/index.js` for route mapping.
+- **Created** `PLAN-A-03.md` as a planning-only document for the future sign-up and login pages, including landing-page integration and links to all three legal policy routes.
+- **Updated** `README.md` and `CODEMAP.md` to index the new authentication-page plan.
+- **Validation:** Documentation-only change; no frontend code or authentication behavior was added.
+- **Created** `PLAN-A-04.md` after rereading PROJECT-SPECS sections 3.2, 3.3, 4.1, and 8. The plan covers a Figma-style authenticated dashboard exploration, credential-free placeholder login, dashboard fixture data, the shared application shell, and a Tsumugi translation of the supplied floating navigation reference.
+- **Updated** `README.md` and `CODEMAP.md` to index the dashboard exploration plan.
+- **Validation:** Documentation-only change; no dashboard, route, authentication, or data behavior was added.
+- **Executed** `PLAN-A-04.md` with a placeholder authenticated dashboard exploration under `client/src/pages/dashboard/`.
+- **Added** dashboard fixture data, a responsive dashboard shell, metric/project/milestone/task/activity panels, placeholder destination routes, a floating Lucide navigation dock inspired by the supplied reference, legal links, and credential-free `/login` to `/dashboard` navigation.
+- **Updated** `PLAN-A-04.md`, `README.md`, and `CODEMAP.md` to reflect the dashboard exploration.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser checks for dashboard/auth/legal routes and mobile overflow passed.
+- **Analyzed** the authenticated routes and functional modules in `PROJECT-SPECS.md` and expanded `PLAN-A-04.md` with page-by-page requirements for dashboard, projects, project workspace, milestones, tasks, requirements, assets, revisions, documentation, reports, and settings.
+- **Added** cross-page requirements for traceability, explicit record relationships, calculation-backed metrics, shared shell consistency, loading/empty/error/unauthorized states, object-storage boundaries, Markdown documentation, revision history, configurable workflows, and future MUI/router architecture.
+- **Validation:** Documentation-only change; no frontend implementation behavior was changed.
+- **Executed** the expanded page-by-page portion of `PLAN-A-04.md`.
+- **Added** fixture-driven placeholder views for projects, milestones, tasks, requirements, assets, revisions, documentation, reports, and settings, plus a revisions route in the authenticated navigation map.
+- **Added** page-specific table schemas, future data-source notes, dashboard metric definitions, traceability vocabulary, object-storage boundaries, and responsive module styling.
+- **Validation:** Client lint, production build, diff whitespace, authenticated route rendering, login-to-dashboard navigation, and mobile no-overflow checks passed.
+- **Refined** the compact navigation dock so the active route remains visible even when it is outside the first five dock items.
+- **Validation:** Route checks confirmed `aria-current="page"` for every authenticated module route after the navigation refinement.
+- **Fixed** desktop dashboard navigation hiding routes after Requirements by rendering the full route set on desktop and applying compact hiding only below the mobile breakpoint; the active mobile route remains visible.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser checks passed. Desktop displays all 10 navigation links; mobile keeps a compact five-link dock while preserving the active route, with no horizontal overflow.
+- **Updated** `PLAN-A-04.md` with the approved floating left-side section-navigation concept for every authenticated dashboard page. The plan now defines the two-region layout, route-specific subsection maps, responsive behavior, accessibility requirements, and separation from the existing bottom top-level module navigation.
+- **Validation:** Documentation-only change; no frontend code was changed.
+- **Executed** the approved floating page-local section navigation from `PLAN-A-04.md`.
+- **Added** reusable left-side section navigation with route-specific section definitions for every authenticated page, right-side section content switching, and a compact horizontal mobile treatment.
+- **Kept** the existing bottom dock as top-level module navigation and preserved the static/demo-only boundary.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, desktop section-navigation rendering, section switching, active-state checks, and mobile no-overflow validation passed.
+- **Executed** `PLAN-A-03.md` by adding static `/login` and `/register` page routes with a Google-inspired layout translation, Tsumugi branding, static form presentation, route switching, legal links, and a custom thread illustration.
+- **Updated** the landing page authentication controls to link to `/login` and `/register`.
+- **Updated** `PLAN-A-03.md`, `README.md`, and `CODEMAP.md` to reflect the implemented static authentication pages and shared page modules.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser route/responsive/overflow checks passed. Authentication behavior remains intentionally unimplemented.
+- **Refined** authentication page titles to identify `Create account | Tsumugi` and `Log in | Tsumugi`.
+- **Validation:** Browser checks confirmed landing-page auth links, auth-page legal links, form presence, distinct headings/titles, and no mobile overflow.
+- **Reorganized** `client/src/pages/` into `legal/` and `auth/` subfolders. Added dedicated route indexes and updated the root page index to re-export both route maps.
+- **Updated** `CODEMAP.md` to document the new page organization.
+- **Created** `PLAN-A-01.md` with a preliminary static landing-page design plan based on `PROJECT-SPECS.md`, including scope, proposed sections, visual decisions, implementation boundaries, and an approval gate.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Refined** `PLAN-A-01.md` after confirming the Moesoft portfolio reference, light-only theme, warm tone, subtle weaving motif, long-scroll immersive structure, local-assets-only policy, `Create your workspace` CTA, and visual-only CTA behavior.
+- **Inspected** the portfolio reference's design tokens and base styles to align the plan with its pastel palette, rounded surfaces, display typography, tinted depth, and motion approach.
+- **Updated** `CODEMAP.md` to index `PROJECT-SPECS.md` and `PLAN-A-01.md`.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Refined** `PLAN-A-01.md` with the approved combined hero visual, sticky Kotoha-inspired navigation, immersive scroll motion, polished copy direction, local Kotoha fansite reference, and proposed section priorities.
+- **Inspected** the Kotoha fansite navigation structure and styles, including its centered floating pill, active-section indicator, responsive menu, and progress-orientation patterns.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Finalized** the preliminary planning decisions in `PLAN-A-01.md`: include a navigation progress meter, review copy before implementation, and use Tsumugi-specific CSS/SVG-like compositions instead of reusing raster branding assets.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Recorded** the project owner's approval to continue refining `PLAN-A-01.md` while keeping frontend implementation paused.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Implemented** the first static Tsumugi landing page pass in `client/src/App.jsx` and `client/src/index.css`, including a long-scroll narrative, floating anchored navigation, active-section tracking, page progress meter, lifecycle and traceability sections, responsive layout, local CSS/SVG-like visuals, and reduced-motion support.
+- **Updated** `README.md`, `CODEMAP.md`, and `PLAN-A-01.md` to reflect the implemented first pass and its remaining refinement status.
+- **Validation:** `npm run lint` passed and `npm run build` passed in `client/`.
+- **Paused** further frontend execution at the project owner's request and refined `PLAN-A-01.md` with the requested cheerful/professional personality, Fredoka default font, stronger outlines, no-gradient rule, increased motion direction, and icon-library evaluation.
+- **Added** Lucide as the preferred icon-library candidate for review without changing dependencies or frontend code.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Refined** `PLAN-A-01.md` with the confirmed Fredoka-all typography, mixed outline system, blended motion character, continuous scroll-linked motion, Lucide adoption, and UI-only gradient prohibition.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Refined** `PLAN-A-01.md` with permission to reorder or merge sections for the immersive narrative, medium/bold Fredoka emphasis, and permission to evaluate an animation library later.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Implemented** the approved PLAN-A-01 additions: local Fredoka font weights, Lucide icons, stronger mixed ink/accent outlines, removal of CSS gradients, continuous scroll-linked motion, bouncy interactions, and theatrical reveal/floating animations with reduced-motion support.
+- **Updated** `README.md`, `CODEMAP.md`, and `PLAN-A-01.md` to reflect the evaluation implementation pass.
+- **Installed** `@fontsource/fredoka` and `lucide-react` in `client/`.
+- **Validation:** `npm run lint` passed, `npm run build` passed, and no `gradient` declarations remain in `client/src`.
+- **Dependency audit note:** npm reported 4 moderate vulnerabilities after installation; no automatic fix was applied.
+- **Researched** public landing-page patterns and texture guidance, comparing product-specific storytelling, persistent orientation, tactile backgrounds, and motion approaches against Tsumugi's approved branding constraints.
+- **Updated** `PLAN-A-01.md` only with the Moeko Works brand correction, warm pattern-background candidates, research findings, selective inspirations, and a scoped Kilo-skills migration plan.
+- **Paused** frontend execution as requested; no implementation or dependency changes were made in this planning pass.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Recorded** the selected hybrid whole-page pattern with subtle scroll motion, all four research applications, and the request to migrate all eligible Kilo skills to user-level Copilot settings after source discovery.
+- **Kept** frontend and customization-file execution paused pending explicit authorization.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Recorded** the story-led section ordering decision, likely-path Kilo discovery approach, separate Kilo migration authorization, and continued pause on landing-page coding.
+- **Validation:** Documentation-only change; no build or test command was required.
+- **Reviewed** the current landing page with Playwright at 500x585 and 1440x900 viewports. Confirmed Fredoka, no horizontal overflow, no CSS gradients, usable primary controls, approximately 5,200px page height, and the stale “A Moesoft project” footer label.
+- **Updated** `PLAN-A-01.md` after approval with Playwright findings, Moeko Works brand-audit requirements, hybrid pattern requirements, story-led restructuring, concrete product-preview guidance, mobile/accessibility checks, increased motion direction, and immersive editorial/product research scope.
+- **Validation:** Documentation-only change; no frontend implementation was performed.
+- **Implemented** the approved plan updates in the landing page: reordered the navigation and sections for a story-led traceability flow, added a low-contrast hybrid woven pattern with subtle scroll movement, expanded the product preview into a concrete objective-to-deliverable workflow, and corrected the footer to Moeko Works.
+- **Updated** `README.md` to replace legacy Moesoft branding and describe the new pattern canvas.
+- **Validation:** `npm run lint` passed and `npm run build` passed in `client/`; Playwright confirmed the warm SVG pattern, story-led navigation order, Moeko Works footer, Fredoka body font, no horizontal overflow, and no stale Moesoft text.
+- **Follow-up correction:** Replaced remaining Georgia display overrides with Fredoka so the implementation matches the approved Fredoka-all typography direction.
+- **Validation:** Playwright confirmed heading and preview typography use Fredoka, the pattern is present, the footer contains Moeko Works, no legacy Moesoft text remains, and no horizontal overflow is present.
+- **Plan completion pass:** Added static Log in/Create account presentation controls, branded page title and description metadata, and visible keyboard focus states. These remain presentation-only in accordance with the static implementation boundary.
+- **Updated** `PLAN-A-01.md` into a visual-audit checklist with explicit completed/pending states, evidence rules, implementation categories, accessibility checks, validation checks, and approval gates.
+- **Validation:** Documentation-only change; checklist status was reconciled against the current client implementation and prior lint, build, and Playwright results.
+- **Audited** the landing page at 500x585 and 1440x900 with Playwright. Confirmed no overflow, no gradients, pattern presence, readable screenshots, mobile navigation exposure, anchor destinations below the sticky header, full-scroll active-section/progress updates, and reduced-motion behavior.
+- **Fixed** active-section tracking so it derives from scroll position consistently during full-page scrolling.
+- **Adjusted** the pink accent token from `#e95399` to `#c73579` after contrast testing found the original pink-on-paper ratio was 3.36:1; the replacement is 4.92:1.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed. The visual-audit checklist in `PLAN-A-01.md` is now complete.
+- **Closed** the final approval-gate checkbox: no additional landing-page implementation pass is required for this audit; future changes require explicit authorization.
+- **Finalized** `PLAN-A-01.md` as complete for this revision after all checklist items were executed or explicitly resolved.
+- **Debugged** the missing pattern background. The inline SVG pattern was hidden behind the body canvas by `body::before { z-index: -1; }`; moved it to the visible layer and placed `main` above it.
+- **Updated** `PLAN-A-01.md` with a GSAP motion-upgrade plan after confirmation. The plan now covers ScrollTrigger scenes, thread/path motion, hero preview staging, micro-interactions, future transition hooks, responsive `matchMedia`, scoped cleanup, minimal reduced-motion behavior, performance checks, and an explicit no-coding approval gate.
+- **Researched** official GSAP `matchMedia()` and `matchMediaRefresh()` guidance and recorded the references in `PLAN-A-01.md`.
+- **Validation:** Documentation-only change; no dependency or frontend code changes were made.
+- **Expanded** the GSAP planning depth in `PLAN-A-01.md` against the current `client/src/App.jsx` structure. Added motion architecture rules, hero/preview, story/traceability, lifecycle, possibilities, closing, navigation, responsive/reduced-motion scene contracts, and performance/failure criteria.
+- **Validation:** Documentation-only change; no GSAP dependency, frontend code, or runtime behavior was changed.
+- **Copied** all 36 Kilo skill directories from `C:\Users\Admin\.kilo\skills` to the personal Copilot skills directory `C:\Users\Admin\.copilot\skills` without modifying their contents.
+- **Validation:** Destination contains 36 skill folders, 36 `SKILL.md` files, and 252 files total; source and destination inventories match with zero SHA-256 hash mismatches.
+- **Verified** the migrated Copilot skills: all 36 folders contain `SKILL.md`, every frontmatter `name` matches its folder, and all 252 destination files match the Kilo source hashes.
+- **Limitation:** The current chat session still exposes only its originally loaded skill set; dynamic availability of all 36 migrated skills requires Copilot/VS Code skill discovery after reload or restart.

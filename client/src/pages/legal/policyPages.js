@@ -1,0 +1,46 @@
+export const policyPages = {
+  '/privacy-policy': {
+    label: 'Privacy Policy / Privacy Notice',
+    title: 'A clear thread for your information.',
+    description: 'How Moeko Works plans to handle information when you visit or use Tsumugi.',
+    draft: 'Planning draft — not yet approved for publication',
+    sections: [
+      ['Who this notice applies to', 'This notice describes how Moeko Works would handle personal information when a person visits Tsumugi, creates or uses an account, or contacts the project team.'],
+      ['Information we may collect', 'Potential categories include account information, workspace content, technical information, communications, and preference values stored through cookies or browser storage. The final policy will describe only information the deployed service actually collects.'],
+      ['How we may use information', 'Information may be used to provide and secure Tsumugi, manage accounts and workspaces, respond to support requests, diagnose errors, prevent abuse, comply with legal obligations, and improve reliability where disclosed.'],
+      ['Sharing and service providers', 'Moeko Works does not plan to sell personal information. Information may be shared with infrastructure, storage, authentication, communications, security, and support providers, professional advisers, regulators, law enforcement, or a successor where legally appropriate.'],
+      ['Retention, security, and international processing', 'The final policy will explain retention periods, deletion requests, security safeguards, and any international processing based on the infrastructure and providers actually used.'],
+      ['Privacy rights', 'Depending on location, a person may have rights to access, correct, delete, restrict, object to, or obtain a copy of personal information. Requests will be handled through the published privacy contact.'],
+      ['Children, changes, and contact', 'The final policy will state the applicable age threshold, explain material updates, and provide a working privacy contact for questions and requests.'],
+    ],
+  },
+  '/terms-of-service': {
+    label: 'Terms of Service / Terms and Conditions',
+    title: 'The shared rules for making together.',
+    description: 'The planned terms for using Tsumugi and protecting the work brought into it.',
+    draft: 'Planning draft — not yet approved for publication',
+    sections: [
+      ['Agreement and eligibility', 'These Terms are intended to govern access to Tsumugi, a creative and technical production-management service operated by Moeko Works. The final version will state eligibility, age, regional, and authority requirements.'],
+      ['Accounts and security', 'Users will be responsible for accurate account information, reasonable credential security, and promptly reporting suspected unauthorized access, subject to responsibilities Moeko Works cannot lawfully exclude.'],
+      ['Workspaces and user content', 'Users retain ownership of content they submit. The final agreement will grant only the rights needed to host, store, secure, transmit, and display that content to provide the service.'],
+      ['Acceptable use', 'Users must not break the law, violate rights, access systems without authorization, upload malware, disrupt security, harass others, or misuse the service.'],
+      ['Intellectual property and third parties', 'Tsumugi, its software, visual design, trademarks, and original materials belong to Moeko Works or its licensors. Third-party services may have separate terms and notices.'],
+      ['Availability and limitations', 'The service may change or be unavailable for maintenance, security, legal, or operational reasons. Disclaimers, liability limits, indemnity, and mandatory legal exceptions require jurisdiction-specific review.'],
+      ['Suspension, disputes, and changes', 'The final Terms will explain suspension, termination, data export, governing law, dispute procedures, material changes, and the contact channel.'],
+    ],
+  },
+  '/cookie-and-local-storage-policy': {
+    label: 'Cookie & Local Storage Policy',
+    title: 'A thoughtful approach to browser storage.',
+    description: 'How Tsumugi may use cookies, local storage, session storage, and similar browser technologies.',
+    draft: 'Planning draft — not yet approved for publication',
+    sections: [
+      ['What this policy covers', 'This policy covers cookies, local storage, session storage, and similar browser technologies used by Tsumugi. It supplements the Privacy Policy.'],
+      ['Current planning position', 'The current landing page is a static evaluation page. It does not intentionally require account cookies, analytics cookies, advertising cookies, or local-storage persistence for its core presentation. This must be rechecked whenever the product changes.'],
+      ['Essential and preference technologies', 'Essential technologies may support security, sessions, authentication, accessibility, or requested features. Preference technologies may remember interface choices. The final policy will identify each technology and its consent category.'],
+      ['Analytics and tracking', 'Analytics or measurement tools must not be described as active unless they are actually deployed. No advertising or cross-site tracking is planned for the current landing page.'],
+      ['Managing choices and storage', 'Users can usually clear cookies and browser storage through browser settings. If non-essential technologies are deployed, Tsumugi should provide the controls required by applicable law and honor selected choices.'],
+      ['Third parties, updates, and contact', 'The final policy will identify actual third-party providers, explain material changes, show the effective date, and provide a working privacy contact.'],
+    ],
+  },
+}

@@ -1,64 +1,107 @@
-<div align="center">
+# Tsumugi (CTINASSL Activity)
 
-# CTINASSL Activity
+> **Weaving ideas into finished work.**
 
-**Activity by Kyle Zoleta, Details, blah blah blah.**
+Tsumugi, also known as Project Garden, is a planned creative and technical production-management platform by Moeko Works. It is intended to help individuals and teams plan, organize, track, and preserve projects from concept through completion.
 
+The platform is designed for software development, creative writing and visual novel production, academic research, multimedia production, and personal or multidisciplinary projects. Unlike a conventional task manager, Tsumugi connects objectives, requirements, milestones, tasks, assets, documentation, revisions, and deliverables into one traceable production lifecycle.
 
-[![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![React 19](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![MUI](https://img.shields.io/badge/MUI-9-007fff?logo=mui&logoColor=white)](https://mui.com)
+## Project status
 
+The repository is currently an early-stage Vite + React implementation. A first static landing-page design is present, while the product direction and target architecture are documented in [PROJECT-SPECS.md](PROJECT-SPECS.md). Most application features have not been implemented yet.
 
-[![All rights reserved](https://img.shields.io/badge/license-all%20rights%20reserved-6b4c7a)](LICENSE)
+## Planned capabilities
 
+- Project directory and configurable project workflows
+- Dashboard with active projects, milestones, tasks, deadlines, and recent activity
+- Milestone, task, requirement, asset, revision, and documentation management
+- Reports for project health and production progress
+- Explicit traceability from project objectives to requirements, milestones, tasks, revisions, and deliverables
+- Public landing page and authentication flows
+- Protected project workspaces with project-level authorization
+- Responsive authenticated application shell with persistent navigation
 
-## About
-**CTINASSL Activity** blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah.
+## Planned application routes
 
-## What's inside
+| Route | Purpose |
+| --- | --- |
+| `/` | Public landing page |
+| `/privacy-policy` | Privacy Policy / Privacy Notice |
+| `/terms-of-service` | Terms of Service / Terms and Conditions |
+| `/cookie-and-local-storage-policy` | Cookie & Local Storage Policy |
+| `/login` | User login |
+| `/register` | Account registration |
+| `/forgot-password` | Start password recovery |
+| `/reset-password` | Complete password recovery |
+| `/dashboard` | Production overview |
+| `/projects` | Project directory |
+| `/projects/:projectId` | Individual project workspace |
+| `/milestones` | Milestone management |
+| `/tasks` | Task management |
+| `/requirements` | Requirements and acceptance criteria |
+| `/assets` | Project asset library |
+| `/revisions` | Revision history |
+| `/documentation` | Project knowledge and records |
+| `/reports` | Progress and production analytics |
+| `/settings` | Account and application preferences |
 
-### Feature 1
-dfaffewfw
+## Target architecture
 
-### Feature 2
-dfaffewfw
+The specification calls for a modular MERN-based application:
 
-### Feature 3
-dfaffewfw
+- **Frontend:** React, TypeScript, Material UI, Emotion, React Router, TanStack Query, and Vite
+- **Backend:** Node.js, Express, Mongoose, and Zod or an equivalent validation library
+- **Data:** MongoDB Atlas for records and external object storage for binary assets
+- **Deployment:** Vercel for the frontend and an initial serverless API deployment, with MongoDB Atlas and managed object storage
 
-### Feature 4
-dfaffewfw
+The backend should be organized by business domain, including authentication, users, projects, milestones, tasks, requirements, assets, revisions, documentation, and reports. The design system should use centralized MUI theme tokens and follow the existing Moeko Works portfolio's visual language rather than inventing an unrelated palette.
 
-</div>
+## Current repository structure
 
----
-
-## Tech stack
-
-
-| Layer      | Choice                                                                                                   |
-| ---------- | -------------------------------------------------------------------------------------------------------- |
-| Framework  | [Next.js 16](https://nextjs.org) (App Router, pre-rendered pages revalidated after admin saves), React 19 |
-| Language   | TypeScript                                                                                               |
-| UI         | [MUI 9](https://mui.com) (Emotion) with CSS design tokens and cascade layers; [Lucide](https://lucide.dev) and Simple Icons |
-| Motion     | [GSAP](https://gsap.com), [Lenis](https://lenis.darkroom.engineering) smooth scrolling, canvas-confetti  |
-| Data       | [Neon](https://neon.tech) Postgres with [Drizzle ORM](https://orm.drizzle.team), validated with Zod       |
-| Media      | [Cloudinary](https://cloudinary.com) (signed uploads, optimised delivery)                                 |
-| Hosting    | [Vercel](https://vercel.com) (region `sin1`) with a daily cron for clean-up and visitor totals            |
-
-```mermaid
-flowchart LR
-  visitor([Visitor]) -->|pre-rendered pages| next[Next.js on Vercel]
-  visitor -->|contact form| actions[Server actions]
-  visitor -->|visit counts| track["/api/track"]
-  owner([Owner]) -->|password + session| admin["/admin"]
-  admin -->|saves, then revalidates pages| next
-  actions --> db[(Neon Postgres)]
-  track --> db
-  admin --> db
-  admin -->|signed uploads| cloudinary[Cloudinary]
-  cron[Daily cron] -->|clean-up, daily totals| db
+```text
+.
+├── PROJECT-SPECS.md   Product specification and target architecture
+├── INSTRUCTIONS.md    Documentation and development rules
+├── LOG.md             Chronological repository action log
+├── CODEMAP.md         Developer and agent codebase index
+├── Server/            Initial server package configuration
+└── client/            React + Vite client scaffold
 ```
 
+See [CODEMAP.md](CODEMAP.md) for the current implemented source map. Generated directories such as `client/node_modules` and `client/dist` are not part of the maintained source map.
+
+## Requirements
+
+- Node.js with npm
+
+## Client
+
+```powershell
+cd client
+npm install
+npm run dev
+```
+
+Available client scripts:
+
+- `npm run dev` starts the Vite development server.
+- `npm run build` creates a production build in `client/dist`.
+- `npm run lint` runs ESLint.
+- `npm run preview` previews the production build.
+
+The current client contains a static long-scroll landing page, three route-selected policy pages, static authentication pages, and a placeholder authenticated dashboard exploration with responsive navigation, a page progress meter, traceability/lifecycle sections, local Fredoka typography, Lucide icons, solid outlined components, a warm woven pattern canvas, CSS/SVG-like visuals, GSAP/ScrollTrigger landing-page scenes, and reduced-motion-compatible behavior. Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
+
+## Server
+
+The `Server/` directory currently contains only the initial CommonJS `package.json`. No Express application, API routes, database integration, authentication, or server runtime entry point is implemented yet.
+
+## Documentation
+
+- [PROJECT-SPECS.md](PROJECT-SPECS.md) defines the product requirements and target architecture.
+- [INSTRUCTIONS.md](INSTRUCTIONS.md) defines repository maintenance rules.
+- [LOG.md](LOG.md) records actions made in the codebase.
+- [CODEMAP.md](CODEMAP.md) describes the current files, responsibilities, and data flow.
+- Draft legal documents are stored in [docs/](docs/) and require owner/legal review before publication.
+- [PLAN-A-02.md](PLAN-A-02.md) plans the future standalone legal policy pages.
+- [PLAN-A-03.md](PLAN-A-03.md) plans the future sign-up and login pages.
+- [PLAN-A-04.md](PLAN-A-04.md) plans the placeholder authenticated dashboard and reference-inspired navigation.
