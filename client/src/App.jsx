@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Menu, Sparkles, X } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { authRoutes, dashboardRoutes, policyRoutes } from './pages'
+import { authRoutes, workspaceRoutes, policyRoutes } from './pages'
 import '@fontsource/fredoka/400.css'
 import '@fontsource/fredoka/500.css'
 import '@fontsource/fredoka/600.css'
@@ -462,10 +462,10 @@ function App() {
   const currentPath = window.location.pathname.replace(/\/$/, '') || '/'
   const PolicyRoute = policyRoutes[currentPath]
   const AuthRoute = authRoutes[currentPath]
-  const DashboardRoute = dashboardRoutes[currentPath]
+  const WorkspaceRoute = workspaceRoutes[currentPath]
   if (PolicyRoute) return <PolicyRoute />
   if (AuthRoute) return <AuthRoute />
-  if (DashboardRoute) return <DashboardRoute currentPath={currentPath} />
+  if (WorkspaceRoute) return <WorkspaceRoute currentPath={currentPath} />
   return <LandingPage />
 }
 

@@ -1,28 +1,28 @@
-export const dashboardProjects = [
+export const workspaceProjects = [
   { name: 'Project Garden', type: 'Creative', status: 'Active', color: 'pink', progress: 68, next: 'Chapter one review' },
   { name: 'Tsumugi API', type: 'Software', status: 'Planning', color: 'blue', progress: 34, next: 'Define authentication flow' },
   { name: 'Color & Memory', type: 'Research', status: 'On Hold', color: 'yellow', progress: 22, next: 'Resume literature notes' },
 ]
 
-export const dashboardMilestones = [
+export const workspaceMilestones = [
   ['Chapter one review', 'Project Garden', 'Tomorrow', 'pink'],
   ['Auth flow map', 'Tsumugi API', '14 Nov', 'blue'],
   ['Research outline', 'Color & Memory', '18 Nov', 'yellow'],
 ]
 
-export const dashboardTasks = [
+export const workspaceTasks = [
   ['Review opening scene notes', 'Due today', 'urgent'],
   ['Connect requirement to milestone', 'Due 14 Nov', 'soon'],
   ['Sort reference assets', 'Due 16 Nov', 'normal'],
 ]
 
-export const dashboardActivity = [
+export const workspaceActivity = [
   ['Mika linked a deliverable', 'Project Garden', '12 min ago'],
   ['You added a new requirement', 'Tsumugi API', '1 hr ago'],
   ['A milestone moved to planning', 'Color & Memory', 'Yesterday'],
 ]
 
-export const dashboardSections = {
+export const workspaceSections = {
   '/dashboard': ['Overview', 'Project pulse', 'Upcoming milestones', 'Tasks needing attention', 'Recent activity', 'Quick actions'],
   '/projects': ['Directory', 'Search and filters', 'Status groups', 'Recently accessed', 'Archived projects'],
   '/milestones': ['All milestones', 'Timeline', 'Upcoming', 'Overdue', 'Completed'],
@@ -42,7 +42,7 @@ export const moduleFixtures = {
     description: 'Browse workspaces, compare their current thread, and find the next place to contribute.',
     action: 'Create project',
     columns: ['Project', 'Category', 'Status', 'Next thread'],
-    rows: dashboardProjects.map((project) => [project.name, project.type, project.status, project.next]),
+    rows: workspaceProjects.map((project) => [project.name, project.type, project.status, project.next]),
     note: 'Future filters: category, status, priority, owner, dates, and tags.',
   },
   '/milestones': {
@@ -51,7 +51,7 @@ export const moduleFixtures = {
     description: 'Keep important phases visible with dates, priorities, and the work that leads to each checkpoint.',
     action: 'Create milestone',
     columns: ['Milestone', 'Project', 'Due', 'State'],
-    rows: dashboardMilestones.map(([title, project, date, tone]) => [title, project, date, tone === 'pink' ? 'Upcoming' : 'Planned']),
+    rows: workspaceMilestones.map(([title, project, date, tone]) => [title, project, date, tone === 'pink' ? 'Upcoming' : 'Planned']),
     note: 'Future views: chronological timeline, dependencies, overdue indicators, and deliverables.',
   },
   '/tasks': {
@@ -60,7 +60,7 @@ export const moduleFixtures = {
     description: 'Turn requirements and milestones into clear, prioritized work that can move through a project.',
     action: 'Create task',
     columns: ['Task', 'Due', 'Priority', 'Status'],
-    rows: dashboardTasks.map(([title, due, tone]) => [title, due, tone === 'urgent' ? 'High' : 'Medium', tone === 'urgent' ? 'In progress' : 'To do']),
+    rows: workspaceTasks.map(([title, due, tone]) => [title, due, tone === 'urgent' ? 'High' : 'Medium', tone === 'urgent' ? 'In progress' : 'To do']),
     note: 'Future views: list, Kanban, subtasks, assignees, comments, and linked records.',
   },
   '/requirements': {

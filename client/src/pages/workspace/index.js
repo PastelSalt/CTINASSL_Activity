@@ -1,14 +1,14 @@
-import DashboardPage from './DashboardPage'
+import WorkspacePage from './WorkspacePage'
 
-export const dashboardRoutes = {
-  '/dashboard': DashboardPage,
-  '/projects': DashboardPage,
-  '/milestones': DashboardPage,
-  '/tasks': DashboardPage,
-  '/requirements': DashboardPage,
-  '/assets': DashboardPage,
-  '/revisions': DashboardPage,
-  '/documentation': DashboardPage,
-  '/reports': DashboardPage,
-  '/settings': DashboardPage,
+export const workspaceRoutes = {
+  '/dashboard': WorkspacePage,
+  '/projects': WorkspacePage,
+  '/milestones': WorkspacePage,
+  '/tasks': WorkspacePage,
+  '/requirements': WorkspacePage,
+  '/assets': WorkspacePage,
+  '/revisions': WorkspacePage,
+  '/documentation': WorkspacePage,
+  '/reports': WorkspacePage,
+  '/settings': WorkspacePage,
 }

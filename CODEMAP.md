@@ -11,11 +11,25 @@ This document is the maintained index of the current codebase. Update it when fi
 | `INSTRUCTIONS.md` | Repository-wide documentation and development rules |
 | `LOG.md` | Chronological record of repository actions |
 | `CODEMAP.md` | Current developer and agent index |
-| `PLAN-A-01.md` | Preliminary static landing-page design plan |
-| `PLAN-A-02.md` | Plan for standalone legal policy pages |
-| `PLAN-A-03.md` | Plan for sign-up and login pages |
-| `PLAN-A-04.md` | Plan for authenticated dashboard visual exploration |
+| `docs/plan/frontend/PLAN-A-01.md` | Preliminary static landing-page design plan |
+| `docs/plan/frontend/PLAN-A-02.md` | Plan for standalone legal policy pages |
+| `docs/plan/frontend/PLAN-A-03.md` | Plan for sign-up and login pages |
+| `docs/plan/frontend/PLAN-A-04.md` | Plan for authenticated workspace and protected user-page visual exploration |
+| `docs/plan/frontend/PLAN-A-04A.md` | Detailed `/dashboard` overview page plan |
+| `docs/plan/frontend/PLAN-A-04B.md` | Detailed `/projects` directory page plan |
+| `docs/plan/frontend/PLAN-A-04C.md` | Detailed `/projects/:projectId` workspace page plan |
+| `docs/plan/frontend/PLAN-A-04D.md` | Detailed `/milestones` page plan |
+| `docs/plan/frontend/PLAN-A-04E.md` | Detailed `/tasks` page plan |
+| `docs/plan/frontend/PLAN-A-04F.md` | Detailed `/requirements` page plan |
+| `docs/plan/frontend/PLAN-A-04G.md` | Detailed `/assets` page plan |
+| `docs/plan/frontend/PLAN-A-04H.md` | Detailed `/revisions` page plan |
+| `docs/plan/frontend/PLAN-A-04I.md` | Detailed `/documentation` page plan |
+| `docs/plan/frontend/PLAN-A-04J.md` | Detailed `/reports` page plan |
+| `docs/plan/frontend/PLAN-A-04K.md` | Detailed `/settings` page plan |
+| `docs/plan/backend/` | Reserved location for future plan-B backend plans |
 | `docs/` | Draft legal and policy documents for owner/legal review |
+| `docs/plan/frontend/` | Frontend plan-A documents for landing, legal, auth, authenticated workspace, and protected user pages |
+| `docs/plan/backend/` | Reserved location for future backend plan-B documents |
 | `Server/` | Initial server package configuration |
 | `client/` | React + Vite application |
 
@@ -40,7 +54,7 @@ No server runtime entry point, routes, or application modules are currently pres
 | `client/src/pages/index.js` | Re-exports legal and authentication route maps |
 | `client/src/pages/legal/` | Legal policy page components and route-keyed content |
 | `client/src/pages/auth/` | Authentication page components and route mapping |
-| `client/src/pages/dashboard/` | Placeholder authenticated dashboard shell, floating navigation, dashboard route mapping, and fixture data |
+| `client/src/pages/workspace/` | Placeholder authenticated workspace shell, floating navigation, protected route mapping, and fixture data |
 | `client/src/index.css` | Fredoka-based landing/policy tokens, solid outlined responsive layout, document styling, footer legal links, fallback motion, and reduced-motion styles |
 | `client/src/assets/` | Bundled static assets used by the client |
 | `client/public/` | Static files served from the site root |

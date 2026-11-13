@@ -13,7 +13,7 @@ The repository is currently an early-stage Vite + React implementation. A first 
 ## Planned capabilities
 
 - Project directory and configurable project workflows
-- Dashboard with active projects, milestones, tasks, deadlines, and recent activity
+- Overview page with active projects, milestones, tasks, deadlines, and recent activity
 - Milestone, task, requirement, asset, revision, and documentation management
 - Reports for project health and production progress
 - Explicit traceability from project objectives to requirements, milestones, tasks, revisions, and deliverables
@@ -89,7 +89,7 @@ Available client scripts:
 - `npm run lint` runs ESLint.
 - `npm run preview` previews the production build.
 
-The current client contains a static long-scroll landing page, three route-selected policy pages, static authentication pages, and a placeholder authenticated dashboard exploration with responsive navigation, a page progress meter, traceability/lifecycle sections, local Fredoka typography, Lucide icons, solid outlined components, a warm woven pattern canvas, CSS/SVG-like visuals, GSAP/ScrollTrigger landing-page scenes, and reduced-motion-compatible behavior. Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
+The current client contains a static long-scroll landing page, three route-selected policy pages, static authentication pages, and a placeholder authenticated workspace with an Overview route plus protected user-page views, responsive navigation, local Fredoka typography, Lucide icons, solid outlined components, a warm woven pattern canvas, CSS/SVG-like visuals, GSAP/ScrollTrigger landing-page scenes, and reduced-motion-compatible behavior. Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
 
 ## Server
 
@@ -102,6 +102,10 @@ The `Server/` directory currently contains only the initial CommonJS `package.js
 - [LOG.md](LOG.md) records actions made in the codebase.
 - [CODEMAP.md](CODEMAP.md) describes the current files, responsibilities, and data flow.
 - Draft legal documents are stored in [docs/](docs/) and require owner/legal review before publication.
-- [PLAN-A-02.md](PLAN-A-02.md) plans the future standalone legal policy pages.
-- [PLAN-A-03.md](PLAN-A-03.md) plans the future sign-up and login pages.
-- [PLAN-A-04.md](PLAN-A-04.md) plans the placeholder authenticated dashboard and reference-inspired navigation.
+- Frontend plans are organized under [docs/plan/frontend/](docs/plan/frontend/).
+- Backend plans will be organized under [docs/plan/backend/](docs/plan/backend/) when created.
+- [PLAN-A-01.md](docs/plan/frontend/PLAN-A-01.md) covers the landing page.
+- [PLAN-A-02.md](docs/plan/frontend/PLAN-A-02.md) covers the legal pages.
+- [PLAN-A-03.md](docs/plan/frontend/PLAN-A-03.md) covers authentication pages.
+- [PLAN-A-04.md](docs/plan/frontend/PLAN-A-04.md) covers the authenticated workspace and protected user pages.
+- [PLAN-A-04A.md](docs/plan/frontend/PLAN-A-04A.md) through [PLAN-A-04K.md](docs/plan/frontend/PLAN-A-04K.md) contain page-specific protected user-page plans.

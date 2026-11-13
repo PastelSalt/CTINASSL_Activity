@@ -1,17 +1,124 @@
-# PLAN-A-04 — Tsumugi Authenticated Dashboard Exploration
+# PLAN-A-04 — Tsumugi Authenticated Workspace and User Pages Exploration
 
 ## Plan status
 
 **Status:** Page-specific placeholder exploration implemented for authenticated routes; production data behavior remains excluded  
-**Scope:** Frontend visual exploration for the placeholder authenticated dashboard and shared application shell  
+**Scope:** Frontend visual exploration for the placeholder authenticated workspace, protected user pages, and shared application shell  
 **Related plans:** [PLAN-A-01.md](PLAN-A-01.md), [PLAN-A-02.md](PLAN-A-02.md), [PLAN-A-03.md](PLAN-A-03.md)  
 **Source specification:** [PROJECT-SPECS.md](PROJECT-SPECS.md), especially sections 3.2, 3.3, 4.1, and 8
 
-This plan treats the authenticated environment as a Figma-like exploration space. The first implementation pass may use local placeholder data and presentation-only navigation so the dashboard can be evaluated visually before real credentials, API calls, database records, or access-control behavior exist.
+This plan treats the authenticated environment as a Figma-like exploration space. The first implementation pass may use local placeholder data and presentation-only navigation so the protected user pages can be evaluated visually before real credentials, API calls, database records, or access-control behavior exist.
+
+## Naming and page division
+
+The authenticated experience is a **workspace**, not a collection of dashboards. The `/dashboard` route is one page within that workspace: the high-level **Overview** page. All other protected routes are named and planned according to their primary user responsibility.
+
+### Shared authenticated workspace
+
+The workspace is the common application context shared by every protected page:
+
+- Persistent top-level navigation between protected modules.
+- Compact application header with page identity, contextual actions, account controls, and demo-session state.
+- Page-local section navigation for nested content within the active module.
+- Shared responsive, accessibility, legal-link, reduced-motion, and visual-token rules.
+- A route outlet that changes the active user page without changing the public landing/auth/legal shells.
+
+### Protected page groups
+
+| Group | Routes | Primary responsibility |
+|---|---|---|
+| **Overview** | `/dashboard` | Summarize current production activity and direct the user to priority work. |
+| **Project management** | `/projects`, `/projects/:projectId` | Browse projects and work inside one project workspace. |
+| **Production planning** | `/milestones`, `/tasks` | Organize phases, deadlines, assignments, and actionable work. |
+| **Traceability and records** | `/requirements`, `/assets`, `/revisions`, `/documentation` | Maintain requirements, files, change history, and project knowledge. |
+| **Insights** | `/reports` | Review production progress, health, and calculated reporting views. |
+| **Account and preferences** | `/settings` | Manage account, application preferences, appearance, density, and legal/privacy links. |
+
+The child plans under `PLAN-A-04` follow this division. `PLAN-A-04A` is the Overview page plan; the remaining `PLAN-A-04B` through `PLAN-A-04K` plans describe individual protected user pages and project-workspace surfaces rather than separate dashboards.
+
+**Execution note:** The workspace/page naming revision has been authorized and applied to the current static exploration. It does not add backend authentication, persistence, or production authorization.
+
+## Visual refinement direction — compact headers and GSAP motion
+
+The current authenticated page header consumes too much vertical space before the user reaches the page-local navigation and content. The next visual pass should compress the shared workspace header while retaining enough context for orientation, then add a restrained GSAP motion system consistent with the landing page.
+
+The compact-header and motion pass is now implemented for the current static authenticated routes. Production data behavior and future project-detail routing remain excluded.
+
+### Compact authenticated page header
+
+- [x] Reduce the vertical gap between the global brand row, page title, page description, actions, and first content region.
+- [x] Keep the global brand/account row compact and visually separate from the page content without creating a second oversized hero.
+- [x] Use a smaller page eyebrow or context label with tighter spacing.
+- [x] Reduce authenticated page-title scale from landing-page hero proportions to an application heading scale.
+- [x] Keep the page description to one or two readable lines without increasing header height.
+- [x] Keep contextual actions aligned beside the title on desktop and move them into a compact action row on smaller screens.
+- [x] Preserve the primary page action and one secondary action without allowing controls to push the content below the fold.
+- [x] Place the page-local section navigation and first content panel closer to the compact header.
+- [x] Ensure the compact header still exposes:
+  - [x] Current page/module identity
+  - [x] Current section context where applicable
+  - [x] Demo workspace/session state
+  - [x] Account menu trigger
+  - [x] Primary contextual action
+- [x] Avoid duplicating the same title, description, or context in the global row, page header, and local section panel.
+- [ ] Establish a compact-header spacing token rather than adding page-specific spacing overrides.
+
+### Compact-header responsive rules
+
+- [x] Desktop: use a short two-row composition with global identity/account controls above a compact title/action row.
+- [x] Tablet: allow the title and actions to wrap once without creating a large empty region.
+- [x] Mobile: stack title and actions tightly, keep the section navigation near the header, and preserve the first useful content state within the initial viewport where practical.
+- [x] Keep the floating bottom module navigation from obscuring the compact header or first content panel.
+- [x] Verify the compact header at 390px and desktop widths; 320px and 768px remain follow-up checks.
+
+### GSAP motion system for authenticated pages
+
+- [x] Reuse the existing GSAP/ScrollTrigger dependency and motion conventions from the landing page.
+- [x] Scope authenticated workspace animations with `gsap.context()` and clean them up on unmount or route changes.
+- [x] Use `gsap.matchMedia()` for reduced-motion handling.
+- [x] Animate only presentation layers; data state, focus state, and route semantics remain static.
+- [x] Use a short page-entry sequence for the compact header, page-local navigation, and first content panel.
+- [x] Use restrained staggered reveals for Overview metric cards and protected-page content panels.
+- [x] Animate section-content changes when the user changes page-local sections.
+- [x] Avoid parallax or continuous floating motion in dense application views.
+- [x] Keep animation durations short enough for production work contexts.
+- [x] Use `fromTo(..., { immediateRender: false })` safeguards so hidden initial states do not blank content before triggers run.
+- [x] Preserve visible-by-default fallback content if JavaScript or animation initialization fails.
+
+### Motion by authenticated surface
+
+- [x] `/dashboard`: reveal compact header, metrics, and priority panels in reading order.
+- [x] `/projects`: reveal the section navigation first, then the project directory/table.
+- [ ] `/projects/:projectId`: stage project identity first, then workflow and related-record regions.
+- [x] `/milestones`: reveal milestone summary and list rows with a restrained stagger.
+- [x] `/tasks`: reveal task controls and list content without animating every status change.
+- [x] `/requirements`: reveal requirement identifiers and traceability content in a readable sequence.
+- [x] `/assets`: reveal asset rows while keeping file metadata stable and scannable.
+- [x] `/revisions`: reveal the chronological history in the fixture order.
+- [x] `/documentation`: reveal document navigation before the table content.
+- [x] `/reports`: reveal report scope controls before report content.
+- [x] `/settings`: use minimal motion and prioritize stable preference controls.
+
+### Accessibility and reduced-motion requirements
+
+- [x] Respect `prefers-reduced-motion: reduce` by disabling non-essential entrance and section-change animations.
+- [x] Keep focus indicators visible during and after animations.
+- [x] Never move a focused control away from the user's pointer or keyboard position.
+- [x] Do not use opacity-only states that make content unavailable to assistive technology.
+- [x] Ensure animated section changes preserve `aria-current`, heading order, and keyboard navigation.
+- [x] Avoid flashing, rapid scaling, or motion that could create discomfort.
+- [x] Validate that reduced-motion users see the same content and controls without waiting for animation completion.
+
+### Visual approval gate before implementation
+
+- [ ] Owner approves the compact header height and title scale.
+- [ ] Owner approves the balance between header context, page-local navigation, and first content panel.
+- [ ] Owner approves the GSAP motion intensity as restrained application motion rather than landing-page spectacle.
+- [ ] Owner approves reduced-motion behavior and fallback visibility.
 
 ## Newly approved navigation direction — floating section navigation
 
-The authenticated dashboard should avoid forcing users to overscroll through long module pages. Every authenticated page will use a two-region composition:
+The authenticated workspace should avoid forcing users to overscroll through long module pages. Every protected user page will use a two-region composition:
 
 - A floating section-navigation panel on the left side of the content area.
 - A section content area on the right side that changes according to the selected subsection.
@@ -21,7 +128,7 @@ This is a planning-only direction. No implementation is authorized in this updat
 ### Shared section-navigation behavior
 
 - [ ] Keep the existing bottom navigation dock for switching between top-level modules.
-- [x] Add a second, page-local floating navigation surface on the left side of the dashboard content.
+- [x] Add a second, page-local floating navigation surface on the left side of the active protected page.
 - [x] Keep the section navigation visually anchored while the right content region changes.
 - [x] Use concise section labels and Lucide-inspired section markers.
 - [x] Highlight the selected section with Tsumugi's dark ink active treatment and a clear text/icon state.
@@ -45,7 +152,7 @@ This is a planning-only direction. No implementation is authorized in this updat
 
 ### Page-local section maps
 
-#### `/dashboard`
+#### `/dashboard` — Overview
 
 - [ ] Overview
 - [ ] Project pulse
@@ -164,7 +271,7 @@ This is a planning-only direction. No implementation is authorized in this updat
 ## Core exploration rule
 
 - [x] Clicking `Log in` from the landing page or login page enters `/dashboard` without requiring credential input.
-- [x] The dashboard visibly identifies the session as a placeholder/demo session.
+- [x] The Overview page visibly identifies the session as a placeholder/demo session.
 - [x] All displayed projects, metrics, milestones, tasks, deadlines, and activity are explicitly placeholder data.
 - [x] No credential, token, cookie, local-storage session, or backend authentication behavior is implied by the prototype.
 - [ ] A later authentication implementation must replace the placeholder entry behavior behind a clear boundary.
@@ -173,7 +280,7 @@ This is a planning-only direction. No implementation is authorized in this updat
 
 ### Authenticated environment from PROJECT-SPECS 3.2
 
-- [x] Define the first dashboard route at `/dashboard`.
+- [x] Define the first Overview route at `/dashboard`.
 - [x] Reserve route structure for:
   - [x] `/projects`
   - [ ] `/projects/:projectId`
@@ -189,7 +296,7 @@ This is a planning-only direction. No implementation is authorized in this updat
 
 ### Shared shell from PROJECT-SPECS 3.3
 
-- [x] Build the dashboard around a persistent floating navigation shell.
+- [x] Build the authenticated workspace around a persistent floating navigation shell.
 - [x] Include an application header/top bar.
 - [x] Show the current page title and contextual actions.
 - [x] Include a placeholder user account menu.
@@ -197,7 +304,7 @@ This is a planning-only direction. No implementation is authorized in this updat
 - [x] Provide responsive navigation behavior for smaller screens.
 - [ ] Keep the shell mounted while authenticated pages change where practical.
 
-### Dashboard scope from PROJECT-SPECS 4.1
+### Overview scope from PROJECT-SPECS 4.1
 
 - [x] Show total and active project counts.
 - [x] Show project status overview.
@@ -215,7 +322,7 @@ The supplied Aqua Iro Archive image is a visual reference for navigation composi
 ### Tsumugi translation
 
 - [x] Use a floating, rounded navigation dock rather than copying the reference site's exact artwork or branding.
-- [x] Place the dock near the bottom on desktop without obstructing the main dashboard content.
+- [x] Place the dock near the bottom on desktop without obstructing the active protected page content.
 - [x] Use Tsumugi's paper surface, dark ink outline, pastel shadow, and solid accent fills.
 - [x] Use Lucide icons with short labels for orientation.
 - [x] Give the active route a dark ink filled capsule with light text and a clear icon.
@@ -224,9 +331,9 @@ The supplied Aqua Iro Archive image is a visual reference for navigation composi
 - [x] Avoid copying the reference's text, imagery, icon drawings, exact spacing, or proprietary visual assets.
 - [x] Keep the navigation usable with keyboard focus and screen readers.
 
-### Proposed dashboard navigation
+### Proposed authenticated workspace navigation
 
-- [x] Dashboard — overview and current pulse
+- [x] Overview — current production pulse (`/dashboard`)
 - [x] Projects — project directory
 - [x] Milestones — phases and checkpoints
 - [x] Tasks — actionable work
@@ -241,7 +348,7 @@ The supplied Aqua Iro Archive image is a visual reference for navigation composi
 
 The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9, 5, 6, 8, 11, and 13 into visual exploration requirements. These are page contracts for the future authenticated application; the current prototype may render marked placeholder states instead of implementing persistence or CRUD behavior.
 
-### `/dashboard` — Overview
+### `/dashboard` — Overview page
 
 - [x] Present total projects, active projects, open/pending tasks, and overdue work as the primary scan layer.
 - [x] Show project status overview, upcoming milestones/deadlines, pending tasks, recent activity, and project pulse.
@@ -249,7 +356,7 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [ ] Reserve quick actions for `Create project` and `Create task` without implying that records were saved.
 - [x] Keep the demo/session state visible and distinguish placeholder values from production metrics.
 - [ ] Future data surfaces: `projects`, `milestones`, `tasks`, and `activities`.
-- [ ] Future reports must reuse dashboard calculations instead of introducing conflicting definitions.
+- [ ] Future reports must reuse the Overview calculations instead of introducing conflicting definitions.
 
 ### `/projects` — Project directory
 
@@ -259,7 +366,7 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [ ] Include a clear create-project entry point and presentation-only empty/loading/error states in the prototype.
 - [ ] Make project cards or rows link to `/projects/:projectId`.
 - [ ] Future data surface: `projects`, with ownership, workflow configuration, metadata, `createdAt`, and `updatedAt`.
-- [ ] Future architecture boundary: project CRUD and query state belong in a project module, not inside the dashboard page.
+- [ ] Future architecture boundary: project CRUD and query state belong in a project module, not inside the Overview page.
 
 ### `/projects/:projectId` — Project workspace
 
@@ -299,7 +406,7 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [ ] Reserve requirement history and verification actions.
 - [ ] Include a visual distinction between specified, in-progress, verified, and unverified requirements.
 - [ ] Future data surface: `requirements`, with explicit queryable relationships to work records.
-- [ ] Dashboard and reports should be able to calculate implementation status from these records.
+- [ ] Overview and reports should be able to calculate implementation status from these records.
 
 ### `/assets` — Asset library
 
@@ -358,7 +465,7 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [ ] Keep top-level module navigation and page-local section navigation separate in purpose and visual hierarchy.
 - [ ] Keep the current manual route map replaceable by React Router without rewriting page-level visual components.
 
-## Dashboard visual composition
+## Overview page visual composition
 
 - [x] Establish a calm application canvas distinct from the expressive landing page while retaining the same tokens.
 - [x] Use a compact page header with:
@@ -366,7 +473,7 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
   - [x] Current page title
   - [x] Placeholder session badge
   - [x] User/account menu trigger
-- [x] Use a dashboard grid with clear density tiers:
+- [x] Use an Overview grid with clear density tiers:
   - [x] Metric cards for high-level counts
   - [x] Status overview panel
   - [x] Upcoming deadlines/milestones panel
@@ -413,7 +520,7 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [x] Desktop: floating navigation dock remains visible without covering key content.
 - [x] Tablet: dock compresses, wraps, or becomes an accessible expanded navigation region.
 - [x] Mobile: use a compact bottom navigation subset plus an accessible overflow/menu for remaining modules.
-- [x] Ensure the dock does not cover focused controls or important dashboard content through reserved page padding.
+- [x] Ensure the dock does not cover focused controls or important protected-page content through reserved page padding.
 - [x] Provide visible focus states for every navigation item and action.
 - [x] Use semantic navigation landmarks and `aria-current` for the active route.
 - [ ] Ensure color is not the only signal for status, urgency, or active navigation.
@@ -422,11 +529,12 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 
 ## Architecture preparation
 
-- [x] Keep the dashboard shell separate from the public landing/auth/legal page shells.
-- [x] Use `client/src/pages/dashboard/` for the dashboard route and future authenticated pages.
-- [x] Keep reusable dashboard UI and placeholder fixtures in the dashboard page module.
+- [x] Keep the authenticated workspace shell separate from the public landing/auth/legal page shells.
+- [ ] Use a protected-page/workspace module naming scheme rather than treating every user page as a dashboard.
+- [x] Organize the implementation under `client/src/pages/workspace/`, distinguishing the workspace shell, Overview page, and protected user-page modules.
+- [x] Keep reusable workspace UI and placeholder fixtures separate from individual protected-page content where practical.
 - [x] Use the existing manual route map as a boundary that can later be replaced with React Router without rewriting visual components.
-- [x] Preserve the future MUI migration boundary from PROJECT-SPECS section 8; dashboard styles remain scoped and token-based.
+- [x] Preserve the future MUI migration boundary from PROJECT-SPECS section 8; workspace and protected-page styles remain scoped and token-based.
 - [x] Do not implement backend authorization, database queries, real sessions, or protected-route enforcement in this exploration pass.
 
 ## Implementation sequence after approval
@@ -434,16 +542,17 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [x] Confirm the navigation dock placement, icon labels, active-state treatment, and mobile behavior.
 - [x] Confirm the left floating section-navigation placement and right-side content relationship before implementation.
 - [x] Confirm each page-local section map before implementation.
-- [x] Confirm the dashboard grid priority and placeholder data vocabulary.
-- [x] Create the dashboard shell and route entry.
+- [x] Confirm the Overview grid priority and placeholder data vocabulary.
+- [x] Create the authenticated workspace shell and Overview route entry.
 - [x] Create the floating navigation dock and responsive overflow treatment.
 - [x] Add placeholder fixtures and metric derivations.
-- [x] Build dashboard cards and panels in priority order.
-- [x] Connect landing/login `Log in` actions to the placeholder dashboard route.
+- [x] Build Overview cards and panels in priority order.
+- [x] Connect landing/login `Log in` actions to the placeholder `/dashboard` Overview route.
 - [x] Add placeholder destination views for the remaining navigation routes.
 - [x] Add legal references and landing-page return links.
 - [x] Validate keyboard navigation, responsive behavior, route transitions, visual hierarchy, and overflow.
 - [x] Update `README.md`, `CODEMAP.md`, and `LOG.md`.
+- [x] Rename the former dashboard implementation boundary to `client/src/pages/workspace/` and rename shared exports/classes to workspace terminology while retaining `/dashboard` as the Overview URL.
 
 ## Exclusions
 
@@ -452,11 +561,11 @@ The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9
 - [x] No server/API/database integration.
 - [x] No durable session state.
 - [x] No claim that placeholder records are real user data.
-- [x] No final MUI migration or production dashboard architecture decision without a separate implementation review.
+- [x] No final MUI migration or production authenticated-workspace architecture decision without a separate implementation review.
 
 ## Approval gate
 
-- [ ] Owner approves the dashboard visual direction and navigation reference translation.
+- [ ] Owner approves the authenticated-workspace visual direction and navigation reference translation.
 - [ ] Owner approves credential-free placeholder login behavior.
-- [ ] Owner approves placeholder data categories and dashboard density.
-- [x] Execution was authorized before dashboard frontend code was added.
+- [ ] Owner approves placeholder data categories and Overview density.
+- [x] Earlier execution was authorized before the authenticated workspace frontend code was added; this naming/division revision does not authorize new coding.

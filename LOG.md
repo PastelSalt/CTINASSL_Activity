@@ -58,10 +58,47 @@ This file records actions made in the repository. Entries are chronological; eac
 - **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser checks passed. Desktop displays all 10 navigation links; mobile keeps a compact five-link dock while preserving the active route, with no horizontal overflow.
 - **Updated** `PLAN-A-04.md` with the approved floating left-side section-navigation concept for every authenticated dashboard page. The plan now defines the two-region layout, route-specific subsection maps, responsive behavior, accessibility requirements, and separation from the existing bottom top-level module navigation.
 - **Validation:** Documentation-only change; no frontend code was changed.
+- **Created** page-specific PLAN-A-04 child plans:
+  - `PLAN-A-04A.md` for `/dashboard`
+  - `PLAN-A-04B.md` for `/projects`
+  - `PLAN-A-04C.md` for `/projects/:projectId`
+  - `PLAN-A-04D.md` for `/milestones`
+  - `PLAN-A-04E.md` for `/tasks`
+  - `PLAN-A-04F.md` for `/requirements`
+  - `PLAN-A-04G.md` for `/assets`
+  - `PLAN-A-04H.md` for `/revisions`
+  - `PLAN-A-04I.md` for `/documentation`
+  - `PLAN-A-04J.md` for `/reports`
+  - `PLAN-A-04K.md` for `/settings`
+- **Updated** `CODEMAP.md` to index the child plans.
+- **Validation:** Documentation-only change; no application code was changed.
+- **Reorganized** all frontend plan documents from the repository root into `docs/plan/frontend/`, preserving the PLAN-A numbering:
+  - `PLAN-A-01.md` landing page
+  - `PLAN-A-02.md` legal pages
+  - `PLAN-A-03.md` authentication pages
+  - `PLAN-A-04.md` authenticated dashboard/user pages
+  - `PLAN-A-04A.md` through `PLAN-A-04K.md` page-specific dashboard plans
+- **Created** `docs/plan/backend/` as the reserved location for future PLAN-B backend documents.
+- **Updated** `README.md` and `CODEMAP.md` with the new plan organization and links.
+- **Validation:** Documentation move and reference updates completed; no application code changed.
+- **Executed** the authenticated workspace naming revision from `PLAN-A-04.md`:
+  - Renamed `client/src/pages/dashboard/` to `client/src/pages/workspace/`.
+  - Renamed the shared route component and fixture module to `WorkspacePage.jsx` and `workspaceData.js`.
+  - Renamed workspace CSS selectors and route exports from dashboard-oriented names.
+  - Changed the `/dashboard` navigation label to `Overview` while preserving the `/dashboard` URL.
+  - Updated README and CODEMAP terminology to distinguish the Overview page from other protected user pages.
+- **Validation:** Pending lint and production build verification.
+- **Executed** the approved compact-header and GSAP motion updates from `PLAN-A-04.md`.
+- **Refined** authenticated page spacing and title scale, retained compact contextual actions, and moved page-local content closer to the header.
+- **Added** scoped GSAP entry and section-change motion with `gsap.context()`, reduced-motion handling via `gsap.matchMedia()`, immediate-render safeguards, and visible fallback content.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, desktop/mobile layout checks, section-navigation checks, and reduced-motion rendering checks passed.
 - **Executed** the approved floating page-local section navigation from `PLAN-A-04.md`.
 - **Added** reusable left-side section navigation with route-specific section definitions for every authenticated page, right-side section content switching, and a compact horizontal mobile treatment.
 - **Kept** the existing bottom dock as top-level module navigation and preserved the static/demo-only boundary.
 - **Validation:** `npm run lint`, `npm run build`, `git diff --check`, desktop section-navigation rendering, section switching, active-state checks, and mobile no-overflow validation passed.
+- **Updated** `PLAN-A-04.md` with a planning-only visual refinement pass for compact authenticated page headers and GSAP motion across dashboard pages.
+- **Added** compact-header requirements, responsive spacing rules, page-by-page motion direction, GSAP cleanup/matchMedia safeguards, reduced-motion requirements, and a visual approval gate.
+- **Validation:** Documentation-only change; no frontend code was changed.
 - **Executed** `PLAN-A-03.md` by adding static `/login` and `/register` page routes with a Google-inspired layout translation, Tsumugi branding, static form presentation, route switching, legal links, and a custom thread illustration.
 - **Updated** the landing page authentication controls to link to `/login` and `/register`.
 - **Updated** `PLAN-A-03.md`, `README.md`, and `CODEMAP.md` to reflect the implemented static authentication pages and shared page modules.
