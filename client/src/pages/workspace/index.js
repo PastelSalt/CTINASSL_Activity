@@ -1,5 +1,7 @@
 import WorkspacePage from './WorkspacePage'
 
+export { WorkspacePage }
+
 export const workspaceRoutes = {
   '/dashboard': WorkspacePage,
   '/projects': WorkspacePage,

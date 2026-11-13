@@ -6,39 +6,39 @@ Plan for attributable changes, version references, review state, and historical 
 
 ## Local navigation
 
-- [ ] All revisions
-- [ ] Recent changes
-- [ ] Pending review
-- [ ] Approved
-- [ ] Version comparison
+- [x] All revisions
+- [x] Recent changes
+- [x] Pending review
+- [x] Approved
+- [x] Version comparison
 
 ## Revision record
 
-- [ ] Show timestamp, author, change description, affected record, project, previous/current references, and approval state.
-- [ ] Order changes chronologically with a clear newest/oldest convention.
-- [ ] Link revisions to tasks, requirements, assets, documents, and deliverables.
+- [x] Show timestamp, author, change description, affected record, project, previous/current references, and approval state.
+- [x] Order changes chronologically with a clear newest/oldest convention.
+- [x] Link revisions to tasks, requirements, assets, documents, and deliverables.
 
 ## Comparison and review
 
-- [ ] Reserve comparison for supported document types.
-- [ ] Show pending, approved, rejected, and recorded states.
-- [ ] Do not promise universal binary or media diffs.
+- [x] Reserve comparison for supported document types.
+- [x] Show pending, approved, rejected, and recorded states.
+- [x] Do not promise universal binary or media diffs.
 
 ## Motion and states
 
-- [ ] Reveal the history in chronological order.
-- [ ] Use minimal motion for dense records.
-- [ ] Provide loading, empty, error, unauthorized, and unsupported-comparison states.
-- [ ] Respect reduced motion.
+- [x] Reveal the history in chronological order.
+- [x] Use minimal motion for dense records.
+- [x] Provide loading, empty, error, unauthorized, and unsupported-comparison states.
+- [x] Respect reduced motion.
 
 ## Data boundary
 
-- [ ] Future source: dedicated `revisions` records.
-- [ ] Avoid unrestricted history arrays embedded in project documents.
-- [ ] Use pagination for large histories.
+- [x] Future source: dedicated `revisions` records.
+- [x] Avoid unrestricted history arrays embedded in project documents.
+- [x] Use pagination for large histories.
 
 ## Acceptance checklist
 
-- [ ] A user can understand what changed, who changed it, and which record was affected.
-- [ ] Review state is visible without relying only on color.
+- [x] A user can understand what changed, who changed it, and which record was affected.
+- [x] Review state is visible without relying only on color.
 

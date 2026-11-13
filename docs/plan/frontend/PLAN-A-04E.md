@@ -6,42 +6,42 @@ Plan for actionable work, priorities, statuses, subtasks, assignments, and relat
 
 ## Local navigation
 
-- [ ] All tasks
-- [ ] List view
-- [ ] Kanban view
-- [ ] Due soon
-- [ ] Blocked
-- [ ] Completed
+- [x] All tasks
+- [x] List view
+- [x] Kanban view
+- [x] Due soon
+- [x] Blocked
+- [x] Completed
 
 ## Task record
 
-- [ ] Show title, description, instructions, project, milestone, priority, status, due date, subtasks, creator, and assignee placeholder.
-- [ ] Represent Backlog, To Do, In Progress, In Review, Blocked, and Completed.
-- [ ] Reserve comments and activity records.
-- [ ] Link tasks to requirements, assets, and revisions.
+- [x] Show title, description, instructions, project, milestone, priority, status, due date, subtasks, creator, and assignee placeholder.
+- [x] Represent Backlog, To Do, In Progress, In Review, Blocked, and Completed.
+- [x] Reserve comments and activity records.
+- [x] Link tasks to requirements, assets, and revisions.
 
 ## Views and controls
 
-- [ ] Provide list and Kanban directions.
-- [ ] Show urgent, overdue, blocked, and completed work clearly.
-- [ ] Provide create/edit and status-change affordances as presentation-only controls.
-- [ ] Use pagination or bounded loading for large collections.
+- [x] Provide list and Kanban directions.
+- [x] Show urgent, overdue, blocked, and completed work clearly.
+- [x] Provide create/edit and status-change affordances as presentation-only controls.
+- [x] Use pagination or bounded loading for large collections.
 
 ## Motion and states
 
-- [ ] Reveal controls before task content.
-- [ ] Do not animate every status update.
-- [ ] Provide loading, empty, no-results, error, and unauthorized states.
-- [ ] Respect reduced motion.
+- [x] Reveal controls before task content.
+- [x] Do not animate every status update.
+- [x] Provide loading, empty, no-results, error, and unauthorized states.
+- [x] Respect reduced motion.
 
 ## Data boundary
 
-- [ ] Future source: `tasks`.
-- [ ] Explicit references: project, milestone, requirements, creator, assignee, assets, revisions.
-- [ ] Validate permissions in the backend.
+- [x] Future source: `tasks`.
+- [x] Explicit references: project, milestone, requirements, creator, assignee, assets, revisions.
+- [x] Validate permissions in the backend.
 
 ## Acceptance checklist
 
-- [ ] Priority, status, due date, and relationship context are scannable.
-- [ ] List/Kanban directions remain usable on small screens.
+- [x] Priority, status, due date, and relationship context are scannable.
+- [x] List/Kanban directions remain usable on small screens.
 

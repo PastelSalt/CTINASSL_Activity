@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Menu, Sparkles, X } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { authRoutes, workspaceRoutes, policyRoutes } from './pages'
+import { authRoutes, WorkspacePage, workspaceRoutes, policyRoutes } from './pages'
 import '@fontsource/fredoka/400.css'
 import '@fontsource/fredoka/500.css'
 import '@fontsource/fredoka/600.css'
@@ -463,8 +463,10 @@ function App() {
   const PolicyRoute = policyRoutes[currentPath]
   const AuthRoute = authRoutes[currentPath]
   const WorkspaceRoute = workspaceRoutes[currentPath]
+  const projectMatch = currentPath.match(/^\/projects\/([^/]+)$/)
   if (PolicyRoute) return <PolicyRoute />
   if (AuthRoute) return <AuthRoute />
+  if (projectMatch) return <WorkspacePage currentPath="/projects/:projectId" projectId={projectMatch[1]} />
   if (WorkspaceRoute) return <WorkspaceRoute currentPath={currentPath} />
   return <LandingPage />
 }

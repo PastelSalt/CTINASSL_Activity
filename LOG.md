@@ -87,7 +87,26 @@ This file records actions made in the repository. Entries are chronological; eac
   - Renamed workspace CSS selectors and route exports from dashboard-oriented names.
   - Changed the `/dashboard` navigation label to `Overview` while preserving the `/dashboard` URL.
   - Updated README and CODEMAP terminology to distinguish the Overview page from other protected user pages.
-- **Validation:** Pending lint and production build verification.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser smoke checks for `/projects`, search filtering, and archived-project rendering passed.
+- **Executed** `PLAN-A-04C.md` for the `/projects/:projectId` project workspace:
+  - Added dynamic project-detail route handling for known demo project IDs and a missing-project state.
+  - Added compact project identity, collaborator/status context, presentation-only edit/archive actions, and project-scoped nested sections.
+  - Added project overview, workflow phases, milestones, tasks, requirements, assets, documentation, revisions, deliverables, and objective-to-deliverable traceability presentation.
+  - Added project workspace fixture records and responsive styling.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser smoke checks for a known project workspace, workflow-section switching, and missing-project handling passed.
+- **Executed** `PLAN-A-04D.md` for the `/milestones` protected user page:
+  - Added milestone fixtures with project references, dates, status, priority, linked tasks, dependencies, and deliverables.
+  - Added dedicated all-milestones, timeline, upcoming, overdue/blocked, and completed section views.
+  - Added milestone summary counts, responsive list/timeline presentation, project links, and placeholder-state messaging.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser smoke checks for the milestone register, timeline links, and overdue/blocked filtering passed.
+- **Created** [`CONTEXT.md`](CONTEXT.md) as a portable continuation handoff containing the conversation decisions, plan organization, authenticated workspace architecture, completed PLAN-A-04B/04C/04D work, validation history, current file boundaries, and exact next steps for PLAN-A-04E.
+- **Validation:** `git diff --check` passed; documentation-only handoff file added and no application behavior changed by this entry.
+- **Executed** `PLAN-A-04B.md` for the `/projects` protected user page:
+  - Added project-directory fixtures with descriptions, ownership, priority, tags, timestamps, archive state, and detail IDs.
+  - Added card/table view switching, project search, status/category filters, reset behavior, status-group/recent/archive section states, and no-results guidance.
+  - Added presentation-only links to `/projects/:projectId` and a create-project entry point through the shared page action.
+  - Added responsive project-directory styling while retaining the authenticated workspace shell and reduced-motion behavior.
+- **Validation:** `npm run lint`, `npm run build`, `git diff --check`, and browser smoke checks for `/projects`, search filtering, and archived-project rendering passed.
 - **Executed** the approved compact-header and GSAP motion updates from `PLAN-A-04.md`.
 - **Refined** authenticated page spacing and title scale, retained compact contextual actions, and moved page-local content closer to the header.
 - **Added** scoped GSAP entry and section-change motion with `gsap.context()`, reduced-motion handling via `gsap.matchMedia()`, immediate-render safeguards, and visible fallback content.
@@ -171,3 +190,63 @@ This file records actions made in the repository. Entries are chronological; eac
 - **Validation:** Destination contains 36 skill folders, 36 `SKILL.md` files, and 252 files total; source and destination inventories match with zero SHA-256 hash mismatches.
 - **Verified** the migrated Copilot skills: all 36 folders contain `SKILL.md`, every frontmatter `name` matches its folder, and all 252 destination files match the Kilo source hashes.
 - **Limitation:** The current chat session still exposes only its originally loaded skill set; dynamic availability of all 36 migrated skills requires Copilot/VS Code skill discovery after reload or restart.
+
+## 2026-11-13
+
+- **Executed** `PLAN-A-04E.md` for the `/tasks` protected user page:
+  - Added `workspaceTaskRecords` fixtures in `client/src/pages/workspace/workspaceData.js` with title, description, instructions, project, milestone, priority, status, due date, subtasks, creator, assignee, and requirement/asset/revision references across the six statuses (Backlog, To Do, In Progress, In Review, Blocked, Completed) and three demo projects.
+  - Replaced the generic `/tasks` module fixture with a dedicated `TasksPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented All tasks / List view / Kanban view / Due soon / Blocked / Completed section views with list and Kanban layouts, task search, visible/completed/in-progress/blocked summary counts, clear empty/no-results states, and presentation-only create-task controls.
+  - Added task card and Kanban column styling plus green tone tokens in `client/src/index.css`.
+- **Updated** `PLAN-A-04E.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks pending for `/tasks`, list/Kanban switching, and task filtering.
+
+## 2026-11-13
+
+- **Executed** `PLAN-A-04F.md` for the `/requirements` protected user page:
+  - Added `workspaceRequirementRecords` fixtures in `client/src/pages/workspace/workspaceData.js` with identifier, type, description, acceptance criteria, priority, status, verification state, project, milestone, linked tasks, and linked deliverable across six requirements and the specified/in progress/verified/unverified/blocked/rejected states.
+  - Replaced the generic `/requirements` module fixture with a dedicated `RequirementsPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented All requirements / Functional / Non-functional / Verification status / Traceability section views with requirement cards, verification state, acceptance criteria, linked work, search, summary counts, clear empty/no-results states, and presentation-only Add requirement controls.
+  - Added requirement card and traceability table styling in `client/src/index.css`, with verification state communicated via text (not color alone).
+- **Updated** `PLAN-A-04F.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks passed for `/requirements`, Functional/Traceability section switching, and requirement filtering.
+
+- **Executed** `PLAN-A-04G.md` for the `/assets` protected user page:
+  - Added `workspaceAssetRecords` fixtures in `client/src/pages/workspace/workspaceData.js` with name, type, size, project, description, tags, category, preview availability, access state, and updated time across nine assets covering images, documents, repository references, datasets, audio, and exports.
+  - Replaced the generic `/assets` module fixture with a dedicated `AssetsPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented All assets / Images and illustrations / Documents and PDFs / Audio and video / Datasets and spreadsheets / References and exports section views with asset cards, asset-type icons, tags, metadata, search, summary counts, clear empty/no-results states, and presentation-only Add asset controls.
+  - Added asset card styling with category-specific icon backgrounds in `client/src/index.css`, with storage boundary notes (metadata in app database, binaries in object storage).
+- **Updated** `PLAN-A-04G.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks passed for `/assets`, Images and illustrations section switching, and asset filtering.
+
+- **Executed** `PLAN-A-04H.md` for the `/revisions` protected user page:
+  - Added `workspaceRevisionRecords` fixtures in `client/src/pages/workspace/workspaceData.js` with timestamp, author, change description, affected record, project, previous/current references, approval state, and linked task/requirement/asset/deliverable across six revisions and the approved/pending review/recorded states.
+  - Replaced the generic `/revisions` module fixture with a dedicated `RevisionsPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented All revisions / Recent changes / Pending review / Approved section views with revision cards, change descriptions, previous/current references, linked work references, search, summary counts, clear empty/no-results states, and presentation-only Log revision controls.
+  - Added revision card styling with state-specific colors in `client/src/index.css`, with review state communicated via text (not color alone).
+- **Updated** `PLAN-A-04H.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks passed for `/revisions`, Pending review section switching, and revision filtering.
+
+- **Executed** `PLAN-A-04I.md` for the `/documentation` protected user page:
+  - Added `workspaceDocumentRecords` fixtures in `client/src/pages/workspace/workspaceData.js` with title, type, project, author, updated time, status, revision context, format, and linked task/requirement/milestone/revision/deliverable across eight documents covering project briefs, technical specifications, research notes, architecture decisions, creative drafts, and release notes.
+  - Replaced the generic `/documentation` module fixture with a dedicated `DocumentationPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented All documents / Project briefs / Technical specifications / Research notes / Architecture decisions / Testing and release notes section views with document cards, Markdown format indicator, linked work references, search, summary counts, clear empty/no-results states, and presentation-only New document controls.
+  - Added document card styling with type-specific badges in `client/src/index.css`, with Markdown clearly presented as the format boundary.
+- **Updated** `PLAN-A-04I.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks passed for `/documentation`, Project briefs section switching, and document filtering.
+
+- **Executed** `PLAN-A-04J.md` for the `/reports` protected user page:
+  - Added `workspaceReportDefinitions` fixtures in `client/src/pages/workspace/workspaceData.js` with explicit formulas, source records, and computed values for Project completion, Task distribution, Milestone progress, Requirement coverage, Activity history, plus overdue work records.
+  - Replaced the generic `/reports` module fixture with a dedicated `ReportsPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented Overview / Project completion / Task distribution / Milestone progress / Requirement coverage / Activity history section views with report panels, formula definitions, source record references, project scope control, search, reset behavior, overdue work section, clear empty/no-results states, and presentation-only Export report controls.
+  - Added report panel and record styling in `client/src/index.css`, with placeholder-only calculation notes on every panel.
+- **Updated** `PLAN-A-04J.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks passed for `/reports`, Task distribution section switching, and project scope control.
+
+- **Executed** `PLAN-A-04K.md` for the `/settings` protected user page:
+  - Replaced the generic `/settings` module fixture with a dedicated `SettingsPage` component in `client/src/pages/workspace/WorkspacePage.jsx`, retaining the shared workspace shell, page-local section navigation, and reduced-motion GSAP behavior.
+  - Implemented Account and profile / Workspace preferences / Notifications / Appearance and density / Legal and privacy section views with setting cards, search, save settings control, security-sensitive actions visually distinct via wording, and presentation-only save behavior.
+  - Added legal links to Privacy Policy, Terms of Service, and Cookie & Local Storage Policy in the Legal and privacy group.
+  - Added settings card and group styling in `client/src/index.css`, with notes that no setting is persisted until a settings API exists.
+- **Updated** `PLAN-A-04K.md` to mark all implementation and acceptance items complete.
+- **Validation:** `npm run lint`, `npm run build`, and `git diff --check` passed in `client/`; browser smoke checks passed for `/settings`, section switching to Legal and privacy.
