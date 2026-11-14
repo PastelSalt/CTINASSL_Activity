@@ -1,94 +1,82 @@
-# PLAN-A-04E — `/tasks` Tasks (UI Plan, Revision 2)
+# PLAN-A-04E — `/tasks` Tasks (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Scope:** UI only, fixture data, no operations · **Status:** Planning · **Reference page:** built first in Phase 4 to prove the shared system
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Status:** Planning · **Reference page:** build first in Phase 4 to prove the new anatomy · **Evidence:** RESEARCH.md D4, D6, D9; Todoist, Things, and Linear speed lessons (section 10)
 
-## 1. Current state (observed)
+## 1. Purpose
 
-- Sections: All tasks, List view, Kanban view, Due soon, Blocked, Completed. *All tasks* and *List view* render the same list; *Due soon/Blocked/Completed* are status filters (audit F6).
-- Three "new task" controls on one screen: header `Create task`, header `New task`, toolbar `New task`; the List/Kanban toggle duplicates two section tabs.
-- Large task cards (~170px) show description, milestone, and four meta items as plain text; 8 tasks already need a long scroll. Kanban uses six equal columns that overflow small screens.
-- Backlog and Blocked share the same lilac tone; `Overdue` is tested in code but is not a status in the fixtures.
-- Summary cards (four outlined boxes) push the list below the fold at 390px.
+The daily loop: see what is on my plate, add something in seconds, finish it. Tasks is "my work" across projects; the same task rows appear inside a project's Work tab.
 
-## 2. UI goals
+## 2. What changes from Revision 2
 
-1. Make triage fast: dense rows for scanning, board for flow, schedule for deadlines.
-2. Status, priority, and due date are visible in one glance on every task.
-3. Relationships (project, milestone, requirement, assets) are chips.
-4. Replace the three create buttons with one.
+- Views become **Today, Upcoming, All** (task horizon) instead of List, Board, Schedule. Board and a flat list become display options of **All**.
+- The filter chip row (Overdue, Due soon, Blocked, Completed) is removed. Overdue and blocked are **sorted to the top and marked** in Today; the rest live in one **Filter** popover.
+- Removed: assignee select, assignee avatars, creator, priority select, the four-card stat strip, and the "Group-by" idea.
+- Statuses: **To do, Doing, Done** plus a **Blocked** flag; priority is **Normal or High** and appears only when High (Revision 2: six statuses, four priorities).
+- The project scope switcher is replaced by a **Project** filter inside the popover.
+- Quick add sits at the top of the list (PLAN-A-04L).
 
 ## 3. Layout
 
 ```text
-Header: Tasks                                           [New task]
-Tabs:   List | Board | Schedule
-Toolbar: [search]  Status: All Due soon Blocked Completed   Project ▾  Assignee ▾  Priority ▾  Sort ▾
-Summary strip: Open 7 · Due this week 3 · Blocked 1 · Done 1                (flat, clickable)
+Tasks
+[Today] [Upcoming] [All]
+[ + Add a task… ]                       [search…] [Filter ▾ (0)]   (List | Board)  (All only)
 
-List row (≈56px):
- ○ Review opening scene notes   (In progress)  High ↑  [Project Garden] [Chapter one review]  due Today  (M)
-Board (≥768px): Backlog | To do | In progress | In review | Blocked | Completed — horizontal scroll with snap
-Schedule: groups  Overdue · Today · This week · Later · No date
+Overdue
+ ◔ Write character profiles      Project Garden      overdue 3 days
+Today
+ ◔ Review opening scene notes    Project Garden      today          ↑ High
+ ○ Choose session strategy       Tsumugi API         today
+Done today (collapsed)
 ```
 
 ## 4. Views
 
-| View | Layout | Notes |
-|---|---|---|
-| List | Compact `RecordRow`s grouped by status or flat (group-by control: None · Status · Project · Due) | Default: flat sorted by due date; blocked and overdue flagged with icon + text |
-| Board | Six status columns with counts; each card shows title, priority, due, assignee, subtask progress | Read-only (no drag handles); columns collapse to a status selector at <768px |
-| Schedule | Tasks grouped by due bucket with a relative-date header per group | Replaces *Due soon*; overdue bucket first |
-
-Filter chips (with counts) replace the *Due soon*, *Blocked*, and *Completed* sections. `More filters` popover: milestone, tag, has-requirement, has-subtasks.
+| View | Content |
+|---|---|
+| Today | Overdue first, then due today, then Doing without a date; done today collapsed |
+| Upcoming | Next 14 days grouped by day; milestone due dates appear as markers |
+| All | Everything, grouped by project or flat; List or Board (To do, Doing, Done) |
 
 ## 5. Record presentation
 
 | Priority | Fields |
 |---|---|
-| Primary | Checkbox-style status icon, title, `StatusBadge`, `DueLabel` |
-| Secondary | `PriorityBadge`, project chip, milestone chip, assignee `Avatar` |
-| Tertiary | Subtask progress (`2/5`), linked requirement/asset/revision counts, creator and description (detail panel only) |
+| Primary | Status control (circle: To do, Doing, Done), title |
+| Secondary | Project label (when not inside a project), due label with overdue treatment, **Blocked** flag, High priority marker |
+| Tertiary | Subtask progress, milestone, notes (panel only) |
 
-The detail panel shows description, instructions, subtasks (read-only checklist), links (requirements, assets, revisions), and an activity/comment placeholder list.
+Detail panel: notes, subtasks (checklist), due date, project, milestone, and a **Links** lens: *Why it exists* (the requirement it serves) and *What it produces* (files and changes). Preview-only actions: Edit, Change status, Block or unblock.
 
 ## 6. Components
 
-Shared: `PageHeader`, `ViewTabs`, `Toolbar`, `FilterChip`, `StatStrip`, `StatusBadge`, `PriorityBadge`, `DueLabel`, `RelationChip`, `Avatar`, `RecordRow`, `DetailPanel`, state components. Page-specific: `TaskBoard`, `TaskBoardCard`, `ScheduleGroup`, `SubtaskList`.
+Shared: `PageHeader`, `ViewTabs`, `Toolbar` with `FilterPopover`, `TaskRow`, `DueLabel`, `StatusBadge`, `RelationChip`, `DetailPanel`. New: `QuickAddField` (inline), `StatusControl`.
 
 ## 7. States
 
-- [ ] Empty project: "No tasks yet" with a `New task` preview action.
-- [ ] No results: active filter chips + `Clear filters`.
-- [ ] Empty board column: "Nothing here" caption (no illustration).
-- [ ] Large collections: show a "Load more" row after 25 items (visual boundary for the future bounded loading strategy; does not fetch).
-- [ ] Loading skeleton rows; error; unauthorized.
+Empty today ("Nothing due today", link to Upcoming), no tasks yet (first-use with Quick add), no results with active filters, loading and error. No "unauthorized".
 
 ## 8. Responsive
 
-≥1280: list + docked detail panel; board shows all six columns. 768–1279: board scrolls horizontally with snap. <768: List shows two-line rows (title / meta); Board becomes a status selector (segmented chips) showing one column at a time; filters open in a bottom sheet; header action becomes icon-only.
+Single column below 1280px; the detail panel is a sheet; Board shows one column at a time below 768px with a status selector; the Quick add field stays pinned at the top.
 
 ## 9. Fixture needs
 
-ISO `due`; statuses limited to the six defined; remove the dead `Overdue` status (compute overdue from `due` and `demoToday`); add `subtasks[]`, `requirementIds`, `assetIds`, `revisionIds`, `creatorId`, `assigneeId`; at least one overdue, one blocked, one completed, one without a due date.
+Three statuses, `blocked`, `priority: normal|high`; remove assignee and creator; keep `due`, `milestoneId`, `subtasks`, and requirement and file links.
 
 ## 10. Preview-only actions
 
-`New task`, `Edit`, `Change status` (menu layout; selecting an item closes the menu without changing the record), `Assign`.
+Status control, Edit, Block, Quick add (session-only add allowed, per PLAN-A-04L).
 
 ## 11. Acceptance checklist
 
-- [ ] Exactly one create control per breakpoint.
-- [ ] Views are List, Board, Schedule; blocked/completed/due-soon are chips with counts.
-- [ ] Every status has a unique icon + label; Backlog and Blocked are clearly different.
+- [ ] Three views; no chip row; one control row.
+- [ ] No people or avatars; priority only when High.
+- [ ] Overdue and blocked are visible by sort order and icon plus text.
 - [ ] A task row fits on one line at ≥1024px and two lines on mobile.
-- [ ] First task row visible above the fold at 390px.
-- [ ] Board works at 768px by scrolling and at <768px through the status selector.
+- [ ] Quick add works from the field and the global shortcut.
 - [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
 
-## 12. Carried over from Revision 1
+## Implementation status (Revision 3)
 
-Task fixtures with project/milestone/assignee, six-status vocabulary, search, empty state, Kanban concept.
-
-## Implementation status — 2026-11-14
-
-Done: List, Board, and Schedule views; a single New task action; filter chips (All, Overdue, Due soon, Blocked, Completed) with counts plus assignee, priority, and sort controls; board with a status selector below 768px; schedule buckets; detail panel with subtasks, relationships as chips, and preview-only Edit and Change status; the dead Overdue status was removed (computed from dates). Not done: Group-by control, Load more boundary, More filters popover.
+Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.

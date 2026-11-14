@@ -2,27 +2,27 @@ import { lazy, Suspense } from 'react'
 import WorkspaceProvider from './WorkspaceProvider'
 import WorkspaceShell from './WorkspaceShell'
 import { Skeleton } from './components/states'
+import { useStoreVersion } from './data/store'
+import '../../styles/forms.css'
 import '../../styles/workspace.css'
 import '../../styles/workspace-pages.css'
 
 // The shell stays mounted while the page inside it changes; each page is its own chunk.
 const pages = {
-  '/dashboard': lazy(() => import('./pages/OverviewPage')),
+  '/home': lazy(() => import('./pages/HomePage')),
   '/projects': lazy(() => import('./pages/ProjectsPage')),
-  '/milestones': lazy(() => import('./pages/MilestonesPage')),
   '/tasks': lazy(() => import('./pages/TasksPage')),
-  '/requirements': lazy(() => import('./pages/RequirementsPage')),
-  '/assets': lazy(() => import('./pages/AssetsPage')),
-  '/revisions': lazy(() => import('./pages/RevisionsPage')),
-  '/documentation': lazy(() => import('./pages/DocumentationPage')),
-  '/reports': lazy(() => import('./pages/ReportsPage')),
-  '/settings': lazy(() => import('./pages/SettingsPage')),
+  '/library': lazy(() => import('./pages/LibraryPage')),
+  '/insights': lazy(() => import('./pages/InsightsPage')),
+  '/account': lazy(() => import('./pages/AccountPage')),
+  '/help': lazy(() => import('./pages/HelpPage')),
 }
-const ProjectWorkspacePage = lazy(() => import('./pages/ProjectWorkspacePage'))
+const ProjectPage = lazy(() => import('./pages/ProjectPage'))
 
 export default function WorkspaceApp({ pathname }) {
+  useStoreVersion() // re-render pages when session data (Quick add, new projects) changes
   const projectMatch = pathname.match(/^\/projects\/([^/]+)$/)
-  const Page = projectMatch ? ProjectWorkspacePage : pages[pathname]
+  const Page = projectMatch ? ProjectPage : pages[pathname]
 
   return (
     <WorkspaceProvider>

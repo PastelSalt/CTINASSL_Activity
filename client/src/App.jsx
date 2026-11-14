@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { installLinkInterception, useLocation } from './app/router'
+import { installLinkInterception, navigate, useLocation } from './app/router'
 
 // Each route group is its own chunk so a visitor only downloads the code for the page they open.
 const LandingPage = lazy(() => import('./pages/landing/LandingPage'))
@@ -24,12 +24,30 @@ const staticRoutes = {
   '/cookie-and-local-storage-policy': CookiePolicyPage,
 }
 
-const workspacePaths = ['/dashboard', '/projects', '/milestones', '/tasks', '/requirements', '/assets', '/revisions', '/documentation', '/reports', '/settings']
+const workspacePaths = ['/home', '/projects', '/tasks', '/library', '/insights', '/account', '/help']
+
+// Paths from the earlier ten-module workspace keep working by redirecting to their new home.
+const legacyRedirects = {
+  '/dashboard': '/home',
+  '/milestones': '/projects?view=timeline',
+  '/requirements': '/projects',
+  '/revisions': '/projects',
+  '/assets': '/library',
+  '/documentation': '/library',
+  '/reports': '/insights',
+  '/settings': '/account',
+}
+
+function Redirect({ to }) {
+  useEffect(() => { navigate(to, { replace: true }) }, [to])
+  return <div className="route-loading" aria-busy="true" />
+}
 
 function Route({ pathname }) {
   const Page = staticRoutes[pathname]
   if (Page) return <Page />
 
+  if (legacyRedirects[pathname]) return <Redirect to={legacyRedirects[pathname]} />
   if (workspacePaths.includes(pathname) || /^\/projects\/[^/]+$/.test(pathname)) return <WorkspaceApp pathname={pathname} />
   return <NotFoundPage />
 }

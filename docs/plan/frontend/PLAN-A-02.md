@@ -126,3 +126,17 @@ Three route-selected policy pages with shared shell, branded header, readable do
 | Shared footer and "Other policies" links | Done |
 
 **Not done:** legal review and publication, measuring font-swap layout shift, screen-reader pass.
+
+## 13. Motion and visual pass — 2026-11-14
+
+The landing and auth motion language now also runs on the legal pages, kept deliberately quiet for reading. Frontend only; document content, anchors, find-in-page, and printing are unchanged.
+
+- **Background:** drifting pastel orbs and a drawn thread behind the document (shared `page-bg` styles in `motion.css`, now also used by the auth pages).
+- **Entrance:** header drops in, banner, contents list, and document card rise, the title reveals word by word, then the description and meta; 4 s failsafe on a plain timer.
+- **Reading progress:** a thin pink bar along the top edge fills as you scroll.
+- **Sections:** each section eases in once as it approaches; a `beforeprint` handler restores everything, and print hides the bar, background, and cursor.
+- **Small touches:** contents links nudge on hover, section anchor icons tilt, soft cursor ring on fine pointers.
+- **Not added on purpose:** smooth scrolling, pinning, and parallax scrub, so anchors, find-in-page, and long reading stay native.
+- Under `prefers-reduced-motion` nothing runs and the progress bar is hidden.
+
+Verified at 1366x728 via DOM probes: word gaps correct, no overflow, no console errors, and with the animation ticker deliberately idle the failsafe still reveals the document. **Not verified live:** section reveals and the progress bar (the browser pane stopped rendering frames during testing), Safari, a real print preview, reduced motion in a real browser.

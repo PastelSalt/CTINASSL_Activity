@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowUpRight, MailCheck, Sparkles } from 'lucide-react'
+import { ArrowUpRight, MailCheck } from 'lucide-react'
 import AuthShell from './AuthShell'
 import PreviewDialog from '../../components/forms/PreviewDialog'
 import { Checkbox, FormBanner, PasswordField, StatusPanel, TextField } from '../../components/forms/forms'
@@ -24,24 +24,6 @@ const registerStates = [
 
 const PASSWORD_HINT = 'Demo only — don’t enter a real password; this page never receives it.'
 
-function ThreadIllustration() {
-  return (
-    <div className="auth-illustration" aria-hidden="true">
-      <svg viewBox="0 0 360 260">
-        <path d="M20 176C66 54 108 62 142 154s62 91 91 14 57-95 107-38" />
-        <path d="M20 112c44 76 77 72 113 8s65-77 96-3 55 74 111 39" />
-        <circle cx="20" cy="176" r="8" />
-        <circle cx="340" cy="130" r="8" />
-      </svg>
-      <div className="auth-illustration__card">
-        <span className="eyebrow"><Sparkles size={13} /> Sample thread</span>
-        <strong>Idea → finished work</strong>
-        <small>Keep every meaningful step together.</small>
-      </div>
-    </div>
-  )
-}
-
 function DemoActions({ onContinue }) {
   return <button className="button button--primary" type="button" onClick={onContinue}>Continue to demo workspace <ArrowUpRight size={16} strokeWidth={2.5} aria-hidden="true" /></button>
 }
@@ -61,13 +43,14 @@ function LoginPage() {
     <AuthShell
       pageTitle="Log in"
       title="Welcome back to the thread."
+      art="login"
       intro="Sign in to continue shaping the work that matters."
       previewStates={loginStates}
       currentState={state}
       note="Use a private device and keep your sign-in details secure."
     >
       {banner && <FormBanner tone={banner[0]} title={banner[1]} focus>{banner[2]}</FormBanner>}
-      <form className="auth-form" noValidate onSubmit={(event) => { event.preventDefault(); navigate('/dashboard') }}>
+      <form className="auth-form" noValidate onSubmit={(event) => { event.preventDefault(); navigate('/home') }}>
         <TextField label="Email address" name="email" type="email" autoComplete="username" placeholder="you@example.com" error={showErrors ? 'Enter your email address.' : undefined} />
         <PasswordField label="Password" name="password" autoComplete="current-password" hint={PASSWORD_HINT} error={showErrors ? 'Enter your password.' : undefined} />
         <a className="auth-support-link" href="/forgot-password">Forgot password?</a>
@@ -75,7 +58,7 @@ function LoginPage() {
           <span>New to Tsumugi? <a className="text-link" href="/register">Create account</a></span>
           <button className="button button--primary" type="submit">Log in <ArrowUpRight size={16} strokeWidth={2.5} aria-hidden="true" /></button>
         </div>
-        <button className="auth-demo-link" type="button" onClick={() => navigate('/dashboard')}>Continue as demo user</button>
+        <button className="auth-demo-link" type="button" onClick={() => navigate('/home')}>Continue as demo user</button>
       </form>
     </AuthShell>
   )
@@ -89,11 +72,11 @@ function RegisterPage() {
   if (state === 'pending' || state === 'success') {
     const pending = state === 'pending'
     return (
-      <AuthShell pageTitle="Create account" title={pending ? 'Check your inbox.' : 'You’re in the thread.'} intro="This is a layout preview of the next step. No account was created." previewStates={registerStates} currentState={state} wide aside={<ThreadIllustration />}>
+      <AuthShell pageTitle="Create account" title={pending ? 'Check your inbox.' : 'You’re in the thread.'} intro="This is a layout preview of the next step. No account was created." previewStates={registerStates} currentState={state} art="register">
         <StatusPanel
           icon={pending ? MailCheck : undefined}
           title={pending ? 'Confirm your email address' : 'Account created'}
-          actions={<DemoActions onContinue={() => navigate('/dashboard')} />}
+          actions={<DemoActions onContinue={() => navigate('/home')} />}
         >
           {pending ? 'A verification link would be sent to your address. Nothing was sent in this demo.' : 'In the real flow this confirms the new account. In the demo, continue to the sample workspace.'}
         </StatusPanel>
@@ -106,8 +89,7 @@ function RegisterPage() {
       pageTitle="Create account"
       title="Start your next thread."
       intro="Create a home for the ideas, requirements, and deliverables you are bringing together."
-      wide
-      aside={<ThreadIllustration />}
+      art="register"
       previewStates={registerStates}
       currentState={state}
       note="Your project thread starts with a clear place to begin."
@@ -128,7 +110,7 @@ function RegisterPage() {
         </div>
       </form>
 
-      <PreviewDialog open={dialogOpen} onClose={() => setDialogOpen(false)} title="Account creation isn’t connected yet" actions={<DemoActions onContinue={() => navigate('/dashboard')} />}>
+      <PreviewDialog open={dialogOpen} onClose={() => setDialogOpen(false)} title="Account creation isn’t connected yet" actions={<DemoActions onContinue={() => navigate('/home')} />}>
         <p>This is where a new account would be created. In this demo nothing you entered was read, stored, or sent, and no account exists.</p>
       </PreviewDialog>
     </AuthShell>

@@ -219,7 +219,7 @@
 
 .policy-section code.placeholder {
   border: 1px dashed var(--pink);
-  color: var(--pink);
+  color: #a82a64;
   background: var(--pink-soft);
 }
 
@@ -322,3 +322,19 @@
     font-size: 0.85em;
   }
 }
+
+/* ---------- Motion layer (legalMotion.js) ---------- */
+.policy-page { position: relative; overflow-x: clip; }
+.policy-page > .public-header, .policy-page > .policy-layout, .policy-page > .public-footer { position: relative; z-index: 1; }
+.policy-progress { position: fixed; z-index: 50; top: 0; right: 0; left: 0; height: 4px; background: var(--pink); transform: scaleX(0); transform-origin: left; pointer-events: none; }
+.policy-toc a { transition: color 160ms ease, background-color 160ms ease, transform 200ms var(--ease-bounce); }
+.policy-toc a:hover { transform: translateX(3px); }
+.policy-section__anchor { transition: opacity 150ms ease, transform 200ms var(--ease-bounce), background-color 150ms ease; }
+.policy-section__anchor:hover { background: var(--pink-soft); transform: rotate(-12deg) scale(1.1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .policy-progress { display: none; }
+  .policy-toc a, .policy-section__anchor { transition: none; }
+  .policy-toc a:hover { transform: none; }
+}
+@media print { .policy-progress, .page-bg, .cursor { display: none !important; } }

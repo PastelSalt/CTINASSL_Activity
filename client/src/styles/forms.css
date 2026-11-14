@@ -284,3 +284,26 @@
   gap: 10px;
   margin-top: 6px;
 }
+
+/* ---------- Micro-interactions ---------- */
+.field input:not([type="checkbox"]) { transition: border-color 160ms ease, box-shadow 160ms ease, transform 220ms var(--ease-bounce); }
+.field input:not([type="checkbox"]):focus { transform: translateY(-2px); }
+.field > label { transition: color 160ms ease; }
+.field:focus-within > label { color: var(--pink); }
+@keyframes form-shake { 20% { translate: -6px 0; } 40% { translate: 5px 0; } 60% { translate: -4px 0; } 80% { translate: 2px 0; } }
+@keyframes form-drop { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes form-pop { from { opacity: 0; transform: scale(0.3) rotate(-20deg); } }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(24px) scale(0.94); } }
+@keyframes backdrop-in { from { opacity: 0; } }
+.form-banner--error { animation: form-shake 420ms ease-out; }
+.field-error { animation: form-drop 220ms ease-out; }
+.status-panel > svg { animation: form-pop 520ms var(--ease-bounce); }
+.field-rules li[data-met="true"] svg { animation: form-pop 380ms var(--ease-bounce); }
+.preview-dialog[open] { animation: dialog-in 280ms var(--ease-bounce); }
+.preview-dialog[open]::backdrop { animation: backdrop-in 200ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .form-banner--error, .field-error, .status-panel > svg, .field-rules li[data-met="true"] svg, .preview-dialog[open], .preview-dialog[open]::backdrop { animation: none; }
+  .field input:not([type="checkbox"]) { transition: none; }
+  .field input:not([type="checkbox"]):focus { transform: none; }
+}

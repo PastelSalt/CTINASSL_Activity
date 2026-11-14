@@ -1,95 +1,65 @@
-# PLAN-A-04J — `/reports` Reports (UI Plan, Revision 2)
+# PLAN-A-04J — `/insights` Insights (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Scope:** UI only, fixture data, no operations · **Status:** Planning
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Reports with five views · **Status:** Planning · **Evidence:** RESEARCH.md D4; Hick's and Cowan's limits (3.4)
 
-## 1. Current state (observed)
+## 1. Purpose
 
-- Sections: Overview, Project completion, Task distribution, Milestone progress, Requirement coverage, Activity history.
-- Each report is a text panel: title, formula chip, definition sentence, source line, and a list of rows with a percentage on the right. There are no bars, rings, or charts, so the page reads as a document, not a report (audit F10).
-- The header actions are `Set report scope` and `New task` (neither fits the page); the toolbar also has `Export report`, a project select, search, and `Reset scope`. There is no date-range control although the plan calls for one.
-- The same "calculation based on placeholder fixture data" note repeats under every panel.
-- Percentages are stored values in fixtures rather than derived from selectors shared with Overview.
+A few honest numbers about progress and coverage, with their definitions. For one person the question is "am I getting there?", not "who is overloaded?".
 
-## 2. UI goals
+## 2. What changes from Revision 2
 
-1. **Glanceable first, defensible second:** every report leads with a simple visual (bar, stacked bar, ring) and exposes its formula and sources one click away.
-2. Only visualize what can be derived exactly from fixtures (counts, ratios); no decorative trends.
-3. Scope controls (project, date range) sit above the content and affect every view.
-4. One consistent report card pattern: headline number → visual → table → definition.
+- Five tabs (Overview, Progress, Workload, Coverage, Activity) become **one page with three cards** and no tabs.
+- Removed: Workload by status and priority, Activity (the feed and the date range), the per-project table as its own view, and the global project scope control.
+- A **project filter** (single select) stays in the control row.
+- Each project also shows its own two numbers on its Overview (04C), so most people never need this page.
 
 ## 3. Layout
 
 ```text
-Header: Reports                                          [Export report ▾ (preview)]
-Tabs:   Overview | Progress | Workload | Coverage | Activity
-Scope bar: Project ▾  Date range [Last 30 days ▾]   Showing 3 projects · demo data   [Reset]
-Overview (2×2 report cards)
-┌ Project completion ───────┐ ┌ Milestone progress ───────┐
-│ 33%  1 of 3 tasks          │ │ 50%  2 of 4 milestones    │
-│ ▓▓▓░░░░░░░                 │ │ ▓▓▓▓▓░░░░░                │
-│ [Definition ⓘ] [View ▸]    │ │ [Definition ⓘ] [View ▸]   │
-└────────────────────────────┘ └───────────────────────────┘
-┌ Requirement coverage ─────┐ ┌ Overdue work ─────────────┐
-Detail views: chart (left) + data table (right) + formula/sources panel (below)
+Insights                                              [Project: All ▾]  [Export ▾ (preview)]
+
+┌ Progress ───────────────┐ ┌ Coverage ───────────────┐ ┌ Overdue ────────────────┐
+│ 56%  5 of 9 tasks       │ │ 50%  2 of 4 met+verified│ │ 3                        │
+│ ▓▓▓▓▓░░░░               │ │ ▓▓▓▓░░░░░               │ │ open items past their date│
+│ [Definition ⓘ]          │ │ [Definition ⓘ]          │ │ [Definition ⓘ]  [View ▸]  │
+└─────────────────────────┘ └─────────────────────────┘ └──────────────────────────┘
+By project (table, optional disclosure): Project · Progress · Coverage
 ```
 
-## 4. Views
+## 3.1 Card spec
 
-| View | Visual | Table | Formula and source |
-|---|---|---|---|
-| Overview | Four report cards with a headline number and a mini bar/ring | — | Each card opens its detail view |
-| Progress | Horizontal bars per project (completed ÷ total tasks) and a milestone completion bar | Project · Done · Total · % | `completed tasks ÷ total tasks`; `completed milestones ÷ total milestones` |
-| Workload | Stacked bar of tasks by status and by priority per project | Status × priority counts | counts by status/priority |
-| Coverage | Stacked bar Verified / Unverified / Failed requirements; list of requirements without implementing work | Requirement · Verification · Linked work | `verified requirements ÷ total requirements` |
-| Activity | Day-grouped bounded list ("last 20 events") with a small per-day count strip | Time · Actor · Action · Record | bounded chronological query |
+- Headline number plus qualifier ("5 of 9 tasks"), a bar with the same numbers as text, a **Definition** disclosure (formula, sources, scope), and a `View` link to the filtered list (Tasks overdue, Specs gaps).
+- Insufficient data shows "Not enough data" with the reason, never `0%`.
+- **Progress** = done tasks ÷ total tasks. **Coverage** = requirements both Met and Verified ÷ total requirements. **Overdue** = open tasks and milestones with a date before today.
 
-The **Overdue work** list appears on Overview and Workload.
+## 4. Components
 
-## 5. Report card spec
+Shared: `PageHeader`, `ProgressBar`, `StatusBadge`, `RelationChip`, state components. Existing from Revision 2: `ReportCard` and `DefinitionPopover` (rename to `InsightCard`).
 
-- Headline: value (28px) + qualifier ("1 of 3 tasks").
-- Visual: 8px bar or 56px ring using tokens; always paired with the numbers as text.
-- `Definition` popover: formula in words, source records (`tasks`, `milestones`…), scope (project/date range), and "Calculated from demo data".
-- `View ▸` link opens the detail view; the whole card is not a link (avoid nested interactive targets).
-- A report with insufficient data shows "Not enough data" with the missing source, never `0%`.
+## 5. States
 
-## 6. Components
+Empty (no data yet, explains what feeds each card), insufficient data per card, loading, error.
 
-Shared: `PageHeader`, `ViewTabs`, `Toolbar` (scope bar variant), `StatStrip`, `ProgressBar`, `MiniChart` (bar, stacked bar, ring), `DataTable`, `RelationChip`, `DetailPanel`, state components, `PreviewActionButton`. Page-specific: `ReportCard`, `DefinitionPopover`, `ScopeBar`.
+## 6. Responsive
 
-## 7. States
+Three columns ≥1024px, one column below; tables become label and value lists.
 
-- [ ] Insufficient data per report (explicit missing source).
-- [ ] No records in scope: empty state with `Reset scope`.
-- [ ] Loading skeleton cards and chart placeholders; error; unauthorized.
-- [ ] Export: preview dialog showing format options (CSV/PDF) and "Export is not available in the demo"; no file is created.
+## 7. Fixture and selector needs
 
-## 8. Responsive
+Reuse `projectProgress`, a new `coverageMetThenVerified`, and `overdueRecords`; no stored percentages.
 
-≥1280: 2×2 cards; detail view chart + table side by side. 768–1279: cards in 2 columns, table below chart. <768: single column cards, bars full width, tables become label/value lists; scope bar collapses to a `Scope` button opening a sheet.
+## 8. Preview-only actions
 
-## 9. Fixture and selector needs
+Export (format dialog, nothing created).
 
-Remove stored percentages; compute from tasks, milestones, requirements, and activities through selectors shared with Overview (04A) and Requirements (04F). Add date-range filtering on `at`/`due`. Provide a fixture state with insufficient data (a project with zero tasks).
+## 9. Acceptance checklist
 
-## 10. Preview-only actions
-
-`Export report` (dialog layout), `Share` (dialog layout). Scope controls work locally on fixtures.
-
-## 11. Acceptance checklist
-
-- [ ] Every report shows a visual **and** the same numbers as text.
-- [ ] Every report exposes formula, sources, and scope via `Definition`.
-- [ ] Project and date-range scope change every view; reset restores defaults.
-- [ ] No percentage is stored in fixtures; changing a fixture record changes the report.
-- [ ] Insufficient-data and empty states exist.
-- [ ] Charts have text equivalents and meet contrast requirements without relying on color alone (patterns or labels).
+- [ ] One page, three cards, no tabs, no more than three figures.
+- [ ] Every figure has a visible definition and is computed by a selector.
+- [ ] "Not enough data" instead of zeros.
+- [ ] No people, workload, or date-range controls.
 - [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
 
-## 12. Carried over from Revision 1
+## Implementation status (Revision 3)
 
-Report definitions, formulas and source documentation, project scope concept, overdue list, no-results behavior.
-
-## Implementation status — 2026-11-14
-
-Done: Overview, Progress, Workload, Coverage, and Activity views; every figure computed from selectors with a Definition disclosure (formula, sources, scope); progress bars and stacked bars with text legends; Not enough data for empty scopes; project scope from the shared switcher; a date range that applies to Activity only (stated on the page); preview-only Export. Not done: ring charts, date-range filtering for the other reports.
+Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.

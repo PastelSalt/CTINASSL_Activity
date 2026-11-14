@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link2, TriangleAlert } from 'lucide-react'
 import PublicHeader from '../../components/public/PublicHeader'
+import { Depth, Words } from '../../components/motion/Motion'
 import PublicFooter from '../../components/public/PublicFooter'
 import { legalLinks } from '../../components/public/legalLinks'
 import { usePageMeta } from '../../hooks/usePageMeta'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { parseDocument, renderBlocks } from '../../lib/markdown'
 import { LEGAL_STATUS, legalDocuments, storageInventory } from './legalMeta'
+import { initLegalMotion } from './legalMotion'
+import '../../styles/motion.css'
 import '../../styles/policy.css'
 
 const INVENTORY_ID = 'storage-inventory'
@@ -48,6 +51,7 @@ export default function PolicyPage({ currentPath, source }) {
   const isDraft = LEGAL_STATUS === 'draft'
   const isWide = useMediaQuery('(min-width: 1024px)')
   const [activeId, setActiveId] = useState('')
+  const pageRef = useRef(null)
   const hasInventory = currentPath === '/cookie-and-local-storage-policy'
   const toc = [...doc.sections.map(({ heading, id }) => ({ heading, id })), ...(hasInventory ? [{ heading: 'Storage inventory', id: INVENTORY_ID }] : [])]
   const statusLine = doc.meta.find(([key]) => /draft status/i.test(key))?.[1]
@@ -70,9 +74,20 @@ export default function PolicyPage({ currentPath, source }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc, hasInventory])
 
+  useLayoutEffect(() => initLegalMotion({ scope: pageRef }), [])
+
   return (
-    <main className="policy-page public-page">
+    <main className="policy-page public-page" ref={pageRef}>
       <a className="skip-link" href="#policy-content">Skip to policy content</a>
+      <div className="cursor" aria-hidden="true" />
+      <div className="policy-progress" aria-hidden="true" />
+      <div className="page-bg" aria-hidden="true">
+        <Depth d={-10}><div className="page-bg__orb page-bg__orb--a" /></Depth>
+        <Depth d={14}><div className="page-bg__orb page-bg__orb--b" /></Depth>
+        <svg className="page-bg__thread" viewBox="0 0 1200 400" preserveAspectRatio="none">
+          <path d="M-20 260C160 60 300 60 440 220s300 160 440-10 220-120 340-60" />
+        </svg>
+      </div>
       <PublicHeader />
 
       <div className="policy-layout section-shell">
@@ -101,7 +116,7 @@ export default function PolicyPage({ currentPath, source }) {
         <article className="policy-document" id="policy-content">
           <header className="policy-document__header">
             <p className="eyebrow">Moeko Works · Tsumugi · {info.label}</p>
-            <h1>{info.title}</h1>
+            <h1><Words text={info.title} /></h1>
             <p className="policy-document__description">{info.description}</p>
             <dl className="policy-document__meta">
               <div><dt>Version</dt><dd>{info.version}</dd></div>

@@ -8,24 +8,26 @@ This document is the maintained index of the current codebase. Update it when fi
 | --- | --- |
 | `README.md` | Project overview, setup, scripts, and documentation links |
 | `PROJECT-SPECS.md` | Product requirements and target architecture |
+| `RESEARCH.md` | UX research and recommendations for simplifying the workspace UI (proposals only) |
 | `INSTRUCTIONS.md` | Repository-wide documentation and development rules |
 | `LOG.md` | Chronological record of repository actions |
 | `CODEMAP.md` | Current developer and agent index |
 | `docs/plan/frontend/PLAN-A-01.md` | Landing page and shared client foundations plan (Revision 2: audit, shared public layout, motion hardening, performance budget) |
 | `docs/plan/frontend/PLAN-A-02.md` | Legal policy pages plan (Revision 2: Markdown-sourced content, contents/anchors, publishing safeguards) |
 | `docs/plan/frontend/PLAN-A-03.md` | Sign-up, login, and recovery pages plan (Revision 2: demo mode, recovery pages, presentation states) |
-| `docs/plan/frontend/PLAN-A-04.md` | Authenticated workspace UI plan (Revision 2: approved D1-D5 shell, shared components, tokens, performance, phases) |
-| `docs/plan/frontend/PLAN-A-04A.md` | Detailed `/dashboard` overview page plan |
-| `docs/plan/frontend/PLAN-A-04B.md` | Detailed `/projects` directory page plan |
-| `docs/plan/frontend/PLAN-A-04C.md` | Detailed `/projects/:projectId` workspace page plan |
-| `docs/plan/frontend/PLAN-A-04D.md` | Detailed `/milestones` page plan |
-| `docs/plan/frontend/PLAN-A-04E.md` | Detailed `/tasks` page plan |
-| `docs/plan/frontend/PLAN-A-04F.md` | Detailed `/requirements` page plan |
-| `docs/plan/frontend/PLAN-A-04G.md` | Detailed `/assets` page plan |
-| `docs/plan/frontend/PLAN-A-04H.md` | Detailed `/revisions` page plan |
-| `docs/plan/frontend/PLAN-A-04I.md` | Detailed `/documentation` page plan |
-| `docs/plan/frontend/PLAN-A-04J.md` | Detailed `/reports` page plan |
-| `docs/plan/frontend/PLAN-A-04K.md` | Detailed `/settings` page plan |
+| `docs/plan/frontend/PLAN-A-04.md` | Individual workspace structure and UI plan (Revision 3: workspace types, five-destination navigation, project hub, small vocabulary, scaffolding separated) |
+| `docs/plan/frontend/PLAN-A-04A.md` | Home (`/home`): what to do today |
+| `docs/plan/frontend/PLAN-A-04B.md` | Projects (`/projects`): list and timeline, template picker |
+| `docs/plan/frontend/PLAN-A-04C.md` | Project page (`/projects/:projectId`): Overview, Work, Specs, Files, History |
+| `docs/plan/frontend/PLAN-A-04D.md` | Work and milestones: tasks grouped by milestone, timeline |
+| `docs/plan/frontend/PLAN-A-04E.md` | Tasks (`/tasks`): Today, Upcoming, All |
+| `docs/plan/frontend/PLAN-A-04F.md` | Specs: requirements and the coverage matrix (project tab) |
+| `docs/plan/frontend/PLAN-A-04G.md` | Library (`/library`) and project Files: merged files and documents |
+| `docs/plan/frontend/PLAN-A-04H.md` | History: changes feed and compare (project tab) |
+| `docs/plan/frontend/PLAN-A-04I.md` | Documents: Markdown reader inside Library and Files |
+| `docs/plan/frontend/PLAN-A-04J.md` | Insights (`/insights`): three honest numbers |
+| `docs/plan/frontend/PLAN-A-04K.md` | Account (`/account`): profile, preferences, appearance, privacy, developer tools |
+| `docs/plan/frontend/PLAN-A-04L.md` | Quick add, project templates, first run, and command palette |
 | `docs/plan/backend/` | Reserved location for future plan-B backend plans |
 | `docs/` | Draft legal and policy documents for owner/legal review |
 | `docs/plan/frontend/` | Frontend plan-A documents for landing, legal, auth, authenticated workspace, and protected user pages |
@@ -61,10 +63,11 @@ No server runtime entry point, routes, or application modules are currently pres
 | `client/src/pages/NotFoundPage.jsx` | 404 page for unknown routes |
 | `client/src/pages/legal/` | Policy pages rendered from `docs/*.md` (`?raw`), `legalMeta.js` (`LEGAL_STATUS`, document labels, storage inventory) |
 | `client/src/pages/auth/` | `AuthShell`, login/register (`AuthPage`), forgot/reset (`RecoveryPage`) and route wrappers; demo mode and previewable states |
-| `client/src/pages/workspace/` | Demo workspace (PLAN-A-04 Revision 2). `WorkspaceApp.jsx` (entry; lazy pages inside a persistent shell), `WorkspaceShell.jsx` (left rail, top bar with project scope, mobile tabs + More sheet, demo banner with preview-state selector, footer), `WorkspaceProvider.jsx` + `context.js` (scope and preview dialog), `nav.js` |
-| `client/src/pages/workspace/pages/` | One lazy page per module: Overview, Projects, ProjectWorkspace, Milestones, Tasks, Requirements, Assets, Revisions, Documentation, Reports, Settings |
-| `client/src/pages/workspace/components/` | Shared workspace UI: `badges.jsx` (status, priority, due, avatars, relation chips, progress, stacked bar), `layout.jsx` (page header, view tabs, toolbar, stat strip, detail panel, preview action), `states.jsx` (empty, no results, error, unauthorized, skeleton, state gate), `records.jsx` (rows, tiles, detail panels), `TraceChain.jsx` |
-| `client/src/pages/workspace/data/` | `fixtures.js` (placeholder records with IDs and relationships), `selectors.js` (all derived counts, statuses, progress, gaps), `status.js` (single status/priority vocabulary), `format.js` (fixed demo date, due labels, formatting) |
+| `client/src/pages/workspace/` | Individual demo workspace (PLAN-A-04 Revision 3). `WorkspaceApp.jsx` (entry; lazy pages in a persistent shell), `WorkspaceShell.jsx` (rail with Quick add and five destinations, top bar with palette trigger and account menu, mobile bar with centre add button, developer-tools bar), `WorkspaceProvider.jsx` (preview dialog, Quick add / palette / new-project state, `q` and Ctrl/Cmd+K shortcuts), `context.js`, `nav.js`, `useWorkspaceMotion.js` |
+| `client/src/pages/workspace/pages/` | Home, Tasks (Today / Upcoming / Calendar / All), Projects, Project (Overview / Work / Specs / Files / History), Library (with document reader), Insights, Account, Help (renders `docs/individual-workspace-guide.md`) |
+| `client/src/pages/workspace/quickadd/` | `QuickAdd.jsx`, `parse.js` (#project, day words, !), `CommandPalette.jsx`, `NewProjectDialog.jsx` (templates), `Modal.jsx` (native dialog shell); all lazy and session-only |
+| `client/src/pages/workspace/components/` | Shared UI: `badges.jsx` (status, flags, due, relation chips, progress), `layout.jsx` (page header, view tabs, Filter popover, toolbar, stat strip, split layout, detail panel), `records.jsx` (task, milestone group, requirement, file, change rows and panels, lens block), `Timeline.jsx`, `CalendarView.jsx`, `DocReader.jsx`, `states.jsx` |
+| `client/src/pages/workspace/data/` | `fixtures.js` (one-person sample records with IDs and relationships), `store.js` (session-only additions), `templates.js`, `selectors.js` (all derived numbers), `status.js` (one small status vocabulary), `kinds.js`, `format.js` (fixed demo date) |
 | `client/src/styles/` | `base.css` (tokens, buttons, shared), `public.css` (compact header/footer, 404), `landing.css`, `auth.css`, `forms.css`, `policy.css`, `workspace.css` (workspace tokens, shell, shared components), `workspace-pages.css` (page layouts); route stylesheets load with their route chunk |
 | `client/src/assets/` | Bundled static assets used by the client |
 | `client/public/` | Static files served from the site root |

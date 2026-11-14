@@ -95,7 +95,7 @@ The current client is a code-split React app with in-app navigation (no full pag
 - **Landing page** — static long-scroll page with GSAP/ScrollTrigger scenes and reduced-motion support.
 - **Legal pages** — Privacy Policy, Terms of Service, and Cookie & Local Storage Policy rendered from the Markdown drafts in `docs/`, with contents list, anchors, a draft banner, and a storage inventory. They are drafts and `noindex` until reviewed.
 - **Auth pages** — `/login`, `/register`, `/forgot-password`, `/reset-password` in demo mode: nothing typed is read, stored, or sent. Append `?preview=<state>` (or use the "Preview states" list) to view error and result layouts.
-- **Demo workspace** — authenticated-style pages for Overview, Projects (and a project workspace), Milestones, Tasks, Requirements, Assets, Revisions, Documentation, Reports, and Settings, all driven by local fixtures with a persistent shell (left rail, project scope switcher, mobile tabs). Actions open "Preview only" dialogs and nothing is saved. Use the "Preview state" selector in the demo bar to view loading, empty, error, and unauthorized layouts. Views, filters, and selected records are kept in the URL (`?view=`, `?filter=`, `?select=`).
+- **Demo workspace** — an individual workspace with five destinations: Home, Projects (with a project page: Overview, Work, Specs, Files, History), Tasks, Library, and Insights, plus Account. Tasks includes a month calendar, and `/help` renders the full guide in `docs/individual-workspace-guide.md`. Press `Q` to quick add a task and `Ctrl/Cmd+K` to search or jump. Everything is drawn from placeholder data; additions made with Quick add or a template last for the session only. Add `?dev` to the URL (or use Account) for the developer-tools bar.
 
 Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
 
@@ -106,6 +106,7 @@ The `Server/` directory currently contains only the initial CommonJS `package.js
 ## Documentation
 
 - [PROJECT-SPECS.md](PROJECT-SPECS.md) defines the product requirements and target architecture.
+- [RESEARCH.md](RESEARCH.md) analyses why the workspace UI feels overwhelming and proposes simplifications (its recommendations are implemented in PLAN-A-04 Revision 3).
 - [INSTRUCTIONS.md](INSTRUCTIONS.md) defines repository maintenance rules.
 - [LOG.md](LOG.md) records actions made in the codebase.
 - [CODEMAP.md](CODEMAP.md) describes the current files, responsibilities, and data flow.
@@ -115,5 +116,5 @@ The `Server/` directory currently contains only the initial CommonJS `package.js
 - [PLAN-A-01.md](docs/plan/frontend/PLAN-A-01.md) covers the landing page.
 - [PLAN-A-02.md](docs/plan/frontend/PLAN-A-02.md) covers the legal pages.
 - [PLAN-A-03.md](docs/plan/frontend/PLAN-A-03.md) covers authentication pages.
-- [PLAN-A-04.md](docs/plan/frontend/PLAN-A-04.md) covers the authenticated workspace and protected user pages.
-- [PLAN-A-04A.md](docs/plan/frontend/PLAN-A-04A.md) through [PLAN-A-04K.md](docs/plan/frontend/PLAN-A-04K.md) contain page-specific protected user-page plans.
+- [PLAN-A-04.md](docs/plan/frontend/PLAN-A-04.md) covers the individual workspace structure and UI (Revision 3, implemented).
+- [PLAN-A-04A.md](docs/plan/frontend/PLAN-A-04A.md) through [PLAN-A-04L.md](docs/plan/frontend/PLAN-A-04L.md) contain the page and cross-cutting plans (Home, Projects, Project page, Work, Tasks, Specs, Library, History, Documents, Insights, Account, and Quick add, templates, first run, palette).

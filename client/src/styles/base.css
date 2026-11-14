@@ -2,7 +2,7 @@
   --paper: #fffdfd;
   --canvas: #f8f6fb;
   --ink: #2f2938;
-  --muted: #716b7c;
+  --muted: #655f70;
   --pink: #c73579;
   --pink-soft: #ffe8f5;
   --blue-soft: #e5f4ff;
@@ -29,7 +29,7 @@
   gap: 6px;
   width: fit-content;
   padding: 9px 12px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 * {
@@ -144,6 +144,7 @@ section {
   border: 2px solid var(--ink);
   border-radius: 999px;
   padding: 15px 22px;
+  text-decoration: none;
   color: var(--ink);
   font-weight: 700;
   transition: transform 200ms var(--ease-bounce), box-shadow 200ms ease;
@@ -208,7 +209,7 @@ section {
 .eyebrow {
   margin: 0 0 18px;
   color: var(--pink);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -279,7 +280,7 @@ h3 {
 @media (max-width: 900px) {
   .button--small {
     padding: 9px 11px;
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
@@ -310,3 +311,11 @@ h3 {
     transform: none;
   }
 }
+
+/* Visual audit fix: standalone text links meet the 24px target size. */
+.text-link, .auth-support-link, .hero__scroll { display: inline-flex; align-items: center; min-height: 24px; }
+
+/* Visual audit fix: footer links, demo state previewer, and heading anchors meet 24px targets. */
+.site-footer a, .public-footer a, footer nav a { display: inline-flex; align-items: center; min-height: 24px; }
+.policy-section__anchor { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; }
+details > summary:where(:not(.button)) { min-height: 24px; }

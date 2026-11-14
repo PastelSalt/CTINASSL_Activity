@@ -1,4 +1,4 @@
-import { CircleAlert, FileQuestion, Inbox, Lock, SearchX } from 'lucide-react'
+import { CircleAlert, FileQuestion, Inbox, SearchX } from 'lucide-react'
 import { usePreviewState } from '../../../hooks/usePreviewState'
 
 export function EmptyState({ icon: Icon = Inbox, title, body, action }) {
@@ -12,11 +12,9 @@ export function EmptyState({ icon: Icon = Inbox, title, body, action }) {
   )
 }
 
-export function NoResults({ onClear, children }) {
+export function NoResults({ onClear }) {
   return (
-    <EmptyState icon={SearchX} title="No results" body="Nothing matches the current search and filters." action={onClear && <button className="button button--small button--secondary" type="button" onClick={onClear}>Clear filters</button>}>
-      {children}
-    </EmptyState>
+    <EmptyState icon={SearchX} title="No results" body="Nothing matches the current search and filters." action={onClear && <button className="button button--small button--secondary" type="button" onClick={onClear}>Clear filters</button>} />
   )
 }
 
@@ -25,19 +23,8 @@ export function ErrorState() {
     <div className="state state--error" role="alert">
       <CircleAlert size={30} aria-hidden="true" />
       <h3>This page couldn’t load</h3>
-      <p>Something went wrong while loading the records. Try again, and if it keeps happening contact support with reference <code>DEMO-0000</code>.</p>
+      <p>Something went wrong while loading the records. This is a demo state; nothing is actually wrong.</p>
       <button className="button button--small button--secondary" type="button" disabled>Try again</button>
-    </div>
-  )
-}
-
-export function UnauthorizedState() {
-  return (
-    <div className="state" role="status">
-      <Lock size={30} aria-hidden="true" />
-      <h3>You don’t have access</h3>
-      <p>You need to be a member of this project to see these records. Ask the project owner to add you.</p>
-      <a className="button button--small button--secondary" href="/projects">Back to Projects</a>
     </div>
   )
 }
@@ -55,18 +42,17 @@ export function UnsupportedPreview({ kind, reason }) {
 export function Skeleton({ rows = 5 }) {
   return (
     <div className="skeleton" aria-busy="true" aria-label="Loading">
-      <div className="skeleton__strip">{[0, 1, 2, 3].map((i) => <span key={i} />)}</div>
+      <div className="skeleton__strip">{[0, 1, 2].map((i) => <span key={i} />)}</div>
       {Array.from({ length: rows }, (_, i) => <span className="skeleton__row" key={i} />)}
     </div>
   )
 }
 
-/** Renders a designed state instead of the page content when the demo state previewer is set. */
-export function StateGate({ empty, children }) {
-  const state = usePreviewState(['loading', 'empty', 'error', 'unauthorized'])
+/** Shows a designed state instead of the page content when the developer-tools state previewer is set. */
+export function StateGate({ empty, children, firstRun }) {
+  const state = usePreviewState(['loading', 'empty', 'error'])
   if (state === 'loading') return <Skeleton />
-  if (state === 'empty') return <EmptyState title={empty.title} body={empty.body} action={empty.action} />
+  if (state === 'empty') return firstRun ?? <EmptyState title={empty.title} body={empty.body} action={empty.action} />
   if (state === 'error') return <ErrorState />
-  if (state === 'unauthorized') return <UnauthorizedState />
   return children
 }

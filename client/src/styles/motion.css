@@ -1,0 +1,29 @@
+/* Shared motion primitives used by the landing and authentication pages. */
+
+/* Word masks for the slide-up headline reveal. Words stay visible without JavaScript. */
+.w { display: inline-block; padding: 0.1em 0.04em 0.14em; margin: -0.1em -0.04em -0.14em; overflow: hidden; vertical-align: top; }
+.w__in { display: inline-block; will-change: transform; }
+
+/* Pointer parallax (depth, CSS variables) wraps scroll parallax (drift, GSAP). */
+.depth { position: absolute; inset: 0; pointer-events: none; transform: translate3d(calc(var(--px, 0) * var(--d) * 1px), calc(var(--py, 0) * var(--d) * 1px), 0); transition: transform 260ms ease-out; }
+.depth > * { pointer-events: auto; }
+.drift { position: absolute; inset: 0; pointer-events: none; }
+.drift > * { pointer-events: auto; }
+
+/* Soft cursor ring: fine pointers only, inverted against any background. */
+.cursor { position: fixed; z-index: 60; top: 0; left: 0; display: none; width: 34px; height: 34px; border: 2px solid #fff; border-radius: 50%; background: transparent; mix-blend-mode: difference; opacity: 0; pointer-events: none; transition: width 220ms var(--ease-bounce), height 220ms var(--ease-bounce), background-color 200ms ease, opacity 200ms ease; }
+.cursor.is-on { opacity: 1; }
+.cursor.is-active { width: 68px; height: 68px; background: rgb(255 255 255 / 0.3); }
+@media (hover: hover) and (pointer: fine) { .cursor { display: block; } }
+
+/* Decorative page background: drifting orbs and a drawn thread behind the content. */
+.page-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.page-bg__orb { position: absolute; border-radius: 50%; }
+.page-bg__orb--a { top: 90px; right: 4%; width: min(280px, 40vw); aspect-ratio: 1; background: var(--pink-soft); }
+.page-bg__orb--b { bottom: 60px; left: 3%; width: min(220px, 34vw); aspect-ratio: 1; background: var(--blue-soft); }
+.page-bg__thread { position: absolute; top: 30%; left: 0; width: 100%; height: 340px; fill: none; stroke: var(--pink); stroke-linecap: round; stroke-width: 2; opacity: 0.35; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor { display: none; }
+  .depth { transition: none; }
+}

@@ -1,104 +1,77 @@
-# PLAN-A-04G — `/assets` Asset Library (UI Plan, Revision 2)
+# PLAN-A-04G — `/library` Library and project Files (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Scope:** UI only, fixture data, no operations · **Status:** Planning
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the Assets and Documentation pages · **Status:** Planning · **Evidence:** RESEARCH.md D2, D3; the "makers juggle two or three tools" pattern (section 10.1)
 
-## 1. Current state (observed)
+## 1. Purpose
 
-- Sections: All assets plus five type sections (Images, Documents, Audio/video, Datasets, References/exports); the type sections are filters.
-- Assets render as horizontal text cards with a 20px icon in a small square — no thumbnail, no visual identity per file type. A tiny `SlidersHorizontal` icon button acts as the card action and its meaning is unclear.
-- "Preview", "Download", and "Linked" are shown as plain text in the meta row; preview availability and access state are not visually separated from file facts.
-- Summary cards (Previewable, Linked, Downloads) count access states rather than helping the user browse.
+One place for "stuff": documents, images, audio and video, data, and links. The same component shows a project's **Files** tab and the cross-project **Library**.
 
-## 2. UI goals
+## 2. What changes from Revision 2
 
-1. A visual library: thumbnails and type tiles first, metadata second.
-2. Separate **file facts** (type, size, updated) from **access state** (preview, download, linked, restricted).
-3. Make unsupported previews and access-denied states explicit and designed.
-4. Keep storage truthful: the UI shows metadata only and never implies the browser holds the files.
+- **Assets and documents merge into a single *File* concept** with a kind (document, image, media, data, link). Documents open in the reader (04I).
+- Two destinations (Assets, Documentation) become one (`/library`) and one project tab (Files).
+- Removed: access states and badges (Preview, Download, Linked, Restricted); everything is private to you. Upload progress stays as a transient state.
+- The type chip row becomes a **kind** filter inside the Filter popover; the views Library and List become a **display toggle** (Grid or List).
+- **Deliverable** is a flag on a file ("Final file"), shown as a marker and linked from requirements.
 
 ## 3. Layout
 
 ```text
-Header: Assets                                         [Add asset]
-Tabs:   Library | List
-Toolbar: [search]  Type: All Images Documents Audio/Video Datasets References   Project ▾   Tags ▾   Sort ▾
-Summary strip: 14 assets · 38.2 MB · 3 linked · 1 restricted
+Library                                                      [+ Add file]
+[search…]  [Filter ▾ (0)]  [Sort ▾]  (Grid | List)
 
-Library grid (4-up ≥1280, 3-up ≥1024, 2-up ≥480)
-┌─────────────┐
-│  thumbnail  │   image: tinted tile with image glyph; PDF: page-shaped tile; audio: waveform glyph
-│ or type tile│
-├─────────────┤
-│ cover-v2.png │ Project Garden
-│ PNG · 2.4 MB │ [Preview ▸]  updated 2d ago
-└─────────────┘
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│  doc   │ │ image  │ │ audio  │ │ data   │
+│Opening │ │cover-v2│ │theme   │ │schema  │
+│brief   │ │.png    │ │.wav    │ │.xlsx   │
+│Garden  │ │ Final ★│ │        │ │        │
+└────────┘ └────────┘ └────────┘ └────────┘
 ```
 
-## 4. Views
+Kinds in the Filter: All, Documents, Images, Audio and video, Data, Links. `/library?view=documents` and the other `view` values preselect a kind.
 
-| View | Layout | Notes |
-|---|---|---|
-| Library | Thumbnail grid with type tile, name, project chip, size, access badge | Selecting an asset opens the detail panel |
-| List | `DataTable`: Name · Type · Project · Size · Access · Updated · Tags | Sortable columns (local sort); sticky header |
-
-Type subsets are filter chips with counts. `Tags` popover filters by tag.
-
-## 5. Record presentation
+## 4. Record presentation
 
 | Priority | Fields |
 |---|---|
-| Primary | Thumbnail/type tile, name, type badge |
-| Secondary | Project chip, size, access badge (Preview · Download · Linked · Restricted) |
-| Tertiary | Tags (max 2 + "+n"), description, updated time, related records (detail panel) |
+| Primary | Kind tile or thumbnail, name |
+| Secondary | Project, size, **Final file** marker |
+| Tertiary | Tags, updated time, description (panel) |
 
-The detail panel shows a large preview area (see below), full metadata, tags, related tasks/requirements/revisions as chips, and preview-only actions.
+Detail panel: preview area (or a designed fallback for unsupported types, external links, and uploading), metadata, tags, the **lens** (*Why it exists* and *What it becomes*), and preview-only actions. Documents show an `Open` button that goes to the reader.
 
-## 6. Preview and access states
+## 5. Preview and fallback states
 
-| State | Presentation |
-|---|---|
-| Previewable | Large rendered preview area from a fixture image/glyph |
-| Unsupported preview | Type tile + "No preview for .xlsx files" + allowed alternative (download layout) |
-| Linked (external) | Link tile showing the host and a "Opens an external site" note |
-| Restricted | Lock tile, "You do not have access" with a `Request access` preview action |
-| Upload in progress | Row with progress bar and file name (fixture, static progress) |
+Previewable, unsupported type (explains and offers download), external link (shows host and says it opens elsewhere), uploading (static progress). There is no restricted state.
 
-## 7. Components
+## 6. Components
 
-Shared: `PageHeader`, `ViewTabs`, `Toolbar`, `FilterChip`, `StatStrip`, `RelationChip`, `DataTable`, `DetailPanel`, `UnsupportedPreview`, `EmptyState`, `NoResults`, `Skeleton`, `PreviewActionButton`. Page-specific: `AssetTile`, `AssetThumb`, `AccessBadge`, `UploadRow`.
+Shared: `PageHeader`, `Toolbar` with `FilterPopover`, `DataTable`, `DetailPanel`, `UnsupportedPreview`, `RelationChip`. New: `FileTile`, `FileThumb`. Retired: `AccessBadge`.
 
-## 8. States
+## 7. States
 
-- [ ] Empty library with an `Add asset` preview dialog showing a drop-zone layout.
-- [ ] No results with active filter chips.
-- [ ] Upload-in-progress row (static), access-denied tile, unsupported preview panel.
-- [ ] Loading skeleton tiles; error; unauthorized.
+Empty library (drop-zone layout in the Add dialog), no results with active filters, uploading row, loading, error.
 
-## 9. Responsive
+## 8. Responsive
 
-≥1280: 4-up grid + docked detail panel. 768–1279: 3-up grid. <768: 2-up grid with compact tiles; List becomes a two-line row list; detail opens as a bottom sheet.
+Grid 4-up ≥1280, 3-up ≥1024, 2-up below; the panel is a sheet below 1280px.
 
-## 10. Fixture needs
+## 9. Fixture needs
 
-Add `mime`, `bytes` (display size is formatted), `thumbnail` (fixture image or glyph key), `accessState`, `tagIds`, `relatedIds`, `updatedAt` ISO. Cover each type plus one restricted, one external link, and one in-progress upload.
+Merge `assets` and `documents` into `files` with `kind`, `isFinal`, optional Markdown `body`, and project links; remove `access`.
 
-## 11. Preview-only actions
+## 10. Preview-only actions
 
-`Add asset`, `Download`, `Rename`, `Change access`, `Request access` (all dialog layouts only; no file is read or written).
+`Add file` (drop zone, no file read), `Download`, `Rename`, `Mark as final file`.
 
-## 12. Acceptance checklist
+## 11. Acceptance checklist
 
-- [ ] Every asset has a distinct visual tile by type.
-- [ ] File facts and access state are separated and use icon + text.
-- [ ] Unsupported-preview, restricted, external-link, and in-progress states all exist.
-- [ ] No control or copy implies the browser stores the file.
-- [ ] Grid and List share filters and detail panel.
+- [ ] One Library destination and one project Files tab, sharing components.
+- [ ] No access or restricted states; no people.
+- [ ] Documents open in the reader; other kinds show a preview or a designed fallback.
+- [ ] No control implies the browser stores the file.
 - [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
 
-## 13. Carried over from Revision 1
+## Implementation status (Revision 3)
 
-Asset fixtures, type categories, tag filtering, access vocabulary, search, empty state.
-
-## Implementation status — 2026-11-14
-
-Done: Library (tile grid) and List (table) views; type chips with counts; sort; tiles with per-type visuals, size, and access badge; detail panel with a preview area or a designed fallback for unsupported, restricted, external-link, and uploading states; storage-boundary note; preview-only Download and Change access. Not done: tag filter, real thumbnails (type glyph tiles are used).
+Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.

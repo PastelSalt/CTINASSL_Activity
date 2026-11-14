@@ -1,86 +1,80 @@
-# PLAN-A-04C — `/projects/:projectId` Project Workspace (UI Plan, Revision 2)
+# PLAN-A-04C — `/projects/:projectId` Project page (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Scope:** UI only, fixture data, no operations · **Status:** Planning
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Project workspace with nine tabs · **Status:** Planning · **Evidence:** RESEARCH.md D1–D3, section 11.5
 
-## 1. Current state (observed)
+## 1. Purpose
 
-- The page header shows the project name as the H1 **and** an identity card repeats the name, category, status, and collaborators (audit F3).
-- Local navigation is a tall left card with nine sections; each non-Overview section is a bare table (`Milestone | Due | State`, `Task | Priority | Status`) with no filters, links, or status badges.
-- The traceability chain is a row of pills with arrows, not navigable and without counts.
-- The phase view is five equal boxes; only the current one is emphasized. Only the demo projects resolve; others show a plain missing-project state.
+The **hub**. Everything about one piece of work lives here, in five tabs, so a person never has to know which record type to look for.
 
-## 2. UI goals
+## 2. What changes from Revision 2
 
-1. One project header that holds identity, health, and context; the page header becomes a breadcrumb.
-2. Make the traceability chain the spine of the project: each node shows a count and opens the matching tab.
-3. Reuse the same record components as the module pages so a task looks the same here and in `/tasks`.
-4. Keep project context while moving between tabs.
+- Nine tabs become five: **Overview, Work, Specs, Files, History** (view in `?view=`).
+- Milestones merge into **Work** (04D); Tasks live in **Work** (04E); Requirements become **Specs** (04F); Assets, Documentation, and Deliverables merge into **Files** (04G, 04I); Revisions become **History** (04H).
+- Removed: owner, collaborators, avatar stack, priority badge, health badge as a status (health is a derived line), Archive and Edit as header buttons (they move to a `⋯` menu).
+- The old trace chain of six counted nouns becomes a single line (below).
 
 ## 3. Layout
 
 ```text
-Breadcrumb: Projects / Project Garden                      [Edit project] [⋯]
-┌ Project header ───────────────────────────────────────────────────────┐
-│ ▣ icon  Project Garden   (Active) (High ↑)   Creative · Mika           │
-│ Story-led creative production workspace.       (M)(Y)(A)  Mar–Jun      │
-│ Health: On track · Phase 3/5 Chapter one review · Next: Chapter one…   │
-└───────────────────────────────────────────────────────────────────────┘
-Tabs: Overview | Workflow | Milestones | Tasks | Requirements | Assets | Docs | Revisions | Deliverables  (counts)
-Content for the tab, using the same toolbar/summary/record patterns as the module pages (scoped to this project)
+Projects / Project Garden                                   [⋯]
+Project Garden            Active · Creative · 1 Sep – 28 Feb
+Story-led creative production workspace.
+[Overview] [Work 9] [Specs 4] [Files 7] [History 5]
+
+Overview
+ Objective: Ship a welcoming first chapter that holds together.
+ Phase  ●─●─◉─○─○  Chapter one (3 of 5)        Progress 5 of 9 tasks
+ Next: Chapter one review · 13 Nov                At risk: 2 tasks overdue
+ Specs: 4 requirements · 2 have no work yet  ▸
+ Recent in this project …
 ```
 
 ## 4. Tabs
 
 | Tab | Content |
 |---|---|
-| Overview | `TraceChain` with counts (Objective → Requirements → Milestones → Tasks → Revisions → Deliverables); objective statement; health explanation (the fixture rule used); next milestone card; recent activity feed |
-| Workflow | Horizontal phase stepper (complete ✓ / current ● / upcoming ○) with dates and the milestones/tasks in each phase; phases are data, not a fixed sequence |
-| Milestones | Project-scoped `RecordRow`s with `StatusBadge`, `DueLabel`, linked task count; mini timeline above the list |
-| Tasks | Board/list toggle scoped to the project, same cards as `/tasks` |
-| Requirements | Rows with ID, verification badge, linked task chips |
-| Assets | Thumbnail grid with type, size, access |
-| Docs | Document rows with type, status, updated |
-| Revisions | History feed scoped to the project |
-| Deliverables | Rows with `RelationChip`s to the requirement and tasks that produce them, and a state badge |
+| Overview | Objective, phase stepper, progress, next date, derived health line, a **Specs summary line** ("4 requirements, 2 without work"), recent changes (3) |
+| Work | Tasks grouped by milestone; List, Board, Timeline toggle (04D, 04E) |
+| Specs | Requirements with acceptance checklists; List or Coverage matrix (04F) |
+| Files | Files and documents of the project (04G, 04I) |
+| History | Changes feed and Compare (04H) |
 
-Tab counts come from selectors so they stay correct when fixtures change. The project header stays visible on every tab (sticky on desktop; collapses to a one-line bar on scroll below 768px).
+Tabs with no content still appear with a short first-use message; counts come from selectors.
 
-## 5. Components
+## 5. Header rules
 
-Shared: `ViewTabs` (with counts), `PageHeader` (breadcrumb mode), `TraceChain`, `StatusBadge`, `PriorityBadge`, `AvatarStack`, `RelationChip`, `ProgressBar`, `DataTable`, `RecordRow`, `DetailPanel`, state components. Page-specific: `ProjectHeader`, `PhaseStepper`, `HealthSummary`.
+- One breadcrumb (`Projects / Name`), the name once as H1, status badge, category, dates.
+- The `⋯` menu holds Edit, Archive, and Delete as preview-only confirmation dialogs.
+- Sticky compact header (name and tab bar) on scroll for mobile.
 
-## 6. States
+## 6. Components
 
-- [ ] Missing project: dedicated "Project not found" state with `Back to Projects` and the fixture projects as links.
-- [ ] Unauthorized project: access-denied state previewable from the state previewer.
-- [ ] Empty tab: tab-specific empty state with a preview action (for example "No deliverables yet").
-- [ ] Loading skeleton: header skeleton + tab content skeleton.
+Shared: `PageHeader` (breadcrumb mode), `ViewTabs` (with counts), `ProgressBar`, `PhaseStepper`, `RelationChip`, state components. The Revision 2 `TraceChain` is retired; its job is now the Specs summary line and the record "lens" (04F).
 
-## 7. Responsive
+## 7. States
 
-≥1280: header with a right-side metadata column; detail panel docks. 768–1279: metadata wraps under the title. <768: header collapses to icon tile + name + status with metadata in a disclosure; tabs scroll with the active tab in view; phase stepper becomes a vertical list.
+Missing project (links to Projects), empty tab states, loading and error. The "unauthorized project" state is removed.
 
-## 8. Fixture needs
+## 8. Responsive
 
-Every project gets `phases[]` with dates, `currentPhaseId`, `objective`, explicit related-record ID arrays, and at least one record in every tab for the three demo projects (including one deliverable each). Add a fourth, sparse fixture to exercise empty tabs.
+Tabs scroll with the active tab in view; the phase stepper becomes vertical below 768px; the detail panel is a sheet below 1280px.
 
-## 9. Preview-only actions
+## 9. Fixture needs
 
-`Edit project`, `Archive` (confirmation layout in the `⋯` menu), and per-tab `Add …` actions.
+`phases[]` with the current phase, `objective`, template `kind`, and a `lastOpenedAt`; at least one project with every tab populated and one nearly empty project to exercise first-use messages.
 
-## 10. Acceptance checklist
+## 10. Preview-only actions
 
-- [ ] The project name appears once as primary content; the breadcrumb carries the route context.
-- [ ] Trace chain nodes show counts and select the matching tab.
-- [ ] Each tab uses shared record components and shows status as icon + text.
-- [ ] Tab selection survives viewport resize.
-- [ ] Missing, unauthorized, and empty-tab states exist and are previewable.
+Edit project, Archive (confirmation layout), per-tab `Add` buttons.
+
+## 11. Acceptance checklist
+
+- [ ] Five tabs; the project name appears once.
+- [ ] No people, avatars, or priority anywhere on the page.
+- [ ] The Specs summary line replaces the six-count chain and links to Specs.
+- [ ] Each tab has a first-use empty state.
 - [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
 
-## 11. Carried over from Revision 1
+## Implementation status (Revision 3)
 
-Identity data, workflow phases, health summary, traceability concept, project-scoped record sets, missing-project state.
-
-## Implementation status — 2026-11-14
-
-Done: breadcrumb header; project summary card (status, priority, health, dates, phase, progress, owner, collaborators); nine tabs with selector-driven counts; clickable trace chain; phase stepper with milestones per phase; project-scoped lists linking to module records; missing-project state; preview-only Edit and Archive. Not done: sticky or collapsing header on scroll, per-tab Add actions, a dedicated unauthorized-project fixture (the state previewer covers it).
+Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.

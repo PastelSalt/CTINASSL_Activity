@@ -165,3 +165,58 @@ Static responsive landing page; story-led sections; hybrid woven background; flo
 | Motion chunk | GSAP is a separate shared chunk (70 kB, 27 kB gzip) loaded with the landing or workspace route. It is **not** deferred until after first paint |
 
 **Not done:** owner-approved copy edits and section merge (section 4), Lighthouse and LCP/CLS measurement, workspace GSAP trimming (PLAN-A-04).
+
+## 13. Visual redesign — 2026-11-14
+
+A second pass on the landing page after reviewing it section by section (at 625px and 375px panes, plus DOM measurements at 320, 375, and 1440px).
+
+**Problems found**
+- The floating header broke between roughly 620 and 960px: the call to action clipped and `Log in` wrapped.
+- Primary buttons rendered with an underline everywhere (`.button` lacked `text-decoration: none`).
+- The story section was a lone paragraph; the traceability chain wrapped into an empty card with trailing arrows; possibility cards were large empty colour blocks; there was no product visual beyond one small card; long empty gaps separated sections.
+
+**Changes (all flat colour, ink outlines, offset shadows; no gradients)**
+- **Header:** menu toggle now takes over at 960px with a full-width panel; inline layout above that.
+- **Hero:** two-column composition with a layered workspace window (rail, stats, task rows, trace chips), three floating status cards (verified requirement, due milestone, approved revision), a drawn thread behind the window, orbs, and pointer parallax on fine pointers only. Added an `Explore the demo` button (to `/dashboard`) and two honest facts: early preview, no sign-in needed to look around.
+- **Ticker band:** full-bleed ink band scrolling the six-stage chain; pauses on hover; static and wrapped under reduced motion; the duplicate row is hidden from assistive technology.
+- **Story:** scattered notes pulled onto one thread (decorative, with the meaning kept in the copy).
+- **Traceability:** interactive explorer with six stage knots, a sample record card, and Why it exists / What it becomes lines; arrow-key support, autoplay only while visible and stopped on any interaction or under reduced motion.
+- **Tour (new):** tabbed product screens (Overview, Tasks, Requirements matrix with gap cells) built from CSS, labelled as sample data; proper `tablist` keyboard behaviour.
+- **Lifecycle:** vertical dashed thread with knots on small screens, horizontal six-column thread from 1100px.
+- **Possibilities:** four worlds with icon, example thread chain, and what each becomes; bold offset shadows.
+- **Closing:** inverted buttons on the dark band, `Explore the demo`, early-preview note.
+- Sections nav gained **Inside**; footer text raised to at least 12px.
+
+**Verification:** lint and build pass; no horizontal overflow at 320 and 375px; desktop at 1440px shows two-column hero, two-column story, six-column lifecycle and traceability, two-column worlds. Landing chunk 51 kB gzip (including GSAP, +3 kB) and 4.2 kB gzip CSS. **Not run:** Lighthouse, screen-reader pass, reduced-motion emulation, cross-browser. Copy for the new sections still needs owner approval (section 4 copy rules).
+
+## 14. Scroll motion pass — 2026-11-14
+
+Goal: make the page feel directed by the scroll, in the way of premium creative sites, while staying accessible and light. All motion lives in `client/src/pages/landing/landingMotion.js`, created inside one `gsap.context()` + `gsap.matchMedia()`; React keeps content and semantic state.
+
+**Added dependency:** `lenis` (smooth scrolling, about 3 kB gzip). Landing chunk is now 59 kB gzip (was 51).
+
+| Moment | Behaviour | Where it runs |
+|---|---|---|
+| Smooth scroll | Lenis eases wheel scrolling and drives ScrollTrigger; in-page links scroll through it (and to the start of a pinned section) | All sizes, pointer wheel only (touch stays native) |
+| Hero intro | Headline words slide up out of masks, then lead, buttons and facts, then orbs, window (settles with a springy tilt), floating cards pop, thread draws; cards then bob. 5 s failsafe forces the end state | All |
+| Hero scroll | Copy lifts and fades; window, cards, orbs, and thread drift at different speeds (separate `drift` layer, so pointer parallax is untouched) | All |
+| Ticker | GSAP loop speeds up with scroll velocity, reverses with scroll direction, and skews while moving, then eases back | All |
+| Headings | Every section heading reveals word by word from a mask; eyebrows and paragraphs fade up | All |
+| Background | The page colour washes between flat pastel tints per section (no gradients) | All |
+| Page thread | A fixed thread on the left edge draws as you scroll, with a needle dot | 1280px and wider |
+| Story | **Pinned.** Scattered notes fly onto one thread as you scroll, then the "One thread" pill appears | 1024px and wider; simple reveal below |
+| Traceability | **Pinned.** Scrolling steps through the six stages and fills the thread; clicking a stage overrides until scroll moves on | 1024px and wider and 760px tall or more; otherwise click, keys, and autoplay as before |
+| Tour | The product window tilts up and scales into place; tab content staggers in on each switch | All |
+| Lifecycle | The dashed thread fills with scroll; cards and knots pop in sequence | All |
+| Possibilities | Cards enter with a stagger and tilt, drift at different speeds, and tilt toward the pointer | Drift and tilt: wide screens with a fine pointer |
+| Closing | The dark band opens like a curtain (clip-path), the thread draws, the buttons pop | All |
+| Pointer | Soft cursor ring that grows over links and buttons (inverts over any background); buttons pull slightly toward the pointer | Fine pointers only |
+
+**Accessibility and safety**
+- `prefers-reduced-motion: reduce`: no Lenis, no pins, no scrubs, no cursor, no page thread, and the ticker becomes a static wrapped row; content renders in its final state.
+- Headline words remain real text in the DOM; the page never depends on a tween to reveal essential content (hero failsafe; scrub states are visible).
+- Nothing is pinned on touch-width screens or short laptop windows, so there is no scroll trap.
+- Section tracking in the header uses bounding boxes, so pinned sections still report the right active link.
+- Every listener, ticker callback, ScrollTrigger and the Lenis instance are removed on unmount or breakpoint change.
+
+**Verified (dev build, desktop at 1440x900 and 1280x720, mobile 375x800, via DOM probes):** Lenis active; hero intro completes; two pins at 1440x900 (one at 1280x720); traceability stage follows scroll and the thread fill updates; story scraps start scattered and converge; lifecycle fill, tour tilt, and closing clip progress with scroll; in-page link lands on the target; no horizontal overflow; no console errors; mobile has no pins or cursor and all content reaches full opacity. **Not verified:** feel and frame rate on real hardware, Lighthouse, reduced-motion in a real browser setting, cross-browser behaviour (Safari pin and clip-path rendering in particular), screen-reader pass.

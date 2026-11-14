@@ -95,54 +95,11 @@
   color: var(--pink);
 }
 
-.auth-illustration {
-  position: relative;
-  display: grid;
-  min-height: 320px;
-  place-items: center;
-  align-self: center;
-  border-radius: 22px;
-  background: var(--blue-soft);
-  overflow: hidden;
-}
 
-.auth-illustration svg {
-  position: absolute;
-  width: 120%;
-  fill: none;
-  stroke: var(--pink);
-  stroke-linecap: round;
-  stroke-width: 2;
-  opacity: 0.7;
-}
 
-.auth-illustration circle {
-  fill: var(--pink);
-  stroke: none;
-}
 
-.auth-illustration__card {
-  position: relative;
-  display: grid;
-  gap: 10px;
-  width: 78%;
-  padding: 24px;
-  border: 2px solid var(--ink);
-  border-radius: 18px;
-  background: var(--paper);
-  box-shadow: 7px 8px 0 var(--lilac);
-  transform: rotate(-3deg);
-}
 
-.auth-illustration__card strong {
-  font-size: 25px;
-  line-height: 1.05;
-}
 
-.auth-illustration__card small {
-  color: var(--muted);
-  line-height: 1.4;
-}
 
 .auth-meta {
   display: grid;
@@ -201,11 +158,7 @@
     grid-template-columns: 1fr;
   }
 
-  .auth-illustration {
-    min-height: 220px;
-    order: 2;
   }
-}
 
 @media (max-width: 480px) {
   .auth-card,
@@ -215,12 +168,39 @@
     box-shadow: 6px 7px 0 var(--lilac);
   }
 
-  .auth-illustration {
-    display: none;
-  }
-
+  
   .auth-actions .button {
     width: 100%;
     justify-content: center;
   }
 }
+
+/* ---------- Page background and layering ---------- */
+.auth-page { position: relative; overflow-x: clip; }
+.auth-page > .public-header, .auth-page > .auth-card, .auth-page > .auth-meta, .auth-page > .public-footer { position: relative; z-index: 1; }
+
+/* ---------- Illustrated side panel ---------- */
+.auth-art { position: relative; min-height: 360px; align-self: stretch; overflow: hidden; border-radius: 22px; background: var(--blue-soft); }
+.auth-art--register { background: var(--pink-soft); }
+.auth-art__orb { position: absolute; top: -40px; right: -40px; width: 200px; aspect-ratio: 1; border-radius: 50%; background: var(--paper); opacity: 0.7; }
+.auth-art__thread { position: absolute; right: 0; bottom: 6%; left: 0; width: 100%; fill: none; stroke: var(--pink); stroke-linecap: round; stroke-width: 2.5; opacity: 0.8; }
+.auth-art__thread circle { fill: var(--pink); stroke: none; }
+.auth-art__window { position: absolute; top: 18%; right: 8%; left: 8%; overflow: hidden; border: 2px solid var(--ink); border-radius: 16px; background: var(--paper); box-shadow: 6px 7px 0 var(--lilac); }
+.auth-art__bar { display: flex; align-items: center; gap: 5px; padding: 8px 12px; border-bottom: 2px solid var(--ink); background: #fbf9fd; }
+.auth-art__bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--pink); }
+.auth-art__bar i:nth-child(2) { background: #75c4e7; }
+.auth-art__bar i:nth-child(3) { background: var(--butter); }
+.auth-art__bar span { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 700; }
+.auth-art__rows { display: grid; gap: 6px; margin: 0; padding: 10px; list-style: none; }
+.auth-art__rows li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 9px; font-size: 13px; font-weight: 700; }
+.auth-art__rows li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adot { width: 9px; height: 9px; border-radius: 50%; background: #cfc8d8; }
+.adot--progress { background: #9a86e0; } .adot--danger { background: #d9578f; } .adot--success { background: #5c8a6b; } .adot--info { background: #75c4e7; }
+.apill { padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.apill--info { color: #1d5f80; background: #e5f4ff; } .apill--progress { color: #5a45a8; background: #ece6fb; }
+.apill--warning { color: #7a5600; background: #fff2cf; } .apill--danger { color: #a3205c; background: #ffe8f5; } .apill--success { color: #2f6a42; background: #e8efe9; }
+.auth-art__chip { position: absolute; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 2px solid var(--ink); border-radius: 12px; font-size: 13px; font-weight: 700; white-space: nowrap; box-shadow: 3px 4px 0 var(--ink); }
+.auth-art__chip--a { top: 5%; right: 5%; background: var(--green-soft); transform: rotate(4deg); }
+.auth-art__chip--b { bottom: 7%; left: 5%; background: #fff2cf; transform: rotate(-4deg); }
+@media (max-width: 900px) { .auth-art { order: 2; min-height: 300px; } }
+@media (max-width: 480px) { .auth-art { display: none; } }

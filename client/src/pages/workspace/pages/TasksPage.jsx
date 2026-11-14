@@ -1,45 +1,51 @@
-import { useMemo, useState } from 'react'
-import { CalendarDays, Columns3, ListChecks, Plus } from 'lucide-react'
+import { useState } from 'react'
+import { CalendarClock, CalendarDays, CalendarRange, LayoutList, Plus, Sun } from 'lucide-react'
 import { useQueryParam } from '../../../hooks/useQueryParam'
-import { Avatar, DueLabel, PriorityBadge, StatusBadge } from '../components/badges'
-import { PageHeader, PreviewAction, SplitLayout, StatStrip, Toolbar, ViewTabs } from '../components/layout'
+import { PageHeader, SplitLayout, Toolbar, FilterField, ViewTabs, Section } from '../components/layout'
+import { EmptyState, NoResults, StateGate } from '../components/states'
 import { TaskPanel, TaskRow } from '../components/records'
-import { NoResults, StateGate } from '../components/states'
-import { useWorkspace } from '../context'
-import { tasks, users } from '../data/fixtures'
-import { daysFromToday } from '../data/format'
-import { dueSoon, get, isOpen, isOverdue, scoped } from '../data/selectors'
-import { PRIORITY, TASK_STATUSES } from '../data/status'
+import CalendarView from '../components/CalendarView'
+import { data, addTask } from '../data/store'
+import { activeProjects, get, isOpen, isOverdue, todayList, upNext } from '../data/selectors'
+import { WORK_STATUSES } from '../data/status'
+import { dayGroup, DEMO_TODAY } from '../data/format'
 
 const VIEWS = [
-  { id: 'list', label: 'List', icon: ListChecks },
-  { id: 'board', label: 'Board', icon: Columns3 },
-  { id: 'schedule', label: 'Schedule', icon: CalendarDays },
+  { id: 'today', label: 'Today', icon: Sun },
+  { id: 'upcoming', label: 'Upcoming', icon: CalendarClock },
+  { id: 'calendar', label: 'Calendar', icon: CalendarRange },
+  { id: 'all', label: 'All', icon: LayoutList },
 ]
-const PRIORITY_ORDER = ['Urgent', 'High', 'Medium', 'Low']
-const SORTS = {
-  due: (a, b) => (a.due || '9999').localeCompare(b.due || '9999'),
-  priority: (a, b) => PRIORITY_ORDER.indexOf(a.priority) - PRIORITY_ORDER.indexOf(b.priority),
-  status: (a, b) => TASK_STATUSES.indexOf(a.status) - TASK_STATUSES.indexOf(b.status),
+
+function InlineAdd() {
+  const [text, setText] = useState('')
+  const submit = (event) => {
+    event.preventDefault()
+    const title = text.trim()
+    if (!title) return
+    addTask({ title, due: DEMO_TODAY, projectId: activeProjects()[0]?.id ?? 'project-garden' })
+    setText('')
+  }
+  return (
+    <form className="inline-add" onSubmit={submit}>
+      <label className="sr-only" htmlFor="inline-add">Add a task for today</label>
+      <Plus size={18} aria-hidden="true" />
+      <input id="inline-add" value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a task for today and press Enter" autoComplete="off" />
+      <span className="inline-add__hint" aria-live="polite">Session only</span>
+    </form>
+  )
 }
 
-function ScheduleView({ list, selectedId, onSelect, showProject }) {
-  const buckets = [
-    ['Overdue', (t) => t.due && daysFromToday(t.due) < 0],
-    ['Today', (t) => t.due && daysFromToday(t.due) === 0],
-    ['This week', (t) => t.due && daysFromToday(t.due) > 0 && daysFromToday(t.due) <= 7],
-    ['Later', (t) => t.due && daysFromToday(t.due) > 7],
-    ['No date', (t) => !t.due],
-  ]
+function Board({ tasks, selectedId, onSelect }) {
   return (
-    <div className="schedule">
-      {buckets.map(([name, test]) => {
-        const group = list.filter(test)
-        if (!group.length) return null
+    <div className="board">
+      {WORK_STATUSES.map((status) => {
+        const list = tasks.filter((t) => t.status === status)
         return (
-          <section key={name} aria-labelledby={`sched-${name}`}>
-            <h2 className="schedule__head" id={`sched-${name}`}>{name} <span>{group.length}</span></h2>
-            <ul className="rows">{group.map((task) => <li key={task.id}><TaskRow task={task} selected={selectedId === task.id} onSelect={onSelect} showProject={showProject} /></li>)}</ul>
+          <section className="board__col" key={status} aria-label={`${status}, ${list.length} tasks`}>
+            <h3>{status} <span>{list.length}</span></h3>
+            <ul className="rows rows--tight">{list.map((t) => <li key={t.id}><TaskRow task={t} selected={selectedId === t.id} onSelect={onSelect} showProject /></li>)}</ul>
+            {!list.length && <p className="board__empty">Nothing here</p>}
           </section>
         )
       })}
@@ -47,107 +53,89 @@ function ScheduleView({ list, selectedId, onSelect, showProject }) {
   )
 }
 
-function BoardView({ list, selectedId, onSelect }) {
-  const [column, setColumn] = useState('In progress')
-  return (
-    <div className="board-wrap">
-      <div className="board-select" role="group" aria-label="Board column">
-        {TASK_STATUSES.map((status) => (
-          <button type="button" className="chips__chip" aria-pressed={column === status} onClick={() => setColumn(status)} key={status}>{status}<span>{list.filter((t) => t.status === status).length}</span></button>
-        ))}
-      </div>
-      <div className="board">
-        {TASK_STATUSES.map((status) => {
-          const items = list.filter((t) => t.status === status)
-          return (
-            <section className="board__col" data-active={column === status} aria-labelledby={`col-${status}`} key={status}>
-              <h2 id={`col-${status}`}><StatusBadge domain="task" status={status} /><span>{items.length}</span></h2>
-              <ul className="rows rows--tight">
-                {items.length === 0 && <li className="board__empty">Nothing here</li>}
-                {items.map((task) => (
-                  <li key={task.id}>
-                    <button type="button" className={`row board-card ${selectedId === task.id ? 'row--selected' : ''}`} aria-pressed={selectedId === task.id} onClick={() => onSelect(task.id)}>
-                      <span className="row__title">{task.title}</span>
-                      <span className="row__meta"><PriorityBadge priority={task.priority} /><DueLabel due={task.due} done={status === 'Completed'} /><Avatar userId={task.assigneeId} size="sm" /></span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 export default function TasksPage() {
-  const { scope } = useWorkspace()
-  const [view, setView] = useQueryParam('view', 'list')
-  const [filter, setFilter] = useQueryParam('filter', 'all')
-  const [selectedId, select] = useQueryParam('select')
+  const [view, setView] = useQueryParam('view', 'today')
+  const [select, setSelect] = useQueryParam('select')
+  const [project, setProject] = useQueryParam('project', 'all')
+  const [status, setStatus] = useQueryParam('status', 'all')
+  const [mode, setMode] = useQueryParam('mode', 'list')
+  const [month, setMonth] = useQueryParam('month')
+  const [day, setDay] = useQueryParam('day')
   const [search, setSearch] = useState('')
-  const [assignee, setAssignee] = useState('all')
-  const [priority, setPriority] = useState('all')
-  const [sort, setSort] = useState('due')
 
-  const base = scoped(tasks, scope)
-  const chips = [
-    { value: 'all', label: 'All', count: base.length },
-    { value: 'overdue', label: 'Overdue', count: base.filter(isOverdue).length },
-    { value: 'soon', label: 'Due soon', count: base.filter(dueSoon).length },
-    { value: 'blocked', label: 'Blocked', count: base.filter((t) => t.status === 'Blocked').length },
-    { value: 'completed', label: 'Completed', count: base.filter((t) => t.status === 'Completed').length },
-  ]
-  const test = { all: () => true, overdue: isOverdue, soon: dueSoon, blocked: (t) => t.status === 'Blocked', completed: (t) => t.status === 'Completed' }[filter] || (() => true)
+  const matches = (t) => (project === 'all' || t.projectId === project) && (status === 'all' || t.status === status) && (!search || t.title.toLowerCase().includes(search.toLowerCase()))
+  const selected = select ? get('task', select) : null
+  const filterCount = (project !== 'all') + (status !== 'all')
+  const reset = () => { setProject(null); setStatus(null) }
+  const open = (id) => setSelect(id)
+  const close = () => setSelect(null)
 
-  const list = useMemo(() => {
-    const q = search.trim().toLowerCase()
-    return base
-      .filter(test)
-      .filter((t) => assignee === 'all' || t.assigneeId === assignee)
-      .filter((t) => priority === 'all' || t.priority === priority)
-      .filter((t) => !q || [t.title, t.description, get('project', t.projectId).name, get('user', t.assigneeId)?.name].join(' ').toLowerCase().includes(q))
-      .sort(SORTS[sort])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [base.length, scope, filter, search, assignee, priority, sort])
-
-  const dirty = filter !== 'all' || search || assignee !== 'all' || priority !== 'all'
-  const reset = () => { setFilter('all'); setSearch(''); setAssignee('all'); setPriority('all') }
-  const selected = selectedId ? get('task', selectedId) : null
-  const showProject = scope === 'all'
+  let body
+  if (view === 'today') {
+    const t = todayList(project)
+    const groups = [['Overdue', t.overdue], ['Today', t.today], ['In progress', t.doing]].map(([l, list]) => [l, list.filter(matches)]).filter(([, l]) => l.length)
+    body = (
+      <>
+        <InlineAdd />
+        {groups.length ? groups.map(([label, list]) => (
+          <Section title={label} id={`g-${label}`} key={label} className="group">
+            <ul className="rows">{list.map((task) => <li key={task.id}><TaskRow task={task} selected={select === task.id} onSelect={open} showProject /></li>)}</ul>
+          </Section>
+        )) : <EmptyState title="All clear for today" body="Add a task above, or look at Upcoming." />}
+      </>
+    )
+  } else if (view === 'upcoming') {
+    const items = upNext(30, project).filter(({ kind, record }) => kind === 'milestone' || matches(record))
+    const grouped = []
+    items.forEach((item) => { const key = dayGroup(item.due); const last = grouped[grouped.length - 1]; if (last?.[0] === key) last[1].push(item); else grouped.push([key, [item]]) })
+    body = grouped.length ? grouped.map(([label, list]) => (
+      <Section title={label === 'Today' ? 'Today' : label} id={`u-${label}`} key={label} className="group">
+        <ul className="rows">{list.map(({ kind, record }) => (
+          <li key={record.id}>{kind === 'task'
+            ? <TaskRow task={record} selected={select === record.id} onSelect={open} showProject />
+            : <a className="row" href={`/projects/${record.projectId}?view=work&select=${record.id}`}><span className="row__main"><span className="row__title">{record.title}</span><span className="row__meta"><span>Milestone</span><span>{get('project', record.projectId).name}</span></span></span></a>}
+          </li>
+        ))}</ul>
+      </Section>
+    )) : <EmptyState icon={CalendarDays} title="Nothing coming up" body="No tasks or milestones are due in the next 30 days." />
+  } else if (view === 'calendar') {
+    body = <CalendarView month={month} onMonth={setMonth} day={day} onDay={setDay} matches={matches} project={project} selectedId={select} onSelectTask={open} />
+  } else {
+    const list = data().tasks.filter(matches)
+    body = !list.length ? <NoResults onClear={() => { reset(); setSearch('') }} /> : mode === 'board'
+      ? <Board tasks={list} selectedId={select} onSelect={open} />
+      : (
+        <>
+          {list.filter(isOpen).length > 0 && <ul className="rows">{list.filter(isOpen).sort((a, b) => Number(isOverdue(b)) - Number(isOverdue(a)) || (a.due || '9').localeCompare(b.due || '9')).map((t) => <li key={t.id}><TaskRow task={t} selected={select === t.id} onSelect={open} showProject /></li>)}</ul>}
+          {list.some((t) => !isOpen(t)) && (
+            <details className="done-fold"><summary>Done ({list.filter((t) => !isOpen(t)).length})</summary>
+              <ul className="rows">{list.filter((t) => !isOpen(t)).map((t) => <li key={t.id}><TaskRow task={t} selected={select === t.id} onSelect={open} showProject /></li>)}</ul>
+            </details>
+          )}
+        </>
+      )
+  }
 
   return (
     <>
-      <PageHeader
-        eyebrow="Work"
-        title="Tasks"
-        description="Everything that needs doing, with its status, priority, and deadline."
-        action={<PreviewAction label="New task" icon={Plus} variant="primary" iconOnlyOnMobile title="Create task" body="A form for the title, project, milestone, priority, due date, and assignee would open here. In the demo nothing is created." />}
-      />
-      <ViewTabs tabs={VIEWS} value={view} onChange={setView} label="Task views" />
-      <StateGate empty={{ title: 'No tasks yet', body: 'Tasks you add to a project appear here.', action: <PreviewAction label="New task" icon={Plus} variant="primary" /> }}>
-        <Toolbar search={search} onSearch={setSearch} placeholder="Search tasks, projects, people" chips={chips} chipValue={filter} onChip={setFilter} chipLabel="Task filters" dirty={dirty} onReset={reset}>
-          <select aria-label="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)}><option value="all">Any assignee</option>{users.map((u) => <option value={u.id} key={u.id}>{u.name}</option>)}</select>
-          <select aria-label="Priority" value={priority} onChange={(e) => setPriority(e.target.value)}><option value="all">Any priority</option>{Object.keys(PRIORITY).map((p) => <option key={p}>{p}</option>)}</select>
-          {view !== 'schedule' && <select aria-label="Sort tasks" value={sort} onChange={(e) => setSort(e.target.value)}><option value="due">Sort: Due date</option><option value="priority">Sort: Priority</option><option value="status">Sort: Status</option></select>}
-        </Toolbar>
-        <StatStrip stats={[
-          { label: 'Open', value: base.filter(isOpen).length },
-          { label: 'Due this week', value: base.filter(dueSoon).length },
-          { label: 'Blocked', value: base.filter((t) => t.status === 'Blocked').length },
-          { label: 'Completed', value: base.filter((t) => t.status === 'Completed').length },
-        ]} />
-        <SplitLayout panel={selected ? <TaskPanel task={selected} onClose={() => select(null)} /> : null}>
-          {list.length === 0 ? <NoResults onClear={reset} /> : (
+      <PageHeader title="Tasks" description="Everything you have to do, across all projects." />
+      <ViewTabs tabs={VIEWS} value={view} onChange={(v) => setView(v === 'today' ? null : v)} label="Task views" />
+      <StateGate empty={{ title: 'No tasks yet', body: 'Press Q to add your first one.' }}>
+        <Toolbar search={search} onSearch={setSearch} placeholder="Search tasks"
+          filter={{ count: filterCount, onReset: reset, content: (
             <>
-              <p className="result-count" role="status">{list.length} of {base.length} tasks</p>
-              {view === 'list' && <ul className="rows">{list.map((task) => <li key={task.id}><TaskRow task={task} selected={selectedId === task.id} onSelect={select} showProject={showProject} /></li>)}</ul>}
-              {view === 'board' && <BoardView list={list} selectedId={selectedId} onSelect={select} />}
-              {view === 'schedule' && <ScheduleView list={list} selectedId={selectedId} onSelect={select} showProject={showProject} />}
+              <FilterField label="Project" value={project} onChange={(v) => setProject(v === 'all' ? null : v)} options={[['all', 'All projects'], ...activeProjects().map((p) => [p.id, p.name])]} />
+              {view === 'all' && <FilterField label="Status" value={status} onChange={(v) => setStatus(v === 'all' ? null : v)} options={[['all', 'Any status'], ...WORK_STATUSES.map((s) => [s, s])]} />}
             </>
+          ) }}>
+          {view === 'all' && (
+            <div className="segmented" role="group" aria-label="Layout">
+              <button type="button" aria-pressed={mode === 'list'} onClick={() => setMode(null)}>List</button>
+              <button type="button" aria-pressed={mode === 'board'} onClick={() => setMode('board')}>Board</button>
+            </div>
           )}
-        </SplitLayout>
+        </Toolbar>
+        <SplitLayout panel={selected && <TaskPanel task={selected} onClose={close} />}>{body}</SplitLayout>
       </StateGate>
     </>
   )

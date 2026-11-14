@@ -1,18 +1,13 @@
-import { BarChart3, BookOpen, Boxes, CheckSquare, ClipboardList, FolderKanban, History, LayoutDashboard, Milestone, Settings } from 'lucide-react'
+import { BarChart3, FolderKanban, House, Library, ListChecks } from 'lucide-react'
 
+// Level 1 navigation: five destinations (PLAN-A-04 section 4).
 export const modules = [
-  { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
+  { href: '/home', label: 'Home', icon: House },
   { href: '/projects', label: 'Projects', icon: FolderKanban },
-  { href: '/milestones', label: 'Milestones', icon: Milestone },
-  { href: '/tasks', label: 'Tasks', icon: CheckSquare },
-  { href: '/requirements', label: 'Requirements', icon: ClipboardList },
-  { href: '/assets', label: 'Assets', icon: Boxes },
-  { href: '/revisions', label: 'Revisions', icon: History },
-  { href: '/documentation', label: 'Documentation', icon: BookOpen },
-  { href: '/reports', label: 'Reports', icon: BarChart3 },
+  { href: '/tasks', label: 'Tasks', icon: ListChecks },
+  { href: '/library', label: 'Library', icon: Library },
+  { href: '/insights', label: 'Insights', icon: BarChart3 },
 ]
 
-export const settingsModule = { href: '/settings', label: 'Settings', icon: Settings }
-
-// Mobile bottom tabs show four modules; the rest live in the "More" sheet.
-export const mobilePrimary = ['/dashboard', '/projects', '/tasks', '/documentation']
+/** Mobile bottom bar: four destinations with Quick add in the middle; Insights lives in the account menu. */
+export const mobileBar = ['/home', '/projects', '/tasks', '/library']

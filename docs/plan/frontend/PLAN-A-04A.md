@@ -1,94 +1,79 @@
-# PLAN-A-04A — `/dashboard` Overview (UI Plan, Revision 2)
+# PLAN-A-04A — `/home` Home (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Scope:** UI only, fixture data, no operations · **Status:** Planning
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Overview (`/dashboard`) · **Status:** Planning · **Evidence:** [RESEARCH.md](../../../RESEARCH.md) D2, D4, section 11.3 item 6
 
-## 1. Current state (observed)
+## 1. Purpose
 
-- Four metric cards, then a two-column grid: project pulse, milestones, tasks, activity, quick actions.
-- Header uses a slogan ("A clear view of the work.") and a hard-coded date; two header buttons (`New project`, `New task`) duplicate the Quick actions panel.
-- The local navigation lists six sections, but five render a "staged for visual exploration" stub even though the same content is on the Overview section (audit F5).
-- Metric values are typed as literals (`03`, `12`) instead of being computed from fixtures; the cards are large, so the first viewport shows metrics but little actionable work.
-- Panels show raw strings (`Tomorrow`, `19 Nov`) with no overdue/today treatment and no links to the underlying records.
+Answer one question: **what should I do today?** Nothing else belongs here.
 
-## 2. UI goals
+## 2. What changes from Revision 2
 
-1. Answer in one screen: *What needs me today? What is slipping? What changed?*
-2. Lead with **action**, not counts: an attention list above project pulse.
-3. Make every number computed from fixtures and clickable into the filtered module.
-4. Remove the dead local navigation and duplicate buttons.
+- Renamed and moved: `/dashboard` → `/home`.
+- Removed: the four-stat strip (replaced by at most three figures), the project pulse panel, the milestones panel, the activity feed, the "Needs attention" mix of tasks and milestones, and the New project header button (Quick add is global).
+- Added: a **Today** list, an **Up next** list, a compact **Projects** strip, and **Recent** items.
+- Removed for the individual workspace: avatars, people, and team activity.
 
 ## 3. Layout
 
 ```text
-Header:  Overview · <demo date>                         [New project]
-         2 items need attention across 3 projects
-Today strip (4 flat stats, clickable):
-  Open tasks 12 → /tasks   Due this week 5 → /tasks   Overdue 2 → /tasks   Active projects 1 → /projects
-┌──────────────────────────────────────────┬───────────────────────────┐
-│ Needs attention (tasks + milestones,     │ Project pulse             │
-│ sorted: overdue, today, blocked, soon)   │ one compact row/project:  │
-│  ▣ Review opening scene notes  Today  ▸  │ name · status · phase ·   │
-│  ▣ Auth flow map  Blocked      ▸         │ progress bar · next step  │
-├──────────────────────────────────────────┼───────────────────────────┤
-│ Upcoming milestones (next 3, dated)      │ Recent activity (feed,    │
-│                                          │ grouped Today/Yesterday)  │
-└──────────────────────────────────────────┴───────────────────────────┘
+Home · Thursday 12 November
+Figures (max 3):  Due today 2 · Overdue 1 · Doing 3        (each opens Tasks, filtered)
+
+Today                                        Up next (next 7 days)
+ ○ Review opening scene notes   Project Garden   ○ Reconcile character names  Fri
+ ○ Choose session strategy      Tsumugi API      ◇ Milestone: Chapter one review  Fri
+ ○ Write character profiles     overdue 3 d      ○ Proof chapter one dialogue  Wed
+ Show all in Tasks ▸
+
+Projects (up to 4 recent)   [Project Garden ▓▓▓▓░ 5/9] [Tsumugi API ▓░░░ 1/6] …
+Recent                       Opening brief · REQ-001 · schedule-draft.xlsx
 ```
 
-Mobile: Today strip scrolls horizontally with snap; panels stack in the order Needs attention → Project pulse → Milestones → Activity.
+Mobile: figures scroll horizontally; the order is Today, Up next, Projects, Recent.
 
 ## 4. Content specification
 
-| Region | Content | Behavior |
+| Region | Content | Behaviour |
 |---|---|---|
-| Header | Eyebrow with the demo date from a fixed "demo today" constant; H1 `Overview`; one-line context computed from fixtures | Primary action `New project` is a preview action |
-| Today strip | Open tasks, due this week, overdue, active projects (value + label + qualifier) | Each stat links to the filtered module route |
-| Needs attention | Merged list of overdue/blocked/due-today tasks and at-risk milestones; row = `StatusBadge`, title, `RelationChip` (project), `DueLabel` | Row opens the `DetailPanel` preview; `View all tasks` link |
-| Project pulse | One row per project: icon tile, name, `StatusBadge`, phase, progress bar, next milestone | Row links to `/projects/:projectId`; progress tooltip shows the formula (completed tasks ÷ total tasks) |
-| Upcoming milestones | Next 3 by due date with `DueLabel`, project chip, linked task count | `View timeline` link |
-| Recent activity | Feed grouped by day: actor avatar, action sentence, record chip, time | `View all` links to Revisions |
+| Header | Date eyebrow, H1 `Home`, one line ("2 things need you today") | No primary action; Quick add is global |
+| Figures | Due today, Overdue, Doing; plain numbers with labels | Each opens `/tasks` with the matching filter |
+| Today | Tasks due today, overdue, and in Doing, up to 7; milestone due today appears as a task-like row | Row opens the task panel; status control is a preview action |
+| Up next | Next 7 days, grouped by day, tasks and milestones mixed with a type glyph | `View all` goes to Tasks, Upcoming |
+| Projects | Up to 4 most recently opened; name, one progress figure, next date | Opens the project |
+| Recent | Last opened records and files (recognition over recall) | Opens the record |
 
-Quick actions are removed as a panel; `New project` stays in the header, and `New task` appears as a preview action in the empty state of Needs attention.
+Overdue and blocked work is surfaced by **sorting and icon plus text** inside Today, not by a separate panel.
 
 ## 5. Components
 
-Shared: `PageHeader`, `StatStrip`, `StatusBadge`, `DueLabel`, `RelationChip`, `ProgressBar`, `DetailPanel`, `EmptyState`, `Skeleton`, `PreviewActionButton`. Page-specific: `AttentionList`, `ProjectPulseRow`, `ActivityFeed`.
+Shared: `PageHeader`, `StatStrip` (max three), `TaskRow`, `ProgressBar`, `RelationChip`, `EmptyState`, `Skeleton`. New: `TodayList`, `UpNextList`, `ProjectStrip`, `RecentList`.
 
 ## 6. States
 
-- [ ] Loading: skeleton strip + three skeleton lists.
-- [ ] Empty (no projects): welcome state with `New project` preview action and three steps (create project → add milestones → add tasks).
-- [ ] Nothing needs attention: positive empty state "All caught up".
-- [ ] Error and unauthorized through the shared components; previewable from the demo state previewer.
+- **First run (no projects):** the first-run checklist from PLAN-A-04L replaces the page body.
+- **Nothing today:** a positive empty state ("Nothing due today") with a link to Up next.
+- Loading, error: shared skeletons and error state (preview selector only when Developer tools are on).
 
 ## 7. Responsive
 
-Desktop ≥1280: two columns (8/4). 768–1279: single column, project pulse moves under Needs attention. <768: stat strip snap-scroll; list rows stack title above meta; the first attention item is visible above the fold at 390px.
+≥1280: two columns (Today | Up next), strips below. 768–1279: single column. <768: figures snap-scroll; the first Today row is above the fold at 390px.
 
 ## 8. Fixture and selector needs
 
-- `demoToday` constant and ISO dates on tasks, milestones, and activity.
-- Selectors: `openTasks`, `dueThisWeek`, `overdueRecords`, `attentionItems`, `projectProgress` (completed ÷ total tasks), reused by Reports (04J).
-- Activity entries get `actorId`, `recordType`, `recordId`, `projectId`, `at`.
+`dueToday`, `overdue`, `doing`, `upNext(7)`, `recentProjects(4)`, `recentRecords(6)`; all derived from the fixed demo date.
 
 ## 9. Preview-only actions
 
-`New project` (preview dialog with the create-form layout). Rows do **not** offer `Mark done` (it would imply an operation); they open details only.
+Status control on a row (changes nothing; dialog explains), and Quick add (see PLAN-A-04L).
 
 ## 10. Acceptance checklist
 
-- [ ] No local navigation tabs; no dead sections.
-- [ ] Every number is computed by a selector and links to a filtered view.
-- [ ] At 1280×720 the first viewport shows the strip and the top of Needs attention; at 390px it shows header, strip, and the first attention row.
-- [ ] Overdue, today, and blocked are distinguishable by icon + text.
-- [ ] Demo notice appears once (banner), not per panel.
-- [ ] Keyboard: strip stats, rows, and panel links are reachable in reading order with visible focus.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536 with no horizontal scroll.
+- [ ] No more than three figures; no avatars or people anywhere.
+- [ ] The first viewport at 1280×720 shows Today and the start of Up next; at 390px it shows the figures and the first Today row.
+- [ ] Every row opens its record; no duplicate "overdue" panel.
+- [ ] First-run, empty, and positive-empty states exist.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536 with no horizontal overflow.
 
-## 11. Carried over from Revision 1
+## Implementation status (Revision 3)
 
-Project pulse, milestones, tasks, and activity content; metric formulas and source documentation; credential-free entry and demo labelling.
-
-## Implementation status — 2026-11-14
-
-Done: a single composed screen (no local tabs); a today strip with clickable, selector-computed stats linking to filtered views; Needs attention list (overdue, blocked, due today or tomorrow tasks and milestones); project pulse with progress from tasks done / total; upcoming milestones; recent activity grouped by day with relation chips; preview-only New project; empty, loading, error, and unauthorized states through the state previewer. Not done: a New task action in the all-caught-up state.
+Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.

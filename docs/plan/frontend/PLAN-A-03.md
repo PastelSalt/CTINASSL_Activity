@@ -151,3 +151,16 @@ Error text states the problem and the fix, is attached to its field, and uses ic
 **Notes:** the password requirements checklist reads the typed value in local component state only to tick rules; it is never stored or sent. Success and pending layouts are previews, not results.
 
 **Not done:** screen-reader pass, network-panel capture, legal review of consent wording.
+
+## 15. Motion and visual pass — 2026-11-14
+
+The landing-page motion language now also runs on the authentication pages (frontend only; nothing typed is read or stored).
+
+- **Illustrated side panel** on login and register (two columns from 900px; below the form under 900px; hidden under 480px): a small workspace window with sample rows, floating status chips, and a drawn thread, with pointer parallax. Recovery pages stay single column.
+- **Background:** flat pastel orbs that drift and a thread that draws behind the card.
+- **Entrance:** header drops in, card rises with a springy settle, the heading reveals word by word, then banner, fields, and actions stagger in; a 4 s failsafe forces the end state.
+- **Pointer only:** soft cursor ring and magnetic action buttons (fine pointers, reduced motion off).
+- **Micro-interactions (CSS):** field lift and label colour on focus, error banner shake, field errors drop in, success icon and met password rules pop, preview dialog springs in. All disabled under reduced motion.
+- **Shared code:** `Words` and `Depth` (components/motion), `motion.css`, and `lib/pointerFx.js` are shared with the landing page; `pages/auth/authMotion.js` owns the auth entrance.
+
+Verified at 1366x728 and 375x800 through DOM probes: intro completes, word gaps correct, art matches the form column height, 5 field errors with the shake animation, success state and demo link still work, no overflow, no console errors. Not verified: real-device feel, Safari, reduced motion in a real browser, screen-reader pass.
