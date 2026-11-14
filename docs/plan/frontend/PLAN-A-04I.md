@@ -1,6 +1,6 @@
 # PLAN-A-04I — Documents: the reader and Markdown (inside Library and Files) (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the Documentation page · **Status:** Planning · **Evidence:** RESEARCH.md D2, section 10 (Obsidian and Notion lessons)
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the Documentation page · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D2, section 10 (Obsidian and Notion lessons)
 
 ## 1. Purpose
 
@@ -57,12 +57,18 @@ Edit, Mark Final, Duplicate, Export.
 
 ## 10. Acceptance checklist
 
-- [ ] Documents are reachable only through Library and project Files.
-- [ ] Reader has outline, rendered Markdown, a Source toggle, and the lens.
-- [ ] No author or avatar; two statuses only.
+- [x] Documents are reachable only through Library and project Files.
+- [x] Reader has outline, rendered Markdown, a Source toggle, and the lens.
+- [x] No author or avatar; two statuses only.
 - [ ] Markdown is stated as the initial editing format; no control implies saving.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `components/DocReader.jsx`, opened from the Library with `?doc=`.
+
+**Built:** outline from the document sections, Preview and Source modes, status and version, the lens, back link, a preview-only Edit button.
+
+**Not done:** the page does not yet say that Markdown is the initial editing format.
+
+**Not verified:** 390 and 1536px.

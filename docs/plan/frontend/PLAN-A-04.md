@@ -3,7 +3,7 @@
 ## Plan status
 
 **Revision:** 3 — restructure for a calm, individual-first workspace. Supersedes Revision 2 (shell, shared components, and visual system from Revision 2 stay unless this plan changes them)  
-**Status:** Planning only. The Revision 2 workspace is implemented and is the baseline to be changed. **Breaking changes to routes, data shapes, and page structure are authorized** (owner permission, 2026-11-14)  
+**Status:** **Implemented 2026-11-14** after the owner approved D6–D10 ("approved all and execute the plans"). Later changes the owner asked for are in section 19. Breaking changes to routes, data shapes, and page structure were authorized  
 **Scope:** Frontend only: information architecture, page structure, vocabulary, fixtures, shared components, and motion for the authenticated workspace  
 **Evidence:** [RESEARCH.md](../../../RESEARCH.md) (diagnosis D1–D9, tool review, overall findings in its section 11)  
 **Related plans:** [PLAN-A-01](PLAN-A-01.md) landing · [PLAN-A-02](PLAN-A-02.md) legal · [PLAN-A-03](PLAN-A-03.md) auth  
@@ -80,11 +80,12 @@ Removed as separate record types: **deliverable** (becomes a flag on a file: "De
 Home            what to do today
 Projects        all projects, then one project:
                   Overview | Work | Specs | Files | History
-Tasks           all my tasks: Today | Upcoming | All
+Tasks           all my tasks: Today | Upcoming | Calendar | All
 Library         files and documents across projects
 Insights        light progress and coverage
 [Quick add]     one field, always reachable (button + shortcut)
-[Account menu]  Account and preferences, developer tools, leave demo
+[Account menu]  bottom of the rail: Account and preferences, Help, developer tools,
+                legal links, leave demo (Insights also listed here on phones)
 ```
 
 - **Level 1:** the five destinations (rail on desktop, bottom bar on mobile).
@@ -99,10 +100,11 @@ Insights        light progress and coverage
 | `/home` | `/dashboard` | Demo entry points (landing, login) update to `/home` |
 | `/projects` | `/projects` | Views: List (cards or table), Timeline (cross-project milestones), plus a "Show archived" toggle |
 | `/projects/:projectId?view=overview\|work\|specs\|files\|history` | `/projects/:projectId` | The hub |
-| `/tasks?view=today\|upcoming\|all` | `/tasks` | |
-| `/library?view=all\|documents\|images\|media\|data\|links` | `/assets`, `/documentation` | Opens a document in the reader |
+| `/tasks?view=today\|upcoming\|calendar\|all` | `/tasks` | Calendar also takes `month` and `day` |
+| `/library` (filters: `kind`, `project`, `final`; `mode=grid\|list`; `doc=` opens the reader) | `/assets`, `/documentation` | Kind is a filter, not a view tab |
 | `/insights` | `/reports` | Single page, no tabs |
-| `/account?view=profile\|preferences\|appearance\|privacy\|developer` | `/settings` | Reached from the account menu, not the rail |
+| `/account` (one page of cards) | `/settings` | Reached from the account menu in the rail footer |
+| `/help` | new | Renders `docs/individual-workspace-guide.md` |
 
 Redirects for removed routes: `/dashboard` → `/home`; `/milestones` → `/projects?view=timeline`; `/requirements`, `/revisions` → `/projects`; `/assets`, `/documentation` → `/library`; `/reports` → `/insights`; `/settings` → `/account`. Selected-record links use `?select=` as before.
 
@@ -165,16 +167,18 @@ One vocabulary for work, small sets elsewhere. Icon plus text, never colour alon
 
 - The demo bar, the **preview-state** selector, and the project scope switcher are removed from the top of every page.
 - A **Developer** section in Account (and `?dev` in the URL) turns on the preview-state selector and a "Sample data" explanation; it is off by default.
-- A small, quiet **Sample workspace** label (footer or account menu) replaces the demo chip; it states that nothing is saved.
+- A small, quiet "sample data, nothing is saved" line in the account menu replaces the demo chip. There is **no page footer** in the workspace.
 - Preview-only dialogs stay, with calmer copy and without the "Preview only" chip on repeat use within a session.
-- The project scope switcher becomes a **project filter** inside Tasks and Library, where it is meaningful.
+- The project scope switcher becomes a **project filter** inside Tasks, Library, and Insights, where it is meaningful. The developer bar is turned on with `?dev`, the account menu, or Account.
 
 ## 9. Shell and navigation components
 
-- **Rail (desktop ≥1024px):** five items with icons and labels (labels always visible at ≥1280px; icon rail with tooltips between 1024 and 1279px), plus a Quick add button at the top and the account menu at the bottom.
-- **Mobile (<1024px):** bottom bar with Home, Projects, **Quick add** (centre), Tasks, Library; Insights and Account are in the account menu.
-- **Top bar:** only what is global: search/command palette trigger and (on mobile) the brand. The scope switcher, demo chip, and preview selector are gone.
-- **Recents:** the command palette and Home list recent projects and records (recognition over recall).
+- **Rail (desktop, 1024px and up):** brand, a **Quick add** button, the five destinations, and at the bottom the **account menu** (avatar, name, opens upward; icon-only between 1024 and 1279px, where it opens to the right). Labels show at 1280px and up.
+- **Phone and tablet (below 1024px):** bottom bar with Home, Projects, a round **+** for Quick add in the centre, Tasks, Library. The account button is in the top bar and lists Insights, Help, Developer tools, the legal links, and Leave demo.
+- **Top bar:** a wide search / command palette trigger and, from 768px, a status group: the demo date, a **due today** chip, and an **overdue** chip (both link to Tasks). The scope switcher, demo chip, and preview selector are gone.
+- **Account menu:** Account and preferences, Help, Developer tools toggle, a Legal group (Privacy, Terms, Cookies), Back to landing page, Leave demo. It layers above page content (rail z-index above the sticky top bar).
+- **No footer.** Legal links live in the account menu.
+- **Recents:** the command palette and Home list recent projects and records.
 
 ## 10. Visual system and motion
 
@@ -192,39 +196,39 @@ One vocabulary for work, small sets elsewhere. Icon plus text, never colour alon
 
 Unchanged budgets from Revision 2 (shared runtime about 71 kB gzip; each page 1.7–3.4 kB; no GSAP in the workspace). Merging pages should reduce the number of chunks; keep each page lazy and keep the command palette and templates in their own lazy chunk.
 
-## 13. Source layout and migration
+## 13. Source layout and migration (as built)
 
 ```text
 client/src/pages/workspace/
-  shell/        Rail, MobileBar, TopBar, AccountMenu
-  pages/        HomePage, ProjectsPage, ProjectPage (tabs: Overview, Work, Specs, Files, History),
-                TasksPage, LibraryPage, InsightsPage, AccountPage
-  components/   shared components from Revision 2, minus Avatar/AvatarStack and access badges
-  quickadd/     QuickAdd, CommandPalette, templates
-  data/         fixtures (individual), selectors, status (about 15 labels), format
+  WorkspaceApp.jsx, WorkspaceShell.jsx, WorkspaceProvider.jsx, context.js, nav.js, useWorkspaceMotion.js
+  pages/        HomePage, ProjectsPage, ProjectPage (tabs inside), TasksPage, LibraryPage,
+                InsightsPage, AccountPage, HelpPage
+  components/   badges, layout, records, states, Timeline, CalendarView, DocReader
+  quickadd/     QuickAdd, parse, CommandPalette, NewProjectDialog, Modal
+  data/         fixtures, store (session-only), templates, selectors, status, kinds, format
 ```
 
-Phases (each ends with lint, build, and a check at 390px and 1280px):
+Phases (all done 2026-11-14; each ended with lint and build, and browser checks):
 
-- [ ] **Phase 0 — Approvals:** owner answers D6–D10 (section 15).
-- [ ] **Phase 1 — Data and vocabulary:** reshape fixtures, merge files, remove team fields, new status maps, update selectors.
-- [ ] **Phase 2 — Strip team and scaffolding:** remove avatars, assignee and owner UI, review queue, access badges, scope switcher, demo bar; add the Developer section.
-- [ ] **Phase 3 — Shell and routes:** five-item rail and mobile bar, redirects, account menu, rename `/dashboard` to `/home` in landing and auth.
-- [ ] **Phase 4 — Pages:** Home, Tasks, Projects, then the Project page and its tabs, Library, Insights, Account.
-- [ ] **Phase 5 — Quick add, templates, first run, palette** (PLAN-A-04L).
-- [ ] **Phase 6 — QA:** success measures (section 14), accessibility pass, update README, CODEMAP, LOG, and tick plan checklists.
+- [x] **Phase 0 — Approvals:** owner approved D6–D10 (section 15).
+- [x] **Phase 1 — Data and vocabulary:** individual fixtures, merged files, team fields removed, new status maps, selectors.
+- [x] **Phase 2 — Strip team and scaffolding:** avatars, assignee and owner UI, review queue, access badges, scope switcher, and demo bar removed; Developer section added.
+- [x] **Phase 3 — Shell and routes:** five-item rail and phone bar, redirects, account menu, `/home` in landing and auth.
+- [x] **Phase 4 — Pages:** Home, Tasks, Projects, Project page and tabs, Library, Insights, Account.
+- [x] **Phase 5 — Quick add, templates, first run, palette.**
+- [ ] **Phase 6 — QA:** automated visual audits done (overflow, text size, contrast, target size, names); **not done:** the user test in section 14, a screen-reader pass, reduced-motion review, 390 and 1536px.
 
-Delete after migration: pages and components for removed destinations, the old status maps, and team-only fixtures.
+Deleted after migration: the ten old pages, `TraceChain.jsx`, the old status maps, and team-only fixtures. The planned `shell/` folder was not created; the shell is one file.
 
 ## 14. Success measures
 
 Test with solo participants (freelancers, students), see RESEARCH.md section 7.
 
-- [ ] A new person creates a project and a first task in **about 60 seconds** without help.
-- [ ] Five task test (find what is overdue, add a task, check whether a requirement has work behind it, find a document, see what changed last): **no more than one wrong turn per task**.
-- [ ] **At most 5** top-level destinations; **at most 3** headline figures on any screen; **at most about 15** status labels.
-- [ ] **Zero** team-only controls in the individual workspace.
-- [ ] A participant can say in one sentence what traceability showed them.
+- [ ] (not tested with people) A new person creates a project and a first task in **about 60 seconds** without help.
+- [ ] (not tested with people) Five task test (find what is overdue, add a task, check whether a requirement has work behind it, find a document, see what changed last): **no more than one wrong turn per task**.
+- [x] **At most 5** top-level destinations; **at most 3** headline figures on any screen; **at most about 15** status labels. (Met: 5 destinations, 3 figures on Home and Insights, 15 labels in `status.js`.)
+- [x] **Zero** team-only controls in the individual workspace.
+- [ ] (not tested with people) A participant can say in one sentence what traceability showed them.
 
 ## 15. Decisions needed from the owner
 
@@ -232,11 +236,11 @@ Defaults are recommendations; each can be changed before Phase 1.
 
 | ID | Decision | Recommended default |
 |---|---|---|
-| D6 | Navigation set | Home, Projects, Tasks, Library, Insights; Account in a menu |
-| D7 | Merge asset and document into **File**; fold deliverable into a flag | Yes |
-| D8 | Status vocabulary in section 6 (drop Low and Urgent priority, Rejected, Archived as a label) | Yes |
-| D9 | Quick add may add to session-only in-memory state so the demo feels real | Yes, clearly labelled |
-| D10 | Rename for plain words: **Revisions → Changes**, **Deliverable → Final file**, **Milestone** kept | Yes, but confirm in testing |
+| D6 | Navigation set | Home, Projects, Tasks, Library, Insights; Account in a menu — **approved** |
+| D7 | Merge asset and document into **File**; fold deliverable into a flag | Yes — **approved** |
+| D8 | Status vocabulary in section 6 (drop Low and Urgent priority, Rejected, Archived as a label) | Yes — **approved** |
+| D9 | Quick add may add to session-only in-memory state so the demo feels real | Yes, clearly labelled — **approved** |
+| D10 | Rename for plain words: **Revisions → Changes**, **Deliverable → Final file**, **Milestone** kept | Yes, but confirm in testing — **approved** |
 
 Still open from RESEARCH.md section 8: one individual workspace per account or several; convert-or-add when team arrives; read-only share link and export at launch.
 
@@ -249,15 +253,25 @@ Still open from RESEARCH.md section 8: one individual workspace per account or s
 
 ## 17. Approval gate
 
-- [ ] Owner approves the workspace-type model and rules (section 3).
-- [ ] Owner approves the navigation and route changes (section 4).
-- [ ] Owner answers D6–D10.
-- [ ] Owner authorizes Phases 1–6 (this revision authorizes no code).
+- [x] Owner approves the workspace-type model and rules (section 3).
+- [x] Owner approves the navigation and route changes (section 4).
+- [x] Owner answers D6–D10 (approved with the defaults).
+- [x] Owner authorizes Phases 1–6 ("approved all and execute the plans", 2026-11-14).
 
-## 18. Baseline (Revision 2, implemented)
+## 18. Baseline (Revision 2, replaced)
 
 Left rail with ten modules, project scope switcher, demo bar with preview states, eleven pages with view tabs, record detail panels, shared components, fixtures with four people and ten record types, 44 status labels, restrained motion. Its page plans are superseded by 04A–04L.
 
+## 19. Changes after the first implementation (2026-11-14)
+
+Requested by the owner during review; the section numbers above describe the final state.
+
+- **Calendar** added as a fourth Tasks view (see PLAN-A-04E).
+- **Help page** at `/help` rendering `docs/individual-workspace-guide.md` (single source), reachable from the account menu and the palette.
+- **Shell rework:** account menu moved to the rail footer; top bar gained the date and due-today and overdue chips; the page footer was removed and the legal links moved into the account menu; Insights is listed in the menu only on phones.
+- **Filter popover** anchors to the button's right edge (and becomes a bottom sheet on phones); **dialogs** received their own spacing tokens (they render outside the workspace wrapper), larger padding, a title and lede hierarchy, and a sticky action row.
+- **Visual audit fixes:** 12px minimum for small buttons, eyebrows, and `<small>`; darker muted text colour; 24px minimum target sizes for standalone links.
+
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14.** See `LOG.md` for each entry, files, and validation. Deviations from this plan: Quick add, the palette, and the template picker share one native-dialog shell (`quickadd/Modal.jsx`); the Coverage matrix (PLAN-A-04F), the compare "unsupported" state (04H), a "not enough data" message (04J), and Account view tabs (04K) were not built; `workspaceId` on records and `canAccess()` are not present (only `workspace.type` in the fixtures); documents are flagged `isFinal` (a "final file") instead of `isDeliverable`. Not yet done: user testing (section 14), a screen-reader pass, reduced-motion review, and 390 and 1536px checks.

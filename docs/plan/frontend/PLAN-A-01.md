@@ -3,9 +3,9 @@
 ## Plan status
 
 **Revision:** 2 — consolidated, audit-driven re-plan  
-**Status:** Revision 2 foundations implemented (see section 12); copy/section edits and Lighthouse QA remain  
+**Status:** Revision 2 foundations, the visual redesign (section 13), and the scroll motion pass (section 14) are implemented; owner-approved copy edits, Lighthouse measurement, and a full reduced-motion and screen-reader pass remain. The landing page's "Explore the demo" links now go to `/home`  
 **Scope:** Public landing page at `/`, plus the client foundations shared with the legal, auth, and workspace plans (public layout, metadata, routing boundary, performance)  
-**Related plans:** [PLAN-A-02](PLAN-A-02.md) legal · [PLAN-A-03](PLAN-A-03.md) auth · [PLAN-A-04](PLAN-A-04.md) workspace (performance budget in its section 16)  
+**Related plans:** [PLAN-A-02](PLAN-A-02.md) legal · [PLAN-A-03](PLAN-A-03.md) auth · [PLAN-A-04](PLAN-A-04.md) workspace (performance budget in its section 12)  
 **Source specification:** [PROJECT-SPECS.md](../../../PROJECT-SPECS.md)  
 **Constraint:** Frontend only. No authentication, API, analytics, or storage behavior. Calls to action only navigate to existing static routes.
 
@@ -63,17 +63,17 @@ Order stays story-led. Hero, traceability, lifecycle, and closing remain distinc
 
 - [ ] One idea per section; headings ≤ 8 words; paragraphs ≤ 3 lines at desktop width.
 - [ ] No unverifiable claims (no numbers of users, no "trusted by", no performance promises).
-- [ ] Preview content is generic sample data and labelled as illustration.
+- [x] Preview content is generic sample data and labelled as illustration.
 - [ ] Section copy reviewed and approved by the owner before implementation.
 
 ## 5. Shared public layout (used by PLAN-A-02 and A-03 as well)
 
-- [ ] `PublicHeader` with variants: `landing` (full nav + CTAs) and `compact` (brand + "Back to home") for auth and legal pages.
-- [ ] `PublicFooter` rendering the Legal group and Moeko Works credit once; used on landing, auth, legal, and Not Found.
-- [ ] `usePageMeta({ title, description, robots })` sets `document.title`, description, and robots; replaces ad-hoc `useEffect` titles.
-- [ ] `index.html` carries default title, description, canonical placeholder, Open Graph and Twitter basics, `theme-color`, and favicon references.
-- [ ] Workspace, auth, and any draft legal routes emit `noindex`; the landing page is indexable.
-- [ ] Not Found page using the public layout with links to `/`, `/login`, and the legal pages.
+- [x] `PublicHeader` with variants: `landing` (full nav + CTAs) and `compact` (brand + "Back to home") for auth and legal pages.
+- [x] `PublicFooter` rendering the Legal group and Moeko Works credit once; used on landing, auth, legal, and Not Found.
+- [x] `usePageMeta({ title, description, robots })` sets `document.title`, description, and robots; replaces ad-hoc `useEffect` titles.
+- [x] `index.html` carries default title, description, canonical placeholder, Open Graph and Twitter basics, `theme-color`, and favicon references.
+- [x] Workspace, auth, and any draft legal routes emit `noindex`; the landing page is indexable.
+- [x] Not Found page using the public layout with links to `/`, `/login`, and the legal pages.
 
 ## 6. Motion and performance
 
@@ -81,11 +81,11 @@ Order stays story-led. Hero, traceability, lifecycle, and closing remain distinc
 
 One scoped motion setup per page, owned by a single module; React owns semantic state (active section, menu, progress) and GSAP owns presentation only.
 
-- [ ] **Visible by default:** CSS renders the final layout; the motion module adds `html.motion-ready` only after GSAP initializes, and hidden initial states apply only under that class (fixes L3).
+- [x] **Visible by default:** CSS renders the final layout; the motion module adds `html.motion-ready` only after GSAP initializes, and hidden initial states apply only under that class (fixes L3).
 - [ ] Remove the legacy `IntersectionObserver` reveal once each GSAP scene passes validation (L4).
-- [ ] Use `gsap.context()` for cleanup and `gsap.matchMedia()` for responsive and reduced-motion variants; one shared defaults object for durations, easing, and scrub values.
-- [ ] Animate `transform`, `opacity`, and SVG presentation values only; no layout properties.
-- [ ] Create a ScrollTrigger per scene (not per child); call `ScrollTrigger.refresh()` only after measured layout changes.
+- [x] Use `gsap.context()` for cleanup and `gsap.matchMedia()` for responsive and reduced-motion variants; one shared defaults object for durations, easing, and scrub values.
+- [x] Animate `transform`, `opacity`, and SVG presentation values only; no layout properties.
+- [x] Create a ScrollTrigger per scene (not per child); call `ScrollTrigger.refresh()` only after measured layout changes.
 - [ ] Load GSAP + ScrollTrigger via dynamic import from the landing chunk only.
 
 ### Scene contracts (condensed)
@@ -115,7 +115,7 @@ Failure criteria: hidden essential content, stale transforms after fast/reverse 
 
 ## 7. Accessibility and responsive
 
-- [ ] Landmarks, one `h1`, ordered headings, skip link, visible `:focus-visible`.
+- [x] Landmarks, one `h1`, ordered headings, skip link, visible `:focus-visible`.
 - [ ] Anchor targets not obscured by the floating navigation.
 - [ ] Mobile menu: `aria-expanded`, focus trap while open, Escape closes, returns focus to the toggle.
 - [ ] Contrast ≥ 4.5:1 over every pattern and colored surface; decorative SVG hidden from assistive technology.
@@ -124,8 +124,8 @@ Failure criteria: hidden essential content, stale transforms after fast/reverse 
 
 ## 8. Implementation phases
 
-- [ ] **Phase 1 — Foundations:** shared `PublicHeader`/`PublicFooter`, `usePageMeta`, head tags, Not Found, router boundary, route code splitting, font reduction (with PLAN-A-04 Phase 1).
-- [ ] **Phase 2 — Motion hardening:** visible-by-default rule, remove duplicate reveal, dynamic motion chunk, cleanup audit.
+- [x] **Phase 1 — Foundations:** shared `PublicHeader`/`PublicFooter`, `usePageMeta`, head tags, Not Found, router boundary, route code splitting, font reduction (with PLAN-A-04 Phase 1).
+- [x] **Phase 2 — Motion hardening:** visible-by-default rule, remove duplicate reveal, dynamic motion chunk, cleanup audit.
 - [ ] **Phase 3 — Content pass:** owner-approved copy edits, preview illustration label, section merge, page-length reduction.
 - [ ] **Phase 4 — QA:** budget measurement, Lighthouse per breakpoint, keyboard and reduced-motion pass; update `README.md`, `CODEMAP.md`, `LOG.md`.
 

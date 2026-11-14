@@ -1,6 +1,6 @@
 # PLAN-A-04D — Work and milestones (project **Work** tab, Projects **Timeline**) (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the `/milestones` page · **Status:** Planning · **Evidence:** RESEARCH.md D2, D3; Trello's "ceiling" lesson (section 10)
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the `/milestones` page · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D2, D3; Trello's "ceiling" lesson (section 10)
 
 ## 1. Purpose
 
@@ -60,12 +60,18 @@ Groups collapse to header plus count on mobile; the Timeline falls back to a ver
 
 ## 10. Acceptance checklist
 
-- [ ] No separate milestones page; both views are reachable from Projects and the project Work tab.
-- [ ] Overdue is derived from dates and shown with icon plus text.
-- [ ] No people, priority, or deliverable fields on milestones.
+- [x] No separate milestones page; both views are reachable from Projects and the project Work tab.
+- [x] Overdue is derived from dates and shown with icon plus text.
+- [x] No people, priority, or deliverable fields on milestones.
 - [ ] Today marker and month grouping on the Timeline; vertical fallback on mobile.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** inside `ProjectPage.jsx` (Work tab) and `ProjectsPage.jsx` (Timeline), sharing `components/Timeline.jsx` and `MilestoneGroup`/`MilestonePanel` in `components/records.jsx`.
+
+**Built:** no separate milestones page; milestone state derived from dates and tasks (Upcoming, Doing, Overdue, Done) with icon and text; Today marker; vertical list fallback below 768px; tasks with no milestone grouped separately.
+
+**Differences / not done:** the timeline shows a start and end date label rather than month grouping; no month headers.
+
+**Not verified:** 390 and 1536px.

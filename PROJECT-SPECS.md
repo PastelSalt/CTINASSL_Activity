@@ -1,5 +1,8 @@
 # TSUMUGI — Project Specifications
 
+
+> **Implementation divergence (updated 2026-11-14).** This is the original product specification and target architecture. The frontend demo deliberately differs in structure: the authenticated app is an **individual workspace** with five destinations (`/home`, `/projects`, `/tasks`, `/library`, `/insights`) plus `/account` and `/help`. `/dashboard` became `/home`; Milestones, Requirements, Revisions, Assets, Documentation, Reports, and Settings were folded into Projects, Library, Insights, and Account (the old paths redirect). Assets and documents are one **File** concept; revisions are **Changes**; deliverables are a **Final file** flag. Team features (members, roles, sharing) are deferred to a separate team workspace type. See `README.md`, `RESEARCH.md`, and `docs/plan/frontend/PLAN-A-04.md`. Sections below that name the old routes describe the target backend and remain the specification.
+
 > **Weaving ideas into finished work.**  
 > A creative and technical production management platform by Moesoft.
 

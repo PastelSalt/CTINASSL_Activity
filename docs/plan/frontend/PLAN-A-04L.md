@@ -1,6 +1,6 @@
 # PLAN-A-04L — Quick add, templates, first run, and command palette (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Status:** Planning · **New in Revision 3** · **Evidence:** RESEARCH.md 3.3, 3.5, section 10 (Todoist and Linear speed; Notion templates), section 11.3 items 7, 8, 10, 13
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Status:** Implemented (2026-11-14) · **New in Revision 3** · **Evidence:** RESEARCH.md 3.3, 3.5, section 10 (Todoist and Linear speed; Notion templates), section 11.3 items 7, 8, 10, 13
 
 ## 1. Purpose
 
@@ -56,11 +56,17 @@ Quick add and the palette are labelled dialogs or sheets with focus management a
 
 - [ ] A new person adds a task in under five seconds from any page.
 - [ ] A new project is created from a template in under 60 seconds including naming.
-- [ ] The first-run checklist has three skippable items and one clear next action.
-- [ ] The palette lists recent items first and works entirely from the keyboard.
-- [ ] Session-only additions are labelled and never claim to be saved.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] The first-run checklist has three skippable items and one clear next action.
+- [x] The palette lists recent items first and works entirely from the keyboard.
+- [x] Session-only additions are labelled and never claim to be saved.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** in `quickadd/` and `data/`.
+
+**Built:** `QuickAdd.jsx` with `parse.js` (`#project`, day words, `!` for high priority; chips; confirmation live region; the dialog stays open for the next task), `CommandPalette.jsx` (recents first, Go to, Actions, projects, library files; arrow keys, Enter, Esc; includes Calendar and Help), `NewProjectDialog.jsx` (five templates), `store.js` (session-only tasks and projects, labelled), `templates.js`, a Home first-run checklist. The shortcuts are `Q` and `Ctrl/Cmd+K`; the phone bar has a centre add button.
+
+**Not timed:** the five-second and sixty-second targets were not measured with people.
+
+**Not verified:** 390 and 1536px.

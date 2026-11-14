@@ -24,18 +24,18 @@
 ## 2. Goals
 
 - [x] Three accessible policy pages in the Tsumugi visual language (implemented in Revision 1).
-- [ ] One source of truth per policy; pages cannot drift from the reviewed documents.
-- [ ] A reading experience suited to long documents: contents list, anchors, readable measure, print style.
-- [ ] A clear, honest draft state that cannot be mistaken for binding terms, and a safe path to switch to "published".
+- [x] One source of truth per policy; pages cannot drift from the reviewed documents.
+- [x] A reading experience suited to long documents: contents list, anchors, readable measure, print style.
+- [x] A clear, honest draft state that cannot be mistaken for binding terms, and a safe path to switch to "published".
 - [ ] Owner and qualified legal review before publication.
 
 ## 3. Content architecture
 
-- [ ] Import each policy's Markdown with Vite's `?raw` suffix and render it with the small shared Markdown renderer (the same one planned for the workspace document reader, PLAN-A-04I). No new runtime dependency beyond that renderer.
-- [ ] Policy metadata (title, label, description, effective date, version, status) lives in front matter or a small `legalMeta.js` — not in components.
-- [ ] A single `LEGAL_STATUS` setting (`draft` | `published`) controls the banner, the `noindex` robots directive, and the placeholder check.
-- [ ] Each policy page is its own lazy-loaded chunk; the Markdown is not bundled into the landing page.
-- [ ] Keep the existing route paths: `/privacy-policy`, `/terms-of-service`, `/cookie-and-local-storage-policy`.
+- [x] Import each policy's Markdown with Vite's `?raw` suffix and render it with the small shared Markdown renderer (the same one planned for the workspace document reader, PLAN-A-04I). No new runtime dependency beyond that renderer.
+- [x] Policy metadata (title, label, description, effective date, version, status) lives in front matter or a small `legalMeta.js` — not in components.
+- [x] A single `LEGAL_STATUS` setting (`draft` | `published`) controls the banner, the `noindex` robots directive, and the placeholder check.
+- [x] Each policy page is its own lazy-loaded chunk; the Markdown is not bundled into the landing page.
+- [x] Keep the existing route paths: `/privacy-policy`, `/terms-of-service`, `/cookie-and-local-storage-policy`.
 
 ## 4. Page design
 
@@ -53,23 +53,23 @@ Compact public header: brand · Back to home
 Footer: shared PublicFooter
 ```
 
-- [ ] Banner uses icon + text, sits on its own row, and wraps cleanly at 320px.
-- [ ] Contents list is generated from the document headings; the current section is marked with `aria-current`; below 1024px it becomes a collapsible "On this page" disclosure above the document.
-- [ ] Headings have stable slug anchors with a visible, keyboard-focusable "link to section" control.
-- [ ] Reading measure ≤ 72ch; body 16px minimum (17px at ≥ 1024px); tables scroll inside their own container.
-- [ ] `Last updated` and `Version` shown beside the effective date; unresolved dates render as `To be confirmed` in draft state rather than raw `[YYYY-MM-DD]`.
-- [ ] Print stylesheet: hide header, contents, and footer chrome; black on white; show URLs for links.
-- [ ] "Other policies" block with the two sibling documents (replaces the footer switcher inside the page).
-- [ ] No decorative motion; woven background stays low contrast behind the paper surface.
-- [ ] One `h1`, ordered headings, landmarks (`header`, `nav`, `main`, `article`), skip link, visible focus.
+- [x] Banner uses icon + text, sits on its own row, and wraps cleanly at 320px.
+- [x] Contents list is generated from the document headings; the current section is marked with `aria-current`; below 1024px it becomes a collapsible "On this page" disclosure above the document.
+- [x] Headings have stable slug anchors with a visible, keyboard-focusable "link to section" control.
+- [x] Reading measure ≤ 72ch; body 16px minimum (17px at ≥ 1024px); tables scroll inside their own container.
+- [x] `Last updated` and `Version` shown beside the effective date; unresolved dates render as `To be confirmed` in draft state rather than raw `[YYYY-MM-DD]`.
+- [x] Print stylesheet: hide header, contents, and footer chrome; black on white; show URLs for links.
+- [x] "Other policies" block with the two sibling documents (replaces the footer switcher inside the page).
+- [x] No decorative motion; woven background stays low contrast behind the paper surface.
+- [x] One `h1`, ordered headings, landmarks (`header`, `nav`, `main`, `article`), skip link, visible focus.
 
 ## 5. Publishing safeguards
 
-- [ ] **Placeholder check:** a build-time script scans policy sources for bracketed placeholders (`[` … `]`), `TBD`, and `[YYYY-MM-DD]`; it warns in draft and **fails the build when `LEGAL_STATUS = published`**.
-- [ ] **Storage inventory:** the Cookie & Local Storage page includes a table (Name · Purpose · Duration · Category) that must match what the client actually writes. Current inventory: none. Any later feature that stores data (for example workspace preferences) must update this table in the same change.
+- [x] **Placeholder check:** a build-time script scans policy sources for bracketed placeholders (`[` … `]`), `TBD`, and `[YYYY-MM-DD]`; it warns in draft and **fails the build when `LEGAL_STATUS = published`**.
+- [x] **Storage inventory:** the Cookie & Local Storage page includes a table (Name · Purpose · Duration · Category) that must match what the client actually writes. Current inventory: none. Any later feature that stores data (for example workspace preferences) must update this table in the same change.
 - [ ] Compare every statement with implemented systems (authentication, storage, hosting, analytics, support) before publication.
 - [ ] Confirm operator name, contact address, privacy contact, effective date, update process, and jurisdiction; replace every bracketed placeholder.
-- [ ] While in draft: `noindex`, visible banner, and no claim that the documents are legal advice or binding.
+- [x] While in draft: `noindex`, visible banner, and no claim that the documents are legal advice or binding.
 - [ ] Obtain qualified legal review of liability, indemnity, dispute, arbitration, and rights language.
 
 ## 6. Policy content requirements (unchanged scope)
@@ -86,17 +86,17 @@ Footer: shared PublicFooter
 
 ## 8. Implementation phases
 
-- [ ] **Phase 1:** Markdown-sourced rendering, `legalMeta`, `LEGAL_STATUS`, lazy route chunks.
-- [ ] **Phase 2:** Document layout (banner, contents, anchors, typography, print), shared `PublicFooter`.
-- [ ] **Phase 3:** Placeholder check script and storage inventory table.
+- [x] **Phase 1:** Markdown-sourced rendering, `legalMeta`, `LEGAL_STATUS`, lazy route chunks.
+- [x] **Phase 2:** Document layout (banner, contents, anchors, typography, print), shared `PublicFooter`.
+- [x] **Phase 3:** Placeholder check script and storage inventory table.
 - [ ] **Phase 4:** QA at 320/390/768/1024/1440, keyboard and screen-reader pass, print preview; update `README.md`, `CODEMAP.md`, `LOG.md`.
 
 ## 9. Acceptance checklist
 
-- [ ] Page text comes from the Markdown source; editing the source changes the page.
-- [ ] Contents list and anchors work with keyboard; headings are unique.
-- [ ] Draft banner is on its own row at every width; `noindex` is present in draft.
-- [ ] Build warns on placeholders in draft and fails on them when published.
+- [x] Page text comes from the Markdown source; editing the source changes the page.
+- [x] Contents list and anchors work with keyboard; headings are unique.
+- [x] Draft banner is on its own row at every width; `noindex` is present in draft.
+- [x] Build warns on placeholders in draft and fails on them when published.
 - [ ] Cookie page's storage inventory matches the client's actual storage (currently none).
 - [ ] No horizontal overflow at 320px; print preview is clean.
 

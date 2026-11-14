@@ -1,6 +1,6 @@
 # PLAN-A-04C — `/projects/:projectId` Project page (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Project workspace with nine tabs · **Status:** Planning · **Evidence:** RESEARCH.md D1–D3, section 11.5
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Project workspace with nine tabs · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D1–D3, section 11.5
 
 ## 1. Purpose
 
@@ -72,9 +72,15 @@ Edit project, Archive (confirmation layout), per-tab `Add` buttons.
 - [ ] Five tabs; the project name appears once.
 - [ ] No people, avatars, or priority anywhere on the page.
 - [ ] The Specs summary line replaces the six-count chain and links to Specs.
-- [ ] Each tab has a first-use empty state.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] Each tab has a first-use empty state.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/ProjectPage.jsx` with tabs Overview, Work, Specs, Files, History (view and selected record kept in the URL).
+
+**Built:** phases row, three figures, next milestone, About, recent changes (Overview); milestone groups with a Groups/Timeline switch (Work); requirement list and panel (Specs); file tiles and panel (Files); day-grouped change feed with a comparison view (History); a "project not found" state; per-tab empty states.
+
+**Differences (why the unticked items above stay open):** the project name appears in both the breadcrumb and the heading; Overview shows a "Requirements complete" figure rather than a Specs summary line with a link; task rows inside the project still show a High priority flag (priority is limited to High, not removed).
+
+**Not verified:** 390 and 1536px.

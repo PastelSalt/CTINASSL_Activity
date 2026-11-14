@@ -1,6 +1,6 @@
 # PLAN-A-04K — `/account` Account and preferences (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** `/settings` · **Status:** Planning · **Evidence:** RESEARCH.md D5, D9
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** `/settings` · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D5, D9
 
 ## 1. Purpose
 
@@ -53,11 +53,17 @@ At 320px toggles and selects keep a 40px minimum target; rows stack with the con
 ## 10. Acceptance checklist
 
 - [ ] No Save button; the Preview-only notice is visible on every group.
-- [ ] No Security, notification-category, member, or role controls.
-- [ ] Developer tools are off by default and fully contained in this section.
-- [ ] Legal links work and the storage statement says nothing is persisted.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] No Security, notification-category, member, or role controls.
+- [x] Developer tools are off by default and fully contained in this section.
+- [x] Legal links work and the storage statement says nothing is persisted.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/AccountPage.jsx`, a single page of cards (Profile, Preferences, Appearance, Privacy, Developer) rather than separate views.
+
+**Built:** an "Edited" chip with Reset instead of a Save button, no security or team controls, a Developer card (show tools bar, reset session data), a privacy statement linking to the policy.
+
+**Differences:** the preview-only notice is one banner at the top rather than on every group; the account menu moved to the bottom of the rail and also holds Help, the legal links, and a Developer tools toggle.
+
+**Not verified:** 390 and 1536px.

@@ -1,6 +1,6 @@
 # PLAN-A-04J — `/insights` Insights (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Reports with five views · **Status:** Planning · **Evidence:** RESEARCH.md D4; Hick's and Cowan's limits (3.4)
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Reports with five views · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D4; Hick's and Cowan's limits (3.4)
 
 ## 1. Purpose
 
@@ -54,12 +54,18 @@ Export (format dialog, nothing created).
 
 ## 9. Acceptance checklist
 
-- [ ] One page, three cards, no tabs, no more than three figures.
-- [ ] Every figure has a visible definition and is computed by a selector.
+- [x] One page, three cards, no tabs, no more than three figures.
+- [x] Every figure has a visible definition and is computed by a selector.
 - [ ] "Not enough data" instead of zeros.
-- [ ] No people, workload, or date-range controls.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] No people, workload, or date-range controls.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/InsightsPage.jsx`.
+
+**Built:** one page with Progress, Coverage, and Overdue cards (three figures), a project selector, an overdue list, a By project table, and a "How these are counted" definition list; all numbers come from selectors.
+
+**Not done:** a "Not enough data" message. Empty scopes currently show 0 and 0%.
+
+**Not verified:** 390 and 1536px.

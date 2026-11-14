@@ -1,6 +1,6 @@
 # PLAN-A-04F — Specs (project **Specs** tab) (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the `/requirements` page · **Status:** Planning · **Evidence:** RESEARCH.md D1, 3.6, section 11.3 item 9
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the `/requirements` page · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D1, 3.6, section 11.3 item 9
 
 ## 1. Purpose
 
@@ -54,12 +54,18 @@ The matrix scrolls horizontally with a sticky first column; below 768px it becom
 
 ## 10. Acceptance checklist
 
-- [ ] No separate Requirements destination; Specs is reachable only inside a project.
-- [ ] Two statuses and one check; no priority or rejected state.
+- [x] No separate Requirements destination; Specs is reachable only inside a project.
+- [x] Two statuses and one check; no priority or rejected state.
 - [ ] Gaps are shown with icon plus text.
-- [ ] The lens lines appear on requirements, and the same block is reusable on tasks and files.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] The lens lines appear on requirements, and the same block is reusable on tasks and files.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as the Specs tab in `ProjectPage.jsx` with `RequirementRow` and `RequirementPanel` in `components/records.jsx`.
+
+**Built:** requirement list with ID, criteria progress, linked task and file counts, and gap labels; a panel with acceptance criteria and the Why it exists / What it becomes block; two statuses and a Verified flag.
+
+**Not built:** the opt-in **Coverage matrix** view (`CoverageMatrix`) and the List | Coverage switch. Coverage is available as a number on Insights. Gap labels are text with a dashed outline, without an icon (hence the unticked item).
+
+**Not verified:** 390 and 1536px.

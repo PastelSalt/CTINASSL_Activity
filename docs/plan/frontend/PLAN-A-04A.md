@@ -1,6 +1,6 @@
 # PLAN-A-04A — `/home` Home (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Overview (`/dashboard`) · **Status:** Planning · **Evidence:** [RESEARCH.md](../../../RESEARCH.md) D2, D4, section 11.3 item 6
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Overview (`/dashboard`) · **Status:** Implemented (2026-11-14) · **Evidence:** [RESEARCH.md](../../../RESEARCH.md) D2, D4, section 11.3 item 6
 
 ## 1. Purpose
 
@@ -68,12 +68,18 @@ Status control on a row (changes nothing; dialog explains), and Quick add (see P
 
 ## 10. Acceptance checklist
 
-- [ ] No more than three figures; no avatars or people anywhere.
+- [x] No more than three figures; no avatars or people anywhere.
 - [ ] The first viewport at 1280×720 shows Today and the start of Up next; at 390px it shows the figures and the first Today row.
-- [ ] Every row opens its record; no duplicate "overdue" panel.
-- [ ] First-run, empty, and positive-empty states exist.
+- [x] Every row opens its record; no duplicate "overdue" panel.
+- [x] First-run, empty, and positive-empty states exist.
 - [ ] Verified at 320, 390, 768, 1024, 1280, 1536 with no horizontal overflow.
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/HomePage.jsx` at `/home`.
+
+**Built as planned:** three figures (Due today, Overdue, In progress); Today (overdue, due today, doing); Up next (7 days, tasks and milestones); Your projects with progress; Recent; first-run checklist (three skippable steps) and a positive empty state when nothing is due; `?preview=empty|loading|error` states.
+
+**Differences:** the Quick add button in the header is hidden on phones because the bottom bar already has the centre add button. The first-run checklist is part of Home, not a separate component. Top-bar chips (due today, overdue) now repeat the two key numbers on every page.
+
+**Not verified:** the exact first-viewport contents at 1280x720 and 390px (measured only that the first row sits near the fold at 375px); 390 and 1536px.

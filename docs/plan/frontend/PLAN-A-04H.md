@@ -1,6 +1,6 @@
 # PLAN-A-04H — History (project **History** tab) (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the `/revisions` page · **Status:** Planning · **Evidence:** RESEARCH.md D9 (review workflow is team-only), D3
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the `/revisions` page · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D9 (review workflow is team-only), D3
 
 ## 1. Purpose
 
@@ -59,12 +59,18 @@ The feed is a single column; Compare is side by side at ≥1024px and stacked be
 
 ## 10. Acceptance checklist
 
-- [ ] No queue, approval, request-changes, author, or state-chip UI.
-- [ ] Order comes from timestamps; fixtures are never mutated by sorting.
+- [x] No queue, approval, request-changes, author, or state-chip UI.
+- [x] Order comes from timestamps; fixtures are never mutated by sorting.
 - [ ] Compare shows markers (not colour alone) and an unsupported state.
-- [ ] The tab is reachable only inside a project.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] The tab is reachable only inside a project.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as the History tab in `ProjectPage.jsx` (feed grouped by day, `ChangeEntry`, `ChangePanel`).
+
+**Built:** newest-first feed, a panel with linked records, a Reviewed flag, and a comparison view (`?mode=compare&rev=`) showing removed and added lines with minus and plus markers.
+
+**Differences / not built:** the comparison is one diff pane, not two columns, and has no "unsupported" state for changes without a diff (the link only appears when a diff exists).
+
+**Not verified:** 390 and 1536px.

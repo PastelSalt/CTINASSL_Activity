@@ -34,13 +34,13 @@ Layout principles from the earlier Google-style references still apply (focused 
 
 ## 3. Demo-mode behavior (frontend-only)
 
-- [ ] Every auth card shows a **demo banner** on its own row: icon + "Demo mode — nothing is sent or saved. You can continue without entering details."
-- [ ] Fields remain for layout evaluation, are optional, and carry help text "Don't enter a real password — this demo does not receive it." The form's submit handler never reads field values.
-- [ ] **Login:** primary `Log in` submits and navigates to `/dashboard`; secondary `Continue as demo user` does the same without touching the form.
-- [ ] **Register:** primary `Create account` opens a **Preview dialog** (PLAN-A-04 §9): "Account creation isn't connected yet", with `Continue to demo workspace` and `Close`. No success message claims an account exists.
-- [ ] **Forgot password:** `Send reset link` opens a preview dialog explaining that no email is sent; the page's success layout is available through the state previewer.
-- [ ] `autocomplete` tokens stay correct (`username`/`email`, `current-password`, `new-password`) so the layout is evaluated realistically; inputs are `spellcheck="false"` and `autocapitalize="none"` where relevant.
-- [ ] No `localStorage`, `sessionStorage`, cookies, or query strings carry any entered value.
+- [x] Every auth card shows a **demo banner** on its own row: icon + "Demo mode — nothing is sent or saved. You can continue without entering details."
+- [x] Fields remain for layout evaluation, are optional, and carry help text "Don't enter a real password — this demo does not receive it." The form's submit handler never reads field values.
+- [x] **Login:** primary `Log in` submits and navigates to `/home`; secondary `Continue as demo user` does the same without touching the form.
+- [x] **Register:** primary `Create account` opens a **Preview dialog** (PLAN-A-04 §9): "Account creation isn't connected yet", with `Continue to demo workspace` and `Close`. No success message claims an account exists.
+- [x] **Forgot password:** `Send reset link` opens a preview dialog explaining that no email is sent; the page's success layout is available through the state previewer.
+- [x] `autocomplete` tokens stay correct (`username`/`email`, `current-password`, `new-password`) so the layout is evaluated realistically; inputs are `spellcheck="false"` and `autocapitalize="none"` where relevant.
+- [x] No `localStorage`, `sessionStorage`, cookies, or query strings carry any entered value.
 
 ## 4. Routes
 
@@ -86,31 +86,31 @@ Error text states the problem and the fix, is attached to its field, and uses ic
 
 - [ ] Visible `:focus-visible`, logical order, 40px+ touch targets, visible labels, error association.
 - [ ] Password visibility toggle exposes `aria-pressed` and a clear label; password fields never auto-reveal.
-- [ ] Terms checkbox links to Terms and Privacy; Cookie & Local Storage Policy linked in the footer.
-- [ ] Page titles via `usePageMeta`; auth routes are `noindex`.
+- [x] Terms checkbox links to Terms and Privacy; Cookie & Local Storage Policy linked in the footer.
+- [x] Page titles via `usePageMeta`; auth routes are `noindex`.
 - [ ] Defer to the backend plan: CSRF, rate limiting, session storage, email verification, password hashing, recovery tokens, lockout logic, secure cookies.
 - [ ] The static pages must not log, persist, or transmit any entered value (verified by code review and network panel check).
 
 ## 8. Landing and workspace integration
 
-- [ ] Landing `Log in` → `/login`; `Create your workspace` and `Create account` → `/register` (implemented; verify consistency across header, hero, closing, footer).
-- [ ] Login's `Log in` / `Continue as demo user` → `/dashboard`; workspace account menu `Back to landing page` → `/`.
-- [ ] Auth pages never imply a signed-in state; the workspace keeps its demo-session chip (PLAN-A-04).
+- [x] Landing `Log in` → `/login`; `Create your workspace` and `Create account` → `/register` (implemented; verify consistency across header, hero, closing, footer).
+- [x] Login's `Log in` / `Continue as demo user` → `/home`; workspace account menu `Back to landing page` → `/`.
+- [x] Auth pages never imply a signed-in state; the workspace states "sample data, nothing is saved" in its account menu (PLAN-A-04).
 
 ## 9. Implementation phases
 
-- [ ] **Phase 1:** shared public layout, Not Found, lazy auth chunk, form components.
-- [ ] **Phase 2:** demo-mode treatment, dialogs, login and register refinement, demo banner placement.
-- [ ] **Phase 3:** forgot-password and reset-password pages.
-- [ ] **Phase 4:** presentation states and previewer, validation copy.
+- [x] **Phase 1:** shared public layout, Not Found, lazy auth chunk, form components.
+- [x] **Phase 2:** demo-mode treatment, dialogs, login and register refinement, demo banner placement.
+- [x] **Phase 3:** forgot-password and reset-password pages.
+- [x] **Phase 4:** presentation states and previewer, validation copy.
 - [ ] **Phase 5:** QA (320/390/768/900/1440, keyboard, screen-reader labels, reduced motion, network panel shows no auth requests), then update `README.md`, `CODEMAP.md`, `LOG.md`.
 
 ## 10. Acceptance checklist
 
 - [ ] No dead links or dead primary buttons on any auth route.
 - [ ] Demo banner is on its own row and readable at 320px.
-- [ ] No page reads, stores, or sends typed values; none claims an account exists.
-- [ ] Every listed state is previewable and uses icon + text.
+- [x] No page reads, stores, or sends typed values; none claims an account exists.
+- [x] Every listed state is previewable and uses icon + text.
 - [x] Auth route adds ≈ 15 kB gzip on the 71 kB shared runtime (total ≈ 86 kB vs 142 kB before); no GSAP loaded.
 - [ ] Keyboard-only completion of every page; errors announced to assistive technology.
 
@@ -139,7 +139,7 @@ Error text states the problem and the fix, is attached to its field, and uses ic
 |---|---|
 | Shared public layout and `AuthShell` | Done |
 | Demo banner on its own row in every auth card | Done |
-| Login: `Log in` and `Continue as demo user` both go to `/dashboard`; submit handler never reads values | Done |
+| Login: `Log in` and `Continue as demo user` both go to `/home` (was `/dashboard` before PLAN-A-04 Revision 3); submit handler never reads values | Done |
 | Register: `Create account` opens a preview dialog (native `<dialog>`) with `Continue to demo workspace` | Done |
 | `/forgot-password` and `/reset-password` static pages | Done; no dead links remain |
 | Not Found route | Done |

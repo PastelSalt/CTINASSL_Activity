@@ -8,42 +8,34 @@ The platform is designed for software development, creative writing and visual n
 
 ## Project status
 
-The repository is currently an early-stage Vite + React implementation. A first static landing-page design is present, while the product direction and target architecture are documented in [PROJECT-SPECS.md](PROJECT-SPECS.md). Most application features have not been implemented yet.
+The repository is a **frontend-only demo** built with Vite and React. The public landing page, demo-mode authentication pages, draft legal pages, and an **individual workspace** (one person, no team features) are implemented on placeholder data. Nothing is saved or sent anywhere; actions that would write open a "Preview only" dialog. There is no backend yet. The product direction and target architecture are in [PROJECT-SPECS.md](PROJECT-SPECS.md).
 
-## Planned capabilities
+## Capabilities
 
-- Project directory and configurable project workflows
-- Overview page with active projects, milestones, tasks, deadlines, and recent activity
-- Milestone, task, requirement, asset, revision, and documentation management
-- Reports for project health and production progress
-- Explicit traceability from project objectives to requirements, milestones, tasks, revisions, and deliverables
-- Public landing page and authentication flows
-- Protected project workspaces with project-level authorization
-- Responsive authenticated application shell with persistent navigation
+Implemented in the demo:
 
-## Planned application routes
+- Landing page, auth pages (demo mode), and three draft legal pages.
+- Individual workspace with five destinations: **Home**, **Projects** (list, timeline, and a project page with Overview, Work, Specs, Files, and History), **Tasks** (Today, Upcoming, Calendar, All), **Library** (files, documents, and a reader), and **Insights**, plus **Account** and **Help**.
+- Quick add (`Q`), a command palette (`Ctrl/Cmd+K`), project templates, a first-run checklist, and session-only additions.
+- Explicit links between objectives, requirements, tasks, files, and changes, shown as "Why it exists / What it becomes" on every record.
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Public landing page |
-| `/privacy-policy` | Privacy Policy / Privacy Notice |
-| `/terms-of-service` | Terms of Service / Terms and Conditions |
-| `/cookie-and-local-storage-policy` | Cookie & Local Storage Policy |
-| `/login` | User login |
-| `/register` | Account registration |
-| `/forgot-password` | Start password recovery |
-| `/reset-password` | Complete password recovery |
-| `/dashboard` | Production overview |
-| `/projects` | Project directory |
-| `/projects/:projectId` | Individual project workspace |
-| `/milestones` | Milestone management |
-| `/tasks` | Task management |
-| `/requirements` | Requirements and acceptance criteria |
-| `/assets` | Project asset library |
-| `/revisions` | Revision history |
-| `/documentation` | Project knowledge and records |
-| `/reports` | Progress and production analytics |
-| `/settings` | Account and application preferences |
+Planned (not implemented): real authentication, persistence, file storage, a backend API, a **team workspace** (people, roles, sharing), notifications, and recurring tasks.
+
+## Application routes
+
+| Route | Status | Purpose |
+| --- | --- | --- |
+| `/` | Implemented | Public landing page |
+| `/privacy-policy`, `/terms-of-service`, `/cookie-and-local-storage-policy` | Implemented (drafts) | Legal pages rendered from `docs/*.md` |
+| `/login`, `/register`, `/forgot-password`, `/reset-password` | Implemented (demo mode) | Authentication layouts; nothing typed is read or sent |
+| `/home` | Implemented | What needs attention today |
+| `/projects`, `/projects/:projectId` | Implemented | Project list and timeline; the project page (`?view=overview\|work\|specs\|files\|history`) |
+| `/tasks` | Implemented | Tasks (`?view=today\|upcoming\|calendar\|all`) |
+| `/library` | Implemented | Files and documents; `?doc=` opens the reader |
+| `/insights` | Implemented | Progress, coverage, overdue |
+| `/account` | Implemented (preview only) | Profile and preferences |
+| `/help` | Implemented | The individual workspace guide |
+| `/dashboard`, `/milestones`, `/requirements`, `/revisions`, `/assets`, `/documentation`, `/reports`, `/settings` | Redirects | Old workspace paths forward to the routes above |
 
 ## Target architecture
 
@@ -61,11 +53,14 @@ The backend should be organized by business domain, including authentication, us
 ```text
 .
 ├── PROJECT-SPECS.md   Product specification and target architecture
+├── RESEARCH.md        UX research behind the workspace restructure
 ├── INSTRUCTIONS.md    Documentation and development rules
 ├── LOG.md             Chronological repository action log
 ├── CODEMAP.md         Developer and agent codebase index
+├── CONTEXT.md         Portable handoff for continuing the work
+├── docs/              Legal drafts, the individual workspace guide, and plans
 ├── Server/            Initial server package configuration
-└── client/            React + Vite client scaffold
+└── client/            React + Vite client
 ```
 
 See [CODEMAP.md](CODEMAP.md) for the current implemented source map. Generated directories such as `client/node_modules` and `client/dist` are not part of the maintained source map.
@@ -92,12 +87,12 @@ Available client scripts:
 
 The current client is a code-split React app with in-app navigation (no full page reloads), a shared public header/footer and page-metadata handling, a 404 page, and these areas:
 
-- **Landing page** — static long-scroll page with GSAP/ScrollTrigger scenes and reduced-motion support.
+- **Landing page** — long-scroll page with GSAP/ScrollTrigger scenes, Lenis smooth scrolling, pointer effects, and reduced-motion support.
 - **Legal pages** — Privacy Policy, Terms of Service, and Cookie & Local Storage Policy rendered from the Markdown drafts in `docs/`, with contents list, anchors, a draft banner, and a storage inventory. They are drafts and `noindex` until reviewed.
 - **Auth pages** — `/login`, `/register`, `/forgot-password`, `/reset-password` in demo mode: nothing typed is read, stored, or sent. Append `?preview=<state>` (or use the "Preview states" list) to view error and result layouts.
-- **Demo workspace** — an individual workspace with five destinations: Home, Projects (with a project page: Overview, Work, Specs, Files, History), Tasks, Library, and Insights, plus Account. Tasks includes a month calendar, and `/help` renders the full guide in `docs/individual-workspace-guide.md`. Press `Q` to quick add a task and `Ctrl/Cmd+K` to search or jump. Everything is drawn from placeholder data; additions made with Quick add or a template last for the session only. Add `?dev` to the URL (or use Account) for the developer-tools bar.
+- **Demo workspace** — an individual workspace with five destinations: Home, Projects (with a project page: Overview, Work, Specs, Files, History), Tasks, Library, and Insights, with Account and Help in the account menu at the bottom of the left rail. Tasks includes a month calendar, and `/help` renders the full guide in `docs/individual-workspace-guide.md`. Press `Q` to quick add a task and `Ctrl/Cmd+K` to search or jump. Everything is drawn from placeholder data; additions made with Quick add or a template last for the session only. Add `?dev` to the URL (or use Account) for the developer-tools bar.
 
-Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
+Real authentication, backend integration, analytics, durable sessions, saving, and final legal publication remain unimplemented.
 
 ## Server
 
@@ -106,15 +101,18 @@ The `Server/` directory currently contains only the initial CommonJS `package.js
 ## Documentation
 
 - [PROJECT-SPECS.md](PROJECT-SPECS.md) defines the product requirements and target architecture.
-- [RESEARCH.md](RESEARCH.md) analyses why the workspace UI feels overwhelming and proposes simplifications (its recommendations are implemented in PLAN-A-04 Revision 3).
+- [RESEARCH.md](RESEARCH.md) analyses why the earlier workspace UI felt overwhelming and proposes simplifications (implemented in PLAN-A-04 Revision 3).
+- [CONTEXT.md](CONTEXT.md) is the portable handoff: routes, decisions, known gaps.
+- [docs/individual-workspace-guide.md](docs/individual-workspace-guide.md) is the full user guide for the individual workspace; it is also rendered at `/help`.
 - [INSTRUCTIONS.md](INSTRUCTIONS.md) defines repository maintenance rules.
 - [LOG.md](LOG.md) records actions made in the codebase.
 - [CODEMAP.md](CODEMAP.md) describes the current files, responsibilities, and data flow.
 - Draft legal documents are stored in [docs/](docs/) and require owner/legal review before publication.
+- [client/README.md](client/README.md) covers the client commands and conventions.
 - Frontend plans are organized under [docs/plan/frontend/](docs/plan/frontend/).
 - Backend plans will be organized under [docs/plan/backend/](docs/plan/backend/) when created.
 - [PLAN-A-01.md](docs/plan/frontend/PLAN-A-01.md) covers the landing page.
 - [PLAN-A-02.md](docs/plan/frontend/PLAN-A-02.md) covers the legal pages.
 - [PLAN-A-03.md](docs/plan/frontend/PLAN-A-03.md) covers authentication pages.
-- [PLAN-A-04.md](docs/plan/frontend/PLAN-A-04.md) covers the individual workspace structure and UI (Revision 3, implemented).
-- [PLAN-A-04A.md](docs/plan/frontend/PLAN-A-04A.md) through [PLAN-A-04L.md](docs/plan/frontend/PLAN-A-04L.md) contain the page and cross-cutting plans (Home, Projects, Project page, Work, Tasks, Specs, Library, History, Documents, Insights, Account, and Quick add, templates, first run, palette).
+- [PLAN-A-04.md](docs/plan/frontend/PLAN-A-04.md) covers the individual workspace structure and UI (Revision 3, implemented; later changes are in its section 19).
+- [PLAN-A-04A.md](docs/plan/frontend/PLAN-A-04A.md) through [PLAN-A-04L.md](docs/plan/frontend/PLAN-A-04L.md) contain the page and cross-cutting plans (Home, Projects, Project page, Work, Tasks, Specs, Library, History, Documents, Insights, Account, and Quick add, templates, first run, palette). Each carries an implementation-status section listing what was built and what was not.

@@ -1,6 +1,6 @@
 # PLAN-A-04E — `/tasks` Tasks (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Status:** Planning · **Reference page:** build first in Phase 4 to prove the new anatomy · **Evidence:** RESEARCH.md D4, D6, D9; Todoist, Things, and Linear speed lessons (section 10)
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Status:** Implemented (2026-11-14) · **Reference page:** build first in Phase 4 to prove the new anatomy · **Evidence:** RESEARCH.md D4, D6, D9; Todoist, Things, and Linear speed lessons (section 10)
 
 ## 1. Purpose
 
@@ -70,13 +70,19 @@ Status control, Edit, Block, Quick add (session-only add allowed, per PLAN-A-04L
 
 ## 11. Acceptance checklist
 
-- [ ] Three views; no chip row; one control row.
-- [ ] No people or avatars; priority only when High.
-- [ ] Overdue and blocked are visible by sort order and icon plus text.
+- [x] Three views; no chip row; one control row.
+- [x] No people or avatars; priority only when High.
+- [x] Overdue and blocked are visible by sort order and icon plus text.
 - [ ] A task row fits on one line at ≥1024px and two lines on mobile.
-- [ ] Quick add works from the field and the global shortcut.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] Quick add works from the field and the global shortcut.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/TasksPage.jsx`.
+
+**Changed from the plan:** there are now **four** views, **Today, Upcoming, Calendar, All**. The Calendar view (`components/CalendarView.jsx`, `?view=calendar&month=YYYY-MM&day=YYYY-MM-DD`) was added at the owner's request: Monday-first month grid, task pills and milestone flags, done/overdue/high treatments, count dots on phones, a day agenda that opens the task panel, project filter and search.
+
+**Built:** inline add field on Today, Upcoming grouped by day, All with a List/Board switch and a collapsed Done section, one control row with search and a Filter popover, a task panel with the Why it exists / What it becomes block, session-only tasks labelled.
+
+**Not verified:** row line counts at 1024px and on mobile; 390 and 1536px.

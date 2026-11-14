@@ -1,16 +1,29 @@
-# React + Vite
+# Tsumugi client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + Vite frontend for Tsumugi. See the [repository README](../README.md) for the product overview and [CODEMAP.md](../CODEMAP.md) for the file index.
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Run from this `client/` directory.
 
-## React Compiler
+```powershell
+npm install
+npm run dev          # Vite dev server
+npm run lint         # ESLint
+npm run build        # runs the legal placeholder check, then builds to dist/
+npm run check:legal  # placeholder check only
+npm run preview      # preview the production build
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## What is here
 
-## Expanding the ESLint configuration
+- Landing, demo-mode auth, draft legal pages, and an individual demo workspace (Home, Projects, Tasks, Library, Insights, Account, Help).
+- Everything runs on placeholder data in the browser. Nothing is saved, and there is no backend connection.
+- Routes are handled by a small history-API router (`src/app/router.js`) and a route table in `src/App.jsx`; each route group is its own lazy chunk.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Conventions
+
+- Plain JavaScript and JSX, flat colour, Fredoka, Lucide icons, 12px minimum text.
+- Motion uses GSAP (and Lenis on the landing page only) and respects `prefers-reduced-motion`.
+- The Help page and the legal pages render Markdown from `../docs/` using `?raw` imports and `src/lib/markdown.jsx`.
+- Plans live in `../docs/plan/frontend/`.

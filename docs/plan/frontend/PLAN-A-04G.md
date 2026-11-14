@@ -1,6 +1,6 @@
 # PLAN-A-04G — `/library` Library and project Files (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the Assets and Documentation pages · **Status:** Planning · **Evidence:** RESEARCH.md D2, D3; the "makers juggle two or three tools" pattern (section 10.1)
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** the Assets and Documentation pages · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D2, D3; the "makers juggle two or three tools" pattern (section 10.1)
 
 ## 1. Purpose
 
@@ -66,12 +66,18 @@ Merge `assets` and `documents` into `files` with `kind`, `isFinal`, optional Mar
 
 ## 11. Acceptance checklist
 
-- [ ] One Library destination and one project Files tab, sharing components.
-- [ ] No access or restricted states; no people.
-- [ ] Documents open in the reader; other kinds show a preview or a designed fallback.
-- [ ] No control implies the browser stores the file.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] One Library destination and one project Files tab, sharing components.
+- [x] No access or restricted states; no people.
+- [x] Documents open in the reader; other kinds show a preview or a designed fallback.
+- [x] No control implies the browser stores the file.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/LibraryPage.jsx` and the project Files tab, sharing `FileTile`, `FileThumb`, and `FilePanel`.
+
+**Built:** merged files and documents; Grid/List switch; search over names and tags; Filter (type, project, Final files only); panel with preview or designed fallback (links, uploading, unsupported types), tags, and the lens; a note that only metadata is shown.
+
+**Differences:** the kind is a filter, not a set of view tabs; documents open the reader through `?doc=`.
+
+**Not verified:** 390 and 1536px.

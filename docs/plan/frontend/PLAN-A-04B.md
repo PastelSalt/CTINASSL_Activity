@@ -1,6 +1,6 @@
 # PLAN-A-04B — `/projects` Projects (Revision 3)
 
-**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Projects directory and the cross-project Milestones page · **Status:** Planning · **Evidence:** RESEARCH.md D2, D3, D9
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Replaces:** Projects directory and the cross-project Milestones page · **Status:** Implemented (2026-11-14) · **Evidence:** RESEARCH.md D2, D3, D9
 
 ## 1. Purpose
 
@@ -65,12 +65,18 @@ Four statuses; one archived project; `lastOpenedAt`; a template `kind` per proje
 
 ## 11. Acceptance checklist
 
-- [ ] Two views only; no board, no recents tab.
-- [ ] One control row; filters live in one popover with an active count.
-- [ ] No people, avatars, or priority on cards.
-- [ ] `/milestones` redirect lands on the Timeline view.
-- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+- [x] Two views only; no board, no recents tab.
+- [x] One control row; filters live in one popover with an active count.
+- [x] No people, avatars, or priority on cards.
+- [x] `/milestones` redirect lands on the Timeline view.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536. (Verified at 320, 375, 768, 1024, 1280, and 1440px by an automated DOM audit (2026-11-14); 390 and 1536px not run.)
 
 ## Implementation status (Revision 3)
 
-Implemented on 2026-11-14 after the owner approved D6-D10. See `LOG.md` for the entry, files, and validation. Deviations: Quick add and the palette use one shared native-dialog shell (`quickadd/Modal.jsx`); the first-run checklist lives on Home; compare mode shows the changed document as one diff pane rather than two columns. Not yet verified: screen-reader pass, 320 and 1440px visual review.
+**Implemented 2026-11-14** as `pages/ProjectsPage.jsx`.
+
+**Built as planned:** two views (Projects cards, Timeline), one control row with search and a single Filter popover (status, category, Show archived) with an active count, project cards without people or priority, `/milestones` redirecting to `?view=timeline`, session-only projects labelled, a New project button opening the template picker.
+
+**Differences:** the Timeline shows each milestone's project name and has a minimum bar width; the plan's table layout for projects was not built (cards only).
+
+**Not verified:** 390 and 1536px.

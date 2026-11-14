@@ -1,9 +1,9 @@
 # Research: Making the Tsumugi workspace understandable
 
-**Status:** Research and recommendations only. Nothing here is implemented or approved.  
+**Status:** Research document. Its recommendations were approved and **implemented on 2026-11-14** as PLAN-A-04 Revision 3 (see [the plan](docs/plan/frontend/PLAN-A-04.md)). The diagnosis (sections 1-2) describes the *earlier* ten-module workspace, not the current one. Success measures in section 7 have not been run with people yet  
 **Date:** 2026-11-14  
 **Question:** The workspace feels overwhelming and confusing, even to its developer. How should a project and production tool like this be designed so a person can use it without holding a lot of information in their head?  
-**Scope:** The authenticated workspace UI (`/dashboard` and the ten modules). The public pages are out of scope.  
+**Scope:** The authenticated workspace UI as it was when this research was written (`/dashboard` and the ten modules; now `/home` and five destinations). The public pages are out of scope.  
 **Owner direction (added 2026-11-14):** Accounts will have two kinds of workspace, **individual** and **team**. Individual comes first and is designed for one person (a freelancer, a student, anyone working solo). Team is a future addition and must not shape the individual experience. This document is read through that lens; see section 5.0.
 
 ## 1. Summary
