@@ -237,6 +237,19 @@ Implemented:
 
 Plan status is recorded in [`PLAN-A-04C.md`](docs/plan/frontend/PLAN-A-04C.md).
 
+### PLAN-A-04A — `/dashboard` Overview
+
+Implemented:
+- Dedicated Overview page with metric cards (Total projects, Active projects, Open tasks, Overdue).
+- Project pulse section with project list showing category, status, next thread, progress.
+- Milestones section with project links and due dates.
+- Tasks section with project links and due dates.
+- Recent activity section with actor, action, project, timestamp.
+- Quick actions section with presentation-only Create project and Create task controls.
+- GSAP page-entry motion and reduced-motion handling.
+
+Plan status is recorded in [`PLAN-A-04A.md`](docs/plan/frontend/PLAN-A-04A.md).
+
 ### PLAN-A-04D — `/milestones`
 
 Implemented:
@@ -446,6 +459,8 @@ For the current implementation:
 - `npm run build` passed from `client\`.
 - `git diff --check` passed.
 - Browser smoke checks passed for:
+  - `/dashboard`
+  - Section switching (Quick actions).
   - `/projects`
   - Project search filtering.
   - Archived projects section.
