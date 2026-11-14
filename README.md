@@ -85,11 +85,19 @@ npm run dev
 Available client scripts:
 
 - `npm run dev` starts the Vite development server.
-- `npm run build` creates a production build in `client/dist`.
+- `npm run build` checks the legal documents for unresolved placeholders, then creates a production build in `client/dist`.
+- `npm run check:legal` runs only the placeholder check (warns while the policies are drafts, fails when `LEGAL_STATUS` is `published`).
 - `npm run lint` runs ESLint.
 - `npm run preview` previews the production build.
 
-The current client contains a static long-scroll landing page, three route-selected policy pages, static authentication pages, and a placeholder authenticated workspace with an Overview route plus protected user-page views, responsive navigation, local Fredoka typography, Lucide icons, solid outlined components, a warm woven pattern canvas, CSS/SVG-like visuals, GSAP/ScrollTrigger landing-page scenes, and reduced-motion-compatible behavior. Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
+The current client is a code-split React app with in-app navigation (no full page reloads), a shared public header/footer and page-metadata handling, a 404 page, and these areas:
+
+- **Landing page** — static long-scroll page with GSAP/ScrollTrigger scenes and reduced-motion support.
+- **Legal pages** — Privacy Policy, Terms of Service, and Cookie & Local Storage Policy rendered from the Markdown drafts in `docs/`, with contents list, anchors, a draft banner, and a storage inventory. They are drafts and `noindex` until reviewed.
+- **Auth pages** — `/login`, `/register`, `/forgot-password`, `/reset-password` in demo mode: nothing typed is read, stored, or sent. Append `?preview=<state>` (or use the "Preview states" list) to view error and result layouts.
+- **Demo workspace** — authenticated-style pages for Overview, Projects (and a project workspace), Milestones, Tasks, Requirements, Assets, Revisions, Documentation, Reports, and Settings, all driven by local fixtures with a persistent shell (left rail, project scope switcher, mobile tabs). Actions open "Preview only" dialogs and nothing is saved. Use the "Preview state" selector in the demo bar to view loading, empty, error, and unauthorized layouts. Views, filters, and selected records are kept in the URL (`?view=`, `?filter=`, `?select=`).
+
+Real authentication, backend integration, analytics, durable sessions, and final legal publication remain unimplemented.
 
 ## Server
 

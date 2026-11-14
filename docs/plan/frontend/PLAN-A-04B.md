@@ -1,61 +1,95 @@
-# PLAN-A-04B — `/projects` Project Directory
+# PLAN-A-04B — `/projects` Project Directory (UI Plan, Revision 2)
 
-## Scope
+**Parent:** [PLAN-A-04.md](PLAN-A-04.md) · **Scope:** UI only, fixture data, no operations · **Status:** Planning
 
-Detailed plan for browsing, searching, filtering, sorting, organizing, and entering projects.
+## 1. Current state (observed)
 
-**Implementation status:** Static project-directory exploration implemented. Search, status/category filtering, card/table views, archived/recent section views, and project-detail links use placeholder data only. Persistence, CRUD, authorization, and server-backed states remain future work.
+- Local sections: Directory, Search and filters, Status groups, Recently accessed, Archived projects.
+- *Search and filters* is a separate page that only repeats a count and a reset button; *Status groups* and *Recently accessed* show the same card list as Directory (audit F5/F6).
+- Cards use a 90px colored swatch with initials, so each card is ~205px tall and only two fit per row; progress is a bare percentage; `More filters` does nothing; sorting is absent.
+- The page header and the toolbar each carry a create action; the table view hides tags and collaborators.
 
-## Shared shell and local navigation
+## 2. UI goals
 
-- [x] Use the authenticated shell and compact header.
-- [ ] Local sections:
-  - [x] Directory
-  - [x] Search and filters
-  - [x] Status groups
-  - [x] Recently accessed
-  - [x] Archived projects
+1. Treat search and filters as a **toolbar**, not a section.
+2. Make each view a real alternative: Directory (cards/table), Board by status, Recent, Archived.
+3. Make a project scannable in about a second: name, status, phase, progress, next milestone, owner.
+4. Provide sorting and a working local filter set.
 
-## Directory content
+## 3. Layout
 
-- [x] Show project name, description, category, status, priority, dates, owner, tags, and icon/cover.
-- [x] Support card and compact table visual directions.
-- [x] Link project records to `/projects/:projectId`.
-- [x] Provide create-project entry point.
+```text
+Header: Projects                                   [New project]
+        3 projects · 1 active
+Tabs:   Directory | Board | Recent | Archived
+Toolbar: [search…]  Status: All Active Planning On hold Completed  Category ▾  Sort ▾  [Cards|Table]
+Cards (3-up ≥1280, 2-up ≥768, 1-up mobile)           Detail panel on select (≥1280)
+┌──────────────────────────┐
+│ ▣ Project Garden  Active │  56px icon tile, status badge
+│ Story-led creative…      │
+│ Phase: Chapter one review│
+│ ▓▓▓▓▓▓▓░░░ 68%  Next: …  │
+│ (Mika)(Y)(Ari)  High ↑   │
+└──────────────────────────┘
+```
 
-## Search and filters
+## 4. Views
 
-- [x] Search by project name, description, tag, or owner.
-- [x] Filter by category and status; priority, date range, and archive state remain reserved for the production filter panel.
-- [x] Provide clear reset behavior and visible matching-result state.
+| View | Layout | Notes |
+|---|---|---|
+| Directory | Cards or table (toggle kept in local state for the session) | Default sort: last updated |
+| Board | Columns Idea · Planning · Active · On hold · Completed with project cards | Read-only; no drag affordance (it would imply an operation) |
+| Recent | List ordered by `lastAccessedAt` with relative time | Replaces *Recently accessed*; max 5 |
+| Archived | Muted rows with archive date and a `Restore` preview action | Visually separated from active work |
 
-## Status groups
+Filters (toolbar chips with counts): status (the six statuses), category (Creative/Software/Research), priority, owner, and a tag popover under `More filters`. Active filters appear as removable chips. `Sort`: Updated, Name, Priority, Due date.
 
-- [x] Represent Idea, Planning, Active, On Hold, Completed, and Archived in the filter vocabulary and fixtures.
-- [x] Avoid assuming a universal workflow sequence.
-- [x] Show configurable workflow metadata where available through status, priority, owner, tags, and next-thread fields.
+## 5. Record presentation
 
-## Recently accessed and archived
+| Priority | Fields |
+|---|---|
+| Primary | Icon tile, name, `StatusBadge` |
+| Secondary | One-line description, current phase, progress bar with `completed/total tasks` label, next milestone `DueLabel` |
+| Tertiary | `AvatarStack` (owner + collaborators), `PriorityBadge`, tags (max 2 + "+n"), updated time |
 
-- [x] Show recently opened projects with last-accessed time in the fixture boundary and recently accessed section.
-- [x] Keep archived projects visually separated from active work.
-- [x] Reserve restore/archive actions for future persistence.
+Cards are anchors to `/projects/:projectId`; table rows are full-row links with a keyboard-focusable title.
 
-## Motion and states
+## 6. Components
 
-- [x] Reveal local navigation before the directory.
-- [x] Stagger project rows/cards without animating every filter update.
-- [x] Provide a no-results state; loading, error, and unauthorized states remain production boundaries.
-- [x] Respect reduced motion and keyboard focus.
+Shared: `PageHeader`, `ViewTabs`, `Toolbar`, `FilterChip`, `StatusBadge`, `PriorityBadge`, `DueLabel`, `AvatarStack`, `ProgressBar`, `DataTable`, `DetailPanel`, state components. Page-specific: `ProjectCard`, `ProjectBoard`.
 
-## Data boundary
+## 7. States
 
-- [x] Future source: `projects`.
-- [x] Include ownership, workflow configuration, metadata, `createdAt`, and `updatedAt` concepts in the fixture boundary.
-- [x] Future CRUD and query logic belongs in a project module.
+- [ ] Empty directory: illustration + `New project` preview action.
+- [ ] No results: active filter chips + `Clear filters`.
+- [ ] Archived tab empty: "Nothing archived".
+- [ ] Loading skeleton cards (same card height), error, and unauthorized through the state previewer.
 
-## Acceptance checklist
+## 8. Responsive
 
-- [x] Search, filter, create, archive, and project-entry affordances are visually represented; sorting remains a future control.
-- [x] Project cards and table rows preserve enough metadata for scanning.
-- [x] Project detail links are ready without requiring real persistence.
+≥1280: 3-up cards + optional detail panel. 768–1279: 2-up. <768: 1-up compact card (icon tile 44px, no tags); table becomes a card list; filter chips scroll horizontally and `More filters` opens a bottom sheet.
+
+## 9. Fixture needs
+
+Add `phase`, `lastAccessedAt`, `archivedAt`, `collaboratorIds`, and ISO `updatedAt`; add one archived and one completed fixture project so every status view has data; keep stable `id` values for routing.
+
+## 10. Preview-only actions
+
+`New project`, `Restore`, `Archive` (confirmation layout). `More filters` works locally because it only filters fixtures.
+
+## 11. Acceptance checklist
+
+- [ ] No "Search and filters" or "Status groups" tab; those jobs live in the toolbar and Board.
+- [ ] Every tab changes layout or data scope.
+- [ ] Sorting and status/category filters work on fixtures with a visible result count.
+- [ ] Card height ≤ 190px on desktop; first card visible above the fold at 390px.
+- [ ] Status is icon + text; archived rows are distinguished by label, not only opacity.
+- [ ] Verified at 320, 390, 768, 1024, 1280, 1536.
+
+## 12. Carried over from Revision 1
+
+Search by name/description/tag/owner, status/category filters, card and table modes, project links, no-results state.
+
+## Implementation status — 2026-11-14
+
+Done: views Directory, Board, Recent, Archived (view in the URL); toolbar search, status chips with counts, category select, sort, cards/table toggle, clear filters; cards show phase, progress, next milestone, people, priority; read-only board by status; archived rows with a preview-only Restore; fixtures cover all six statuses. Not done: priority, owner, and tag filters (More filters), and a Load more boundary.

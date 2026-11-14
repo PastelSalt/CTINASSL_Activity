@@ -1,0 +1,286 @@
+/* Shared presentation-only form pieces (also reused by Settings in PLAN-A-04K). */
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field > label,
+.field-check label {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.field input:not([type="checkbox"]) {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.field input:not([type="checkbox"]):focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--pink-soft);
+}
+
+.field input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.field input[aria-invalid="true"] {
+  border-color: var(--pink);
+}
+
+.field-hint,
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.field-hint {
+  color: var(--muted);
+}
+
+.field-hint--warning {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.field-error {
+  color: #a3205c;
+  font-weight: 600;
+}
+
+.field-error svg,
+.field-hint svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.field-password {
+  position: relative;
+  display: block;
+}
+
+.field-password input {
+  padding-right: 52px !important;
+}
+
+.field-password__toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: transparent;
+  transform: translateY(-50%);
+}
+
+.field-password__toggle:hover {
+  color: var(--ink);
+  background: var(--pink-soft);
+}
+
+.field-rules {
+  display: grid;
+  gap: 4px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.field-rules li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-rules li[data-met="true"] {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.field-rules__dot {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+}
+
+.field-check {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 10px;
+}
+
+.field-check input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--pink);
+}
+
+.field-check label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.field-check a {
+  color: var(--pink);
+  font-weight: 700;
+}
+
+.form-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  background: var(--blue-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.form-banner svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.form-banner strong {
+  display: block;
+}
+
+.form-banner p {
+  margin: 2px 0 0;
+  color: #4a4455;
+}
+
+.form-banner--error {
+  border-color: var(--pink);
+  background: var(--pink-soft);
+}
+
+.form-banner--success {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+
+.status-panel {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 24px;
+  border: 2px dashed var(--ink);
+  border-radius: 18px;
+  background: var(--canvas);
+}
+
+.status-panel svg {
+  color: var(--pink);
+}
+
+.status-panel h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.status-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.status-panel__actions {
+  margin-top: 6px;
+}
+
+.preview-dialog {
+  width: min(480px, calc(100vw - 32px));
+  padding: 0;
+  border: 2px solid var(--ink);
+  border-radius: 22px;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 8px 9px 0 var(--lilac);
+}
+
+.preview-dialog::backdrop {
+  background: rgb(47 41 56 / 0.45);
+}
+
+.preview-dialog__body {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 26px 24px 22px;
+}
+
+.preview-dialog__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: transparent;
+}
+
+.preview-dialog__close:hover {
+  color: var(--ink);
+  background: var(--pink-soft);
+}
+
+.preview-dialog__chip {
+  width: fit-content;
+  margin: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--pink);
+  border-radius: 999px;
+  color: var(--pink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.preview-dialog h2 {
+  margin: 0;
+  padding-right: 36px;
+  font-size: 24px;
+}
+
+.preview-dialog__content p {
+  margin: 0;
+  color: #4a4455;
+  line-height: 1.6;
+}
+
+.preview-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}

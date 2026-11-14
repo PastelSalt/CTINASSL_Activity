@@ -1,83 +1,128 @@
-# PLAN-A-02 — Tsumugi Legal Policy Pages
+# PLAN-A-02 — Tsumugi Legal Policy Pages (Revision 2)
 
 ## Plan status
 
-**Status:** Implemented static policy-page pass — legal/content review pending  
-**Scope:** Three responsive static policy pages adapted from the Tsumugi landing-page design  
-**Source drafts:** [docs/](docs/)  
-**Related plan:** [PLAN-A-01.md](PLAN-A-01.md)
+**Revision:** 2 — audit-driven re-plan  
+**Status:** Revision 2 implemented (see section 12); legal and owner review of the content is still pending  
+**Scope:** Three standalone policy pages: Privacy Policy, Terms of Service, Cookie & Local Storage Policy  
+**Related plans:** [PLAN-A-01](PLAN-A-01.md) (shared public layout, metadata, performance) · [PLAN-A-03](PLAN-A-03.md) · [PLAN-A-04](PLAN-A-04.md)  
+**Source drafts:** [privacy-policy.md](../../privacy-policy.md), [terms-of-service.md](../../terms-of-service.md), [cookie-and-local-storage-policy.md](../../cookie-and-local-storage-policy.md)  
+**Constraint:** Frontend only. This plan does not finalize legal language, choose a jurisdiction, or implement consent, cookies, analytics, or storage.
 
-This plan covers the future creation of standalone pages for the Privacy Policy, Terms of Service, and Cookie & Local Storage Policy. It does not finalize legal language, select jurisdiction, create consent tooling, or implement authentication, analytics, cookies, or local-storage behavior.
+## 1. Audit of the current pages
 
-## Goals
+| # | Finding | Evidence | Fix |
+|---|---|---|---|
+| P1 | **Two sources of truth.** The Markdown drafts in `docs/` and the page text in `policyPages.js` are separate; the page text is a shortened rewrite (one paragraph per section). | `docs/*.md` vs `client/src/pages/legal/policyPages.js` | Render the page from the Markdown source (section 3) |
+| P2 | **Hard to navigate.** Seven to ten numbered sections in one long column; no table of contents, no section anchors, no link to share a section. | `/privacy-policy` | Sticky contents list + heading anchors |
+| P3 | **Draft status crowds the header.** The "Planning draft" pill sits against the eyebrow on the same line and wraps awkwardly on narrow screens. | Screenshot of `/privacy-policy` | Full-width draft banner above the title |
+| P4 | **Placeholders can ship by accident.** `[YYYY-MM-DD]` and bracketed items are plain text; nothing blocks a production build. | `PolicyPage.jsx`, drafts | Build-time placeholder check (section 5) |
+| P5 | **Duplicate footers.** The policy page defines its own footer and policy switcher separate from landing and auth footers. | `PolicyPage.jsx` | Shared `PublicFooter` (PLAN-A-01 §5) + in-document "Other policies" links |
+| P6 | **Reading experience is basic.** Body text is small relative to the heading scale, there is no print style, and no "last updated" or version marker beyond the placeholder. | Screenshot, `index.css` | Document typography spec (section 4) |
+| P7 | **Cookie policy accuracy risk.** The cookie/local-storage statement must match what the client actually stores; today that is nothing, and the planned workspace settings must not change that silently. | PLAN-A-04K | Storage inventory table (section 5) |
 
-- [x] Create three readable, accessible policy pages using the Tsumugi visual language.
-- [x] Preserve the landing page's Fredoka typography, paper background, woven pattern, solid outlines, pastel accents, and Moeko Works branding.
-- [x] Make each policy page usable independently from the landing page and easy to return from.
-- [ ] Keep legal content accurate to the deployed product rather than the planning drafts.
-- [ ] Obtain owner and qualified legal review before publication.
+## 2. Goals
 
-## Planned pages
+- [x] Three accessible policy pages in the Tsumugi visual language (implemented in Revision 1).
+- [ ] One source of truth per policy; pages cannot drift from the reviewed documents.
+- [ ] A reading experience suited to long documents: contents list, anchors, readable measure, print style.
+- [ ] A clear, honest draft state that cannot be mistaken for binding terms, and a safe path to switch to "published".
+- [ ] Owner and qualified legal review before publication.
 
-### Privacy Policy
+## 3. Content architecture
 
-- [x] Use `Privacy Policy` as the primary title and retain `Privacy Notice` in the page label.
-- [x] Adapt the draft at [docs/privacy-policy.md](docs/privacy-policy.md).
-- [x] Include scope, data categories, purposes, sharing, retention, security, rights, children, changes, and contact guidance.
-- [ ] Replace all bracketed placeholders after confirming actual data practices and jurisdictions.
+- [ ] Import each policy's Markdown with Vite's `?raw` suffix and render it with the small shared Markdown renderer (the same one planned for the workspace document reader, PLAN-A-04I). No new runtime dependency beyond that renderer.
+- [ ] Policy metadata (title, label, description, effective date, version, status) lives in front matter or a small `legalMeta.js` — not in components.
+- [ ] A single `LEGAL_STATUS` setting (`draft` | `published`) controls the banner, the `noindex` robots directive, and the placeholder check.
+- [ ] Each policy page is its own lazy-loaded chunk; the Markdown is not bundled into the landing page.
+- [ ] Keep the existing route paths: `/privacy-policy`, `/terms-of-service`, `/cookie-and-local-storage-policy`.
 
-### Terms of Service
+## 4. Page design
 
-- [x] Use `Terms of Service` as the primary title and retain `Terms and Conditions` in the page label.
-- [x] Adapt the draft at [docs/terms-of-service.md](docs/terms-of-service.md).
-- [x] Include agreement, eligibility, accounts, user content, acceptable use, intellectual property, third parties, availability, limitations, termination, disputes, changes, and contact guidance.
-- [ ] Obtain jurisdiction-specific legal review before publishing liability, indemnity, dispute, or arbitration language.
+```text
+Compact public header: brand · Back to home
+┌ Draft banner (full width, own row) ───────────────────────────────┐
+│ ⚠ Planning draft — not yet approved for publication or legal advice │
+└───────────────────────────────────────────────────────────────────┘
+┌ Contents (sticky ≥1024px) ┐ ┌ Document (≤ 72ch) ───────────────────┐
+│ 1 Who this applies to      │ │ Eyebrow · Title · Description         │
+│ 2 Information we collect   │ │ Version · Effective date · Updated    │
+│ …                          │ │ ## 1 Heading  (anchor link on hover)  │
+│ Other policies ▸           │ │ Body 16–17px, 1.65 line height        │
+└────────────────────────────┘ └───────────────────────────────────────┘
+Footer: shared PublicFooter
+```
 
-### Cookie & Local Storage Policy
+- [ ] Banner uses icon + text, sits on its own row, and wraps cleanly at 320px.
+- [ ] Contents list is generated from the document headings; the current section is marked with `aria-current`; below 1024px it becomes a collapsible "On this page" disclosure above the document.
+- [ ] Headings have stable slug anchors with a visible, keyboard-focusable "link to section" control.
+- [ ] Reading measure ≤ 72ch; body 16px minimum (17px at ≥ 1024px); tables scroll inside their own container.
+- [ ] `Last updated` and `Version` shown beside the effective date; unresolved dates render as `To be confirmed` in draft state rather than raw `[YYYY-MM-DD]`.
+- [ ] Print stylesheet: hide header, contents, and footer chrome; black on white; show URLs for links.
+- [ ] "Other policies" block with the two sibling documents (replaces the footer switcher inside the page).
+- [ ] No decorative motion; woven background stays low contrast behind the paper surface.
+- [ ] One `h1`, ordered headings, landmarks (`header`, `nav`, `main`, `article`), skip link, visible focus.
 
-- [x] Use `Cookie & Local Storage Policy` as the primary title.
-- [x] Adapt the draft at [docs/cookie-and-local-storage-policy.md](docs/cookie-and-local-storage-policy.md).
-- [x] Describe the planned technology categories without claiming undeployed technologies are active.
-- [x] Keep the current static landing-page statement accurate until cookies, analytics, authentication, or browser storage are implemented.
+## 5. Publishing safeguards
 
-## Shared page design
+- [ ] **Placeholder check:** a build-time script scans policy sources for bracketed placeholders (`[` … `]`), `TBD`, and `[YYYY-MM-DD]`; it warns in draft and **fails the build when `LEGAL_STATUS = published`**.
+- [ ] **Storage inventory:** the Cookie & Local Storage page includes a table (Name · Purpose · Duration · Category) that must match what the client actually writes. Current inventory: none. Any later feature that stores data (for example workspace preferences) must update this table in the same change.
+- [ ] Compare every statement with implemented systems (authentication, storage, hosting, analytics, support) before publication.
+- [ ] Confirm operator name, contact address, privacy contact, effective date, update process, and jurisdiction; replace every bracketed placeholder.
+- [ ] While in draft: `noindex`, visible banner, and no claim that the documents are legal advice or binding.
+- [ ] Obtain qualified legal review of liability, indemnity, dispute, arbitration, and rights language.
 
-- [x] Add a compact branded header with Tsumugi identity, Moeko Works context, and a return-to-home link.
-- [x] Use a centered, readable document column with strong ink outline and paper surface.
-- [x] Keep the woven background subtle and behind content without reducing text contrast.
-- [x] Add a visible document label, title, and proposed effective-date metadata.
-- [x] Use semantic `main`, `article`, `header`, `nav`, and heading structure.
-- [x] Keep links and headings keyboard accessible with the existing visible focus treatment.
-- [x] Add a footer policy switcher linking all three documents and the landing page.
-- [x] Provide responsive wrapping and comfortable reading widths on mobile and desktop.
-- [x] Preserve reduced-motion stability; no decorative policy-page animation was added.
-- [x] Do not use gradients, aggressive parallax, or decorative motion that competes with legal reading.
+## 6. Policy content requirements (unchanged scope)
 
-## Content and publishing safeguards
+- **Privacy Policy / Privacy Notice:** scope, data categories, purposes, sharing, retention, security, rights, children, changes, contact.
+- **Terms of Service / Terms and Conditions:** agreement, eligibility, accounts, user content, acceptable use, intellectual property, third parties, availability, limitations, termination, disputes, changes, contact.
+- **Cookie & Local Storage Policy:** categories of technology described without claiming undeployed technologies are active; storage inventory table; how to manage browser storage.
 
-- [ ] Remove or resolve every bracketed placeholder before publication.
-- [ ] Confirm the operator name, contact address, privacy contact, effective date, update process, and jurisdiction.
-- [ ] Compare every statement with the implemented authentication, storage, hosting, analytics, cookie, local-storage, and support systems.
-- [x] Add a clear draft/review state while documents are not approved.
-- [x] Confirm that policy links from the landing page resolve to the page routes.
-- [ ] Do not present drafts as legal advice or binding terms.
+## 7. Performance
 
-## Implementation sequence
+- [ ] Legal routes load only the shared shell, the policy chunk, and the primary font weights — no GSAP, no landing code.
+- [x] Legal route adds ≈ 9 kB gzip on the shared runtime; no GSAP, no landing code. (Layout shift on font swap not yet measured.)
+- [ ] Documents render without client-side data fetching.
 
-- [x] Confirm the page-routing approach for the current Vite static client.
-- [x] Represent the reviewed-draft page content as route-selected page data/components while retaining Markdown source drafts.
-- [x] Build the shared policy-page shell and policy navigation.
-- [x] Create the three policy pages from the planning content.
-- [x] Add responsive styles, metadata, focus states, and reduced-motion-compatible behavior.
-- [x] Replace the landing-page draft-file references with website routes.
-- [x] Validate navigation, headings, link targets, mobile wrapping, contrast, overflow, and browser rendering.
-- [x] Update `README.md`, `CODEMAP.md`, and `LOG.md`.
-- [x] Keep policy route data and shared page rendering outside `App.jsx` under `client/src/pages/` for maintainability.
-- [x] Give each policy route its own page entry component while sharing the common policy shell.
+## 8. Implementation phases
 
-## Approval gate
+- [ ] **Phase 1:** Markdown-sourced rendering, `legalMeta`, `LEGAL_STATUS`, lazy route chunks.
+- [ ] **Phase 2:** Document layout (banner, contents, anchors, typography, print), shared `PublicFooter`.
+- [ ] **Phase 3:** Placeholder check script and storage inventory table.
+- [ ] **Phase 4:** QA at 320/390/768/1024/1440, keyboard and screen-reader pass, print preview; update `README.md`, `CODEMAP.md`, `LOG.md`.
 
-- [x] Owner authorizes the page structure and visual adaptation for this implementation pass.
+## 9. Acceptance checklist
+
+- [ ] Page text comes from the Markdown source; editing the source changes the page.
+- [ ] Contents list and anchors work with keyboard; headings are unique.
+- [ ] Draft banner is on its own row at every width; `noindex` is present in draft.
+- [ ] Build warns on placeholders in draft and fails on them when published.
+- [ ] Cookie page's storage inventory matches the client's actual storage (currently none).
+- [ ] No horizontal overflow at 320px; print preview is clean.
+
+## 10. Baseline already built (Revision 1)
+
+Three route-selected policy pages with shared shell, branded header, readable document column, draft notice, footer policy switcher, landing-page links to routes, metadata, and reduced-motion-safe styling.
+
+## 11. Approval gate
+
+- [x] Owner authorized the Revision 1 page structure and visual adaptation.
+- [ ] Owner approves the Revision 2 content architecture and layout (sections 3–5).
 - [ ] Qualified legal reviewer approves the final policy language.
 - [ ] Product implementation confirms the described data practices.
-- [x] Execution is authorized before policy-page frontend code is added.
+
+## 12. Implementation status — 2026-11-14
+
+| Item | Result |
+|---|---|
+| Markdown is the single source | Done: pages import `docs/*.md` with `?raw` and render via `lib/markdown.jsx` (no new dependency); `policyPages.js` removed. Vite dev server allows `..` for this |
+| `legalMeta.js` with `LEGAL_STATUS` and per-document labels | Done; `draft` drives banner, `noindex`, and build check |
+| Draft banner on its own row | Done |
+| Contents list, section anchors, active-section marker | Done; sticky at ≥1024px, collapsible "On this page" below |
+| Typography and print stylesheet | Done (72ch measure, 16px body; print hides chrome and shows external URLs) |
+| "To be confirmed" for unresolved effective date and contact in the header block | Done; placeholders in the body are highlighted |
+| Storage inventory table | Done on the Cookie page; inventory is empty ("None") and lives in `legalMeta.js` |
+| Placeholder check | Done: `npm run check:legal` runs before `build`; currently warns for 14 placeholders in draft |
+| Shared footer and "Other policies" links | Done |
+
+**Not done:** legal review and publication, measuring font-swap layout shift, screen-reader pass.

@@ -1,571 +1,348 @@
-# PLAN-A-04 — Tsumugi Authenticated Workspace and User Pages Exploration
+# PLAN-A-04 — Tsumugi Authenticated Workspace: UI Plan (Revision 2)
 
 ## Plan status
 
-**Status:** Page-specific placeholder exploration implemented for authenticated routes; production data behavior remains excluded  
-**Scope:** Frontend visual exploration for the placeholder authenticated workspace, protected user pages, and shared application shell  
-**Related plans:** [PLAN-A-01.md](PLAN-A-01.md), [PLAN-A-02.md](PLAN-A-02.md), [PLAN-A-03.md](PLAN-A-03.md)  
-**Source specification:** [PROJECT-SPECS.md](PROJECT-SPECS.md), especially sections 3.2, 3.3, 4.1, and 8
+**Revision:** 2 — UI re-plan based on an audit of the implemented static workspace  
+**Status:** Decisions D1–D5 approved and Revision 2 implemented (see section 21); polish, Lighthouse, and assistive-technology QA remain  
+**Scope:** Frontend UI only — layout, components, visual system, states, responsive behavior, and static fixtures  
+**Related plans:** [PLAN-A-01.md](PLAN-A-01.md) (landing + shared client foundations), [PLAN-A-02.md](PLAN-A-02.md) (legal), [PLAN-A-03.md](PLAN-A-03.md) (auth). Routing, bundle, font, and token work in section 16 is shared with those plans.  
+**Page plans:** [04A Overview](PLAN-A-04A.md) · [04B Projects](PLAN-A-04B.md) · [04C Project workspace](PLAN-A-04C.md) · [04D Milestones](PLAN-A-04D.md) · [04E Tasks](PLAN-A-04E.md) · [04F Requirements](PLAN-A-04F.md) · [04G Assets](PLAN-A-04G.md) · [04H Revisions](PLAN-A-04H.md) · [04I Documentation](PLAN-A-04I.md) · [04J Reports](PLAN-A-04J.md) · [04K Settings](PLAN-A-04K.md)  
+**Source specification:** [PROJECT-SPECS.md](../../../PROJECT-SPECS.md), sections 3.2, 3.3, 4.1–4.9, 8
 
-This plan treats the authenticated environment as a Figma-like exploration space. The first implementation pass may use local placeholder data and presentation-only navigation so the protected user pages can be evaluated visually before real credentials, API calls, database records, or access-control behavior exist.
+## 1. Constraint: frontend only, no operations
 
-## Naming and page division
+This plan covers what users **see and can try on screen**. It does not cover what the system **does**.
 
-The authenticated experience is a **workspace**, not a collection of dashboards. The `/dashboard` route is one page within that workspace: the high-level **Overview** page. All other protected routes are named and planned according to their primary user responsibility.
+- No authentication, authorization, API calls, database access, persistence, uploads, exports, or real session state.
+- All data comes from local fixtures in `client/src/pages/workspace/`. Interactions that are purely local (switching a view, filtering a list, opening a panel, toggling a control) are in scope. Interactions that would write, save, send, or delete are not.
+- Every control that implies an operation follows the **preview-only action pattern** (section 9). No control may show a fake success message, a fake saved state, or a "Save" button that does nothing.
+- Fixtures must be shaped like the future records (explicit IDs, explicit relationships) so the UI does not need to change when real data arrives.
 
-### Shared authenticated workspace
+## 2. Audit of the current frontend
 
-The workspace is the common application context shared by every protected page:
+The Revision 1 workspace was built page by page from the checklists in this plan. It works, but reviewing it live (desktop pane and 375px mobile) and reading `WorkspacePage.jsx`, `workspaceData.js`, and `index.css` shows problems that come from the structure, not from polish.
 
-- Persistent top-level navigation between protected modules.
-- Compact application header with page identity, contextual actions, account controls, and demo-session state.
-- Page-local section navigation for nested content within the active module.
-- Shared responsive, accessibility, legal-link, reduced-motion, and visual-token rules.
-- A route outlet that changes the active user page without changing the public landing/auth/legal shells.
+| # | Finding | Evidence | Effect |
+|---|---|---|---|
+| F1 | **Three navigation layers compete for space.** Brand header, left "This page" card, and a floating bottom dock. | Dock is fixed over the lower edge on every page; on 375px it clips ("More", "Overview" dot, label truncation) and covers content. | Lost viewport height, content hidden behind the dock, hard-to-scan navigation. |
+| F2 | **Header actions are generic and duplicated.** Every module shows a hard-coded secondary `New task`; Reports shows `Set report scope` + `New task`; Settings shows `Review preferences` + `New task`. Tasks shows `Create task`, header `New task`, and toolbar `New task`. | `WorkspacePage.jsx` heading block and per-page toolbars. | Actions do not match the page; three buttons for one action. |
+| F3 | **Redundant titles.** Page H1 `Tasks` is followed by H2 `Task register`; the project page shows `Project Garden` as H1 and again in the identity card; Overview uses a marketing slogan ("A clear view of the work.") as the H1. | Screenshots of `/tasks`, `/projects/project-garden`, `/dashboard`. | Header consumes ~250–280px on mobile before any content. |
+| F4 | **Box-in-box-in-box.** Outer 2px-ink page card → controls card → summary cards → record cards, all outlined. | Every module page. | Flat hierarchy; nothing reads as primary; wasted padding. |
+| F5 | **Overview local navigation is mostly empty.** Five of six Overview sections render a "staged for visual exploration" stub, although the same content already lives on the Overview section. | `OverviewPage` early return for non-Overview sections. | A navigation control that leads to dead ends. |
+| F6 | **Several planned sections have no dedicated UI** but are ticked complete: Requirements → *Acceptance criteria*; Revisions → *Version comparison*; Tasks → *All tasks* duplicates *List view*; Projects → *Status groups* and *Recently accessed* show the same list as *Directory*. | Section handling in each page component. | Plan accuracy and user trust; section nav suggests views that do not exist. |
+| F7 | **Text is too small.** 59 declarations at 9–11px; most metadata, statuses, and summary captions are below 12px. | `index.css`. | Fails comfortable reading and accessibility expectations; dense but not scannable. |
+| F8 | **Status styling is duplicated and inconsistent.** Each page defines its own tone map; Tasks maps Backlog and Blocked to the same lilac; status relies on a pill plus a color bar. | `statusTone` functions in Tasks, Requirements, Revisions, Documentation. | Same status looks different across pages; some statuses indistinguishable. |
+| F9 | **Settings are not controls.** Values render as static text, with a `Save settings` button. | `SettingsPage`. | Cannot evaluate the real settings UI; the button implies persistence. |
+| F10 | **Reports are text panels.** Formulas and percentages in lists; no visual representation. | `/reports` screenshot. | The page whose job is to be glanceable is a wall of text. |
+| F11 | **Relationships are plain strings.** Task → project, milestone; requirement → tasks; revision → refs are text, not links or chips. | Record cards. | The traceability story (objective → requirement → milestone → task → revision → deliverable) is not navigable. |
+| F12 | **Same placeholder note repeated** at the foot of every page and every panel. | `.workspace-module__note` on all pages. | Noise; the demo banner should say it once. |
+| F13 | **Hard-coded context.** `Tuesday, 11 November`, avatar `PS`, fixed relative times (`12 min ago`) used for sorting. | `WorkspacePage.jsx`, `RevisionsPage`. | Looks stale; sorting by string is brittle. |
+| F14 | **Code structure blocks iteration.** `WorkspacePage.jsx` is a ~920-line single file with eight copies of the toolbar/search/summary/empty pattern; `index.css` holds ~290 workspace rules as minified one-liners; `RevisionsPage` calls `Array.sort` on the shared fixture array (mutates fixtures). | File inspection. | Every visual change must be repeated eight times; hard to review. |
+| F15 | **Mobile order is wrong.** Heading + two buttons + section strip appear before the first record; summary cards overflow horizontally; entry animation can leave the heading faded. | 375px `/tasks`. | First useful content sits below the fold. |
 
-### Protected page groups
+## 3. Design principles for Revision 2
 
-| Group | Routes | Primary responsibility |
+1. **One job per layer.** Global navigation moves between modules. Page tabs move between *views* of one module. Filters narrow records inside a view. These three never share a control.
+2. **Sections are views; statuses are filters.** A section must change the *layout or content model* (list → board → timeline). Status/type subsets (Blocked, Completed, Functional) become filter chips with counts. This removes the dead and duplicate sections in F5/F6.
+3. **Title once.** The page header states the module name; the content area never repeats it. The project name appears once, in the project header.
+4. **One primary action per page, and it is the right one** (`New project`, `New task`, `Add requirement`…). Secondary actions live in the toolbar or the record.
+5. **Flat first, boxed second.** Content sits on the canvas. Only records (cards, rows, panels that need separation) get borders. Reserve the heavy ink outline for the active/selected element and primary action.
+6. **Say "demo" once.** One persistent demo banner/chip replaces per-page and per-panel notes.
+7. **Every state is designed.** Loading, empty, no results, error, unauthorized, and unsupported-preview each exist as real components that can be previewed.
+8. **Relationships are links.** Project, milestone, task, requirement, asset, and revision references render as chips that navigate (or show a preview) rather than as text.
+9. **Readable by default.** Minimum 12px for any text, 14px for body, with a defined scale; status is always icon + text, never color alone.
+
+## 4. Decisions needed from the owner
+
+Revision 1 used a floating bottom dock plus a left section card. The owner approved replacing it. **All five recommendations below are approved and supersede the earlier approved navigation direction.**
+
+| ID | Decision | Approved outcome |
 |---|---|---|
-| **Overview** | `/dashboard` | Summarize current production activity and direct the user to priority work. |
-| **Project management** | `/projects`, `/projects/:projectId` | Browse projects and work inside one project workspace. |
-| **Production planning** | `/milestones`, `/tasks` | Organize phases, deadlines, assignments, and actionable work. |
-| **Traceability and records** | `/requirements`, `/assets`, `/revisions`, `/documentation` | Maintain requirements, files, change history, and project knowledge. |
-| **Insights** | `/reports` | Review production progress, health, and calculated reporting views. |
-| **Account and preferences** | `/settings` | Manage account, application preferences, appearance, density, and legal/privacy links. |
-
-The child plans under `PLAN-A-04` follow this division. `PLAN-A-04A` is the Overview page plan; the remaining `PLAN-A-04B` through `PLAN-A-04K` plans describe individual protected user pages and project-workspace surfaces rather than separate dashboards.
-
-**Execution note:** The workspace/page naming revision has been authorized and applied to the current static exploration. It does not add backend authentication, persistence, or production authorization.
-
-## Visual refinement direction — compact headers and GSAP motion
-
-The current authenticated page header consumes too much vertical space before the user reaches the page-local navigation and content. The next visual pass should compress the shared workspace header while retaining enough context for orientation, then add a restrained GSAP motion system consistent with the landing page.
-
-The compact-header and motion pass is now implemented for the current static authenticated routes. Production data behavior and future project-detail routing remain excluded.
-
-### Compact authenticated page header
-
-- [x] Reduce the vertical gap between the global brand row, page title, page description, actions, and first content region.
-- [x] Keep the global brand/account row compact and visually separate from the page content without creating a second oversized hero.
-- [x] Use a smaller page eyebrow or context label with tighter spacing.
-- [x] Reduce authenticated page-title scale from landing-page hero proportions to an application heading scale.
-- [x] Keep the page description to one or two readable lines without increasing header height.
-- [x] Keep contextual actions aligned beside the title on desktop and move them into a compact action row on smaller screens.
-- [x] Preserve the primary page action and one secondary action without allowing controls to push the content below the fold.
-- [x] Place the page-local section navigation and first content panel closer to the compact header.
-- [x] Ensure the compact header still exposes:
-  - [x] Current page/module identity
-  - [x] Current section context where applicable
-  - [x] Demo workspace/session state
-  - [x] Account menu trigger
-  - [x] Primary contextual action
-- [x] Avoid duplicating the same title, description, or context in the global row, page header, and local section panel.
-- [ ] Establish a compact-header spacing token rather than adding page-specific spacing overrides.
-
-### Compact-header responsive rules
-
-- [x] Desktop: use a short two-row composition with global identity/account controls above a compact title/action row.
-- [x] Tablet: allow the title and actions to wrap once without creating a large empty region.
-- [x] Mobile: stack title and actions tightly, keep the section navigation near the header, and preserve the first useful content state within the initial viewport where practical.
-- [x] Keep the floating bottom module navigation from obscuring the compact header or first content panel.
-- [x] Verify the compact header at 390px and desktop widths; 320px and 768px remain follow-up checks.
-
-### GSAP motion system for authenticated pages
-
-- [x] Reuse the existing GSAP/ScrollTrigger dependency and motion conventions from the landing page.
-- [x] Scope authenticated workspace animations with `gsap.context()` and clean them up on unmount or route changes.
-- [x] Use `gsap.matchMedia()` for reduced-motion handling.
-- [x] Animate only presentation layers; data state, focus state, and route semantics remain static.
-- [x] Use a short page-entry sequence for the compact header, page-local navigation, and first content panel.
-- [x] Use restrained staggered reveals for Overview metric cards and protected-page content panels.
-- [x] Animate section-content changes when the user changes page-local sections.
-- [x] Avoid parallax or continuous floating motion in dense application views.
-- [x] Keep animation durations short enough for production work contexts.
-- [x] Use `fromTo(..., { immediateRender: false })` safeguards so hidden initial states do not blank content before triggers run.
-- [x] Preserve visible-by-default fallback content if JavaScript or animation initialization fails.
-
-### Motion by authenticated surface
-
-- [x] `/dashboard`: reveal compact header, metrics, and priority panels in reading order.
-- [x] `/projects`: reveal the section navigation first, then the project directory/table.
-- [ ] `/projects/:projectId`: stage project identity first, then workflow and related-record regions.
-- [x] `/milestones`: reveal milestone summary and list rows with a restrained stagger.
-- [x] `/tasks`: reveal task controls and list content without animating every status change.
-- [x] `/requirements`: reveal requirement identifiers and traceability content in a readable sequence.
-- [x] `/assets`: reveal asset rows while keeping file metadata stable and scannable.
-- [x] `/revisions`: reveal the chronological history in the fixture order.
-- [x] `/documentation`: reveal document navigation before the table content.
-- [x] `/reports`: reveal report scope controls before report content.
-- [x] `/settings`: use minimal motion and prioritize stable preference controls.
-
-### Accessibility and reduced-motion requirements
-
-- [x] Respect `prefers-reduced-motion: reduce` by disabling non-essential entrance and section-change animations.
-- [x] Keep focus indicators visible during and after animations.
-- [x] Never move a focused control away from the user's pointer or keyboard position.
-- [x] Do not use opacity-only states that make content unavailable to assistive technology.
-- [x] Ensure animated section changes preserve `aria-current`, heading order, and keyboard navigation.
-- [x] Avoid flashing, rapid scaling, or motion that could create discomfort.
-- [x] Validate that reduced-motion users see the same content and controls without waiting for animation completion.
-
-### Visual approval gate before implementation
-
-- [ ] Owner approves the compact header height and title scale.
-- [ ] Owner approves the balance between header context, page-local navigation, and first content panel.
-- [ ] Owner approves the GSAP motion intensity as restrained application motion rather than landing-page spectacle.
-- [ ] Owner approves reduced-motion behavior and fallback visibility.
-
-## Newly approved navigation direction — floating section navigation
-
-The authenticated workspace should avoid forcing users to overscroll through long module pages. Every protected user page will use a two-region composition:
-
-- A floating section-navigation panel on the left side of the content area.
-- A section content area on the right side that changes according to the selected subsection.
-
-This is a planning-only direction. No implementation is authorized in this update.
-
-### Shared section-navigation behavior
-
-- [ ] Keep the existing bottom navigation dock for switching between top-level modules.
-- [x] Add a second, page-local floating navigation surface on the left side of the active protected page.
-- [x] Keep the section navigation visually anchored while the right content region changes.
-- [x] Use concise section labels and Lucide-inspired section markers.
-- [x] Highlight the selected section with Tsumugi's dark ink active treatment and a clear text/icon state.
-- [x] Keep the section navigation keyboard accessible with visible focus and `aria-current`.
-- [ ] Avoid making the left navigation taller than the viewport; use a compact layout or bounded internal scrolling when necessary.
-- [ ] Preserve the shared app header, account menu, bottom module navigation, legal links, and demo-session notice.
-- [x] On smaller screens, transform the left section navigation into a compact horizontal scroll control rather than retaining a narrow two-column layout.
-- [ ] Do not duplicate the complete top-level module navigation inside the page-local section navigation.
-
-### Two-region layout prototype
-
-- [x] Replace the current single generic module-view concept with a `module layout` containing:
-  - [x] Left: floating section-navigation card.
-  - [x] Right: section content panel.
-  - [x] Shared page title and contextual actions above both regions.
-- [x] Use the current module table as the first right-side content state so the concept can be evaluated without implementing full CRUD.
-- [x] Add a small section description or context label above the right-side content.
-- [ ] Keep the right-side content independently scrollable only when necessary; prefer a page layout that minimizes nested scrolling.
-- [ ] Define a clear empty, loading, error, and unauthorized state for the selected section.
-- [x] Keep section changes presentation-only during the static exploration phase.
-
-### Page-local section maps
-
-#### `/dashboard` — Overview
-
-- [ ] Overview
-- [ ] Project pulse
-- [ ] Upcoming milestones
-- [ ] Tasks needing attention
-- [ ] Recent activity
-- [ ] Quick actions
-
-#### `/projects`
-
-- [ ] Directory
-- [ ] Search and filters
-- [ ] Status groups
-- [ ] Recently accessed
-- [ ] Archived projects
-
-#### `/projects/:projectId`
-
-- [ ] Project overview
-- [ ] Workflow phases
-- [ ] Milestones
-- [ ] Tasks
-- [ ] Requirements
-- [ ] Assets
-- [ ] Documentation
-- [ ] Revisions
-- [ ] Deliverables
-
-#### `/milestones`
-
-- [ ] All milestones
-- [ ] Timeline
-- [ ] Upcoming
-- [ ] Overdue
-- [ ] Completed
-
-#### `/tasks`
-
-- [ ] All tasks
-- [ ] List view
-- [ ] Kanban view
-- [ ] Due soon
-- [ ] Blocked
-- [ ] Completed
-
-#### `/requirements`
-
-- [ ] All requirements
-- [ ] Functional
-- [ ] Non-functional
-- [ ] Acceptance criteria
-- [ ] Verification status
-- [ ] Traceability
-
-#### `/assets`
-
-- [ ] All assets
-- [ ] Images and illustrations
-- [ ] Documents and PDFs
-- [ ] Audio and video
-- [ ] Datasets and spreadsheets
-- [ ] References and exports
-
-#### `/revisions`
-
-- [ ] All revisions
-- [ ] Recent changes
-- [ ] Pending review
-- [ ] Approved
-- [ ] Version comparison
-
-#### `/documentation`
-
-- [ ] All documents
-- [ ] Project briefs
-- [ ] Technical specifications
-- [ ] Research notes
-- [ ] Architecture decisions
-- [ ] Testing and release notes
-
-#### `/reports`
-
-- [ ] Overview
-- [ ] Project completion
-- [ ] Task distribution
-- [ ] Milestone progress
-- [ ] Requirement coverage
-- [ ] Activity history
-
-#### `/settings`
-
-- [ ] Account and profile
-- [ ] Workspace preferences
-- [ ] Notifications
-- [ ] Appearance and density
-- [ ] Legal and privacy
-
-### Section-navigation visual direction
-
-- [ ] Use a compact paper card with strong dark outline, rounded corners, and restrained pastel depth.
-- [ ] Keep the left card visually quieter than the right content panel.
-- [ ] Use an optional small thread marker or vertical rule to reinforce the weaving metaphor without adding clutter.
-- [ ] Make the selected section legible through fill, icon, text, and position—not color alone.
-- [ ] Keep section labels readable at desktop widths without forcing the content panel too narrow.
-- [ ] Use the same section-navigation component pattern across all authenticated pages.
-
-### Section-navigation responsive rules
-
-- [x] Desktop: left floating section navigation remains visible beside the right content.
-- [ ] Tablet: left navigation may narrow or become a compact stacked control.
-- [x] Mobile: replace the side card with a horizontal scroll, disclosure button, or top-local selector.
-- [ ] Preserve the active section when the viewport changes.
-- [ ] Ensure section navigation does not cover focused controls, tables, forms, or primary actions.
-- [ ] Test the planned layout at 320px, 390px, 768px, and desktop widths.
-
-## Core exploration rule
-
-- [x] Clicking `Log in` from the landing page or login page enters `/dashboard` without requiring credential input.
-- [x] The Overview page visibly identifies the session as a placeholder/demo session.
-- [x] All displayed projects, metrics, milestones, tasks, deadlines, and activity are explicitly placeholder data.
-- [x] No credential, token, cookie, local-storage session, or backend authentication behavior is implied by the prototype.
-- [ ] A later authentication implementation must replace the placeholder entry behavior behind a clear boundary.
-
-## Specification-derived requirements
-
-### Authenticated environment from PROJECT-SPECS 3.2
-
-- [x] Define the first Overview route at `/dashboard`.
-- [x] Reserve route structure for:
-  - [x] `/projects`
-  - [ ] `/projects/:projectId`
-  - [x] `/milestones`
-  - [x] `/tasks`
-  - [x] `/requirements`
-  - [x] `/assets`
-  - [ ] `/revisions`
-  - [x] `/documentation`
-  - [x] `/reports`
-  - [x] `/settings`
-- [x] Keep the application layout separate from the public landing-page layout.
-
-### Shared shell from PROJECT-SPECS 3.3
-
-- [x] Build the authenticated workspace around a persistent floating navigation shell.
-- [x] Include an application header/top bar.
-- [x] Show the current page title and contextual actions.
-- [x] Include a placeholder user account menu.
-- [x] Reserve the main content outlet for future route pages.
-- [x] Provide responsive navigation behavior for smaller screens.
-- [ ] Keep the shell mounted while authenticated pages change where practical.
-
-### Overview scope from PROJECT-SPECS 4.1
-
-- [x] Show total and active project counts.
-- [x] Show project status overview.
-- [x] Show upcoming milestones and deadlines.
-- [x] Show pending and overdue tasks.
-- [x] Show recent project activity.
-- [x] Show recently accessed projects through project pulse fixtures.
-- [x] Show quick actions for creating projects and tasks.
-- [x] Document each placeholder metric's future calculation source rather than inventing arbitrary percentages.
-
-## Navigation reference study
-
-The supplied Aqua Iro Archive image is a visual reference for navigation composition only. It shows a persistent floating navigation bar near the bottom of the viewport, compact icon-plus-label items, a rounded light surface, and a strongly distinguished active item.
-
-### Tsumugi translation
-
-- [x] Use a floating, rounded navigation dock rather than copying the reference site's exact artwork or branding.
-- [x] Place the dock near the bottom on desktop without obstructing the active protected page content.
-- [x] Use Tsumugi's paper surface, dark ink outline, pastel shadow, and solid accent fills.
-- [x] Use Lucide icons with short labels for orientation.
-- [x] Give the active route a dark ink filled capsule with light text and a clear icon.
-- [x] Use a secondary pink/lilac treatment for hover and active orientation.
-- [x] Keep the dock visually lighter than the content cards.
-- [x] Avoid copying the reference's text, imagery, icon drawings, exact spacing, or proprietary visual assets.
-- [x] Keep the navigation usable with keyboard focus and screen readers.
-
-### Proposed authenticated workspace navigation
-
-- [x] Overview — current production pulse (`/dashboard`)
-- [x] Projects — project directory
-- [x] Milestones — phases and checkpoints
-- [x] Tasks — actionable work
-- [x] Requirements — acceptance criteria and traceability
-- [x] Assets — project files and media
-- [x] Documentation — project knowledge
-- [x] Reports — progress and health
-- [x] Settings — account and application preferences
-- [x] Use a responsive overflow/menu treatment for routes that cannot fit in the dock; show the complete navigation on desktop and compact it only on mobile.
-
-## Page-by-page specification detail
-
-The following checklist translates `PROJECT-SPECS.md` sections 3.2, 3.3, 4.1-4.9, 5, 6, 8, 11, and 13 into visual exploration requirements. These are page contracts for the future authenticated application; the current prototype may render marked placeholder states instead of implementing persistence or CRUD behavior.
-
-### `/dashboard` — Overview page
-
-- [x] Present total projects, active projects, open/pending tasks, and overdue work as the primary scan layer.
-- [x] Show project status overview, upcoming milestones/deadlines, pending tasks, recent activity, and project pulse.
-- [x] Derive every metric from named fixture records and document the future calculation source beside the fixture definition.
-- [ ] Reserve quick actions for `Create project` and `Create task` without implying that records were saved.
-- [x] Keep the demo/session state visible and distinguish placeholder values from production metrics.
-- [ ] Future data surfaces: `projects`, `milestones`, `tasks`, and `activities`.
-- [ ] Future reports must reuse the Overview calculations instead of introducing conflicting definitions.
-
-### `/projects` — Project directory
-
-- [x] Provide a directory view with project name, category, status, and next thread; remaining metadata is reserved for the production view.
-- [ ] Provide visible search, sorting, filtering, and organization controls.
-- [ ] Represent the suggested statuses: Idea, Planning, Active, On Hold, Completed, and Archived.
-- [ ] Include a clear create-project entry point and presentation-only empty/loading/error states in the prototype.
-- [ ] Make project cards or rows link to `/projects/:projectId`.
-- [ ] Future data surface: `projects`, with ownership, workflow configuration, metadata, `createdAt`, and `updatedAt`.
-- [ ] Future architecture boundary: project CRUD and query state belong in a project module, not inside the Overview page.
-
-### `/projects/:projectId` — Project workspace
-
-- [ ] Define a project header containing name, category, status, priority, date range, owner, collaborators, and project icon/cover.
-- [ ] Provide workspace sections for overview, workflow phases, milestones, tasks, requirements, assets, documentation, revisions, and deliverables.
-- [ ] Show the configurable workflow rather than assuming one universal phase sequence.
-- [ ] Surface the traceability chain: objective → requirement → milestone → task → revision → deliverable.
-- [ ] Provide project-level search/filter context without losing the parent project identity.
-- [ ] Future access checks must be enforced for every project operation, not only by frontend route guards.
-- [ ] Future data surfaces: `projects` plus related `milestones`, `tasks`, `requirements`, `assets`, `documents`, `revisions`, and `activities`.
-
-### `/milestones` — Phases and checkpoints
-
-- [x] Provide a list-oriented placeholder view for milestones; timeline remains a future view.
-- [ ] Show milestone name, project, start date, due date, status, priority, related tasks, and deliverables.
-- [x] Visually distinguish milestone state with text labels and fixture status, not color alone.
-- [ ] Reserve create, edit, complete, archive, and dependency actions.
-- [ ] Show milestone relationships to tasks and requirements where traceability is available.
-- [ ] Future data surface: `milestones`, with explicit project references and optional dependency references.
-- [ ] Prototype fixture categories should cover at least one active, completed, and overdue milestone.
-
-### `/tasks` — Actionable work
-
-- [x] Provide a list-oriented placeholder view; Kanban remains a future view.
-- [ ] Show task title, description/instructions, project, milestone, priority, status, due date, subtasks, and assignee placeholder.
-- [ ] Represent the suggested statuses: Backlog, To Do, In Progress, In Review, Blocked, and Completed.
-- [ ] Provide clear priority and due-date treatment for pending, urgent, overdue, and completed work.
-- [ ] Reserve links to requirements, assets, revisions, and activity records.
-- [ ] Future data surface: `tasks`, with explicit project, milestone, requirement, creator, assignee, asset, and revision references.
-- [ ] Large task collections must use pagination or an equivalent bounded loading strategy.
-
-### `/requirements` — Specifications and acceptance criteria
-
-- [x] Provide requirement identifiers, type, and verification status in the placeholder view; descriptions and acceptance criteria remain future record fields.
-- [ ] Show links to implementing milestones, tasks, and satisfying deliverables.
-- [ ] Make the traceability relationship understandable without relying on loosely formatted text references.
-- [ ] Reserve requirement history and verification actions.
-- [ ] Include a visual distinction between specified, in-progress, verified, and unverified requirements.
-- [ ] Future data surface: `requirements`, with explicit queryable relationships to work records.
-- [ ] Overview and reports should be able to calculate implementation status from these records.
-
-### `/assets` — Asset library
-
-- [x] Represent documents, images, and repository references in the placeholder asset view.
-- [ ] Show asset name, type, size, project association, description, tags/categories, preview availability, and access state.
-- [ ] Reserve upload, organize, preview, download, and access-control actions.
-- [ ] Clearly separate metadata presentation from binary storage behavior.
-- [ ] Future data surface: `assets` metadata and storage references; binary files belong in object storage, not MongoDB documents.
-- [ ] Prototype states should include empty library, unsupported preview, upload-in-progress, and access-denied treatments.
-
-### `/revisions` — Change and version history
-
-- [x] Provide placeholder revision entries with author, change description, affected record, and review state.
-- [ ] Link revisions to previous/current version references and related deliverables.
-- [ ] Reserve comparison UI for supported document types without promising universal diff support.
-- [ ] Make project history attributable and understandable rather than presenting an unrestricted embedded history array.
-- [ ] Future data surface: dedicated `revisions` records with pagination for large histories.
-- [ ] Prototype fixture categories should include a recent change, an approved change, and a pending-review change.
-
-### `/documentation` — Project knowledge
-
-- [x] Represent project briefs, technical specifications, and research notes in the placeholder documentation view.
-- [ ] Show document title, type, project, author, updated time, status, and revision context.
-- [ ] Reserve a Markdown editor as the initial editing direction.
-- [ ] Keep rich-text editing as a later enhancement unless a concrete requirement is added.
-- [ ] Link documents to projects and traceability records where useful.
-- [ ] Future data surface: `documents`, with explicit project references and revision metadata.
-- [ ] Prototype states should include document directory, document preview, and empty knowledge base.
-
-### `/reports` — Progress and production analytics
-
-- [x] Provide report definitions for project completion, milestone completion, and requirement coverage; additional report types remain future views.
-- [ ] Label each metric with its source and calculation definition.
-- [ ] Avoid decorative percentages or charts that cannot be derived reliably from stored records.
-- [ ] Provide project and date-range context for report views.
-- [ ] Reserve export/share behavior without implementing it in the static exploration.
-- [ ] Future data surfaces: aggregated `projects`, `milestones`, `tasks`, `requirements`, and `activities`; report queries must remain bounded and paginated where appropriate.
-
-### `/settings` — Account and application preferences
-
-- [x] Define account, workspace, appearance, and legal preference groupings in the placeholder view.
-- [ ] Keep authentication/security controls visually distinct from ordinary display preferences.
-- [ ] Reserve account-management, session-management, and preference-save states without processing credentials in this prototype.
-- [ ] Preserve the shared legal references and access to Privacy Policy, Terms of Service, and Cookie & Local Storage Policy.
-- [ ] Future data surface: `users` and user preferences, with secure authentication handled outside the visual page.
-- [ ] Do not imply that changing a control persists until a real settings API exists.
-
-### Cross-page relationship requirements
-
-- [x] Every page should retain the shared shell: navigation, app header, current title, contextual action area, account menu, and route outlet.
-- [ ] Every record relationship should be represented explicitly in the future data model using IDs/ObjectIds rather than free-text references.
-- [ ] Every page should expose a clear loading, empty, error, and unauthorized state before production integration.
-- [ ] Project, task, milestone, requirement, asset, document, revision, and activity pages should preserve the project context when navigating between related records.
-- [ ] Use the same theme tokens, reusable components, responsive rules, and accessibility conventions across all authenticated pages.
-- [x] Use one reusable page-local section-navigation pattern across all authenticated pages, with route-specific section definitions.
-- [ ] Keep top-level module navigation and page-local section navigation separate in purpose and visual hierarchy.
-- [ ] Keep the current manual route map replaceable by React Router without rewriting page-level visual components.
-
-## Overview page visual composition
-
-- [x] Establish a calm application canvas distinct from the expressive landing page while retaining the same tokens.
-- [x] Use a compact page header with:
-  - [x] Greeting or workspace context
-  - [x] Current page title
-  - [x] Placeholder session badge
-  - [x] User/account menu trigger
-- [x] Use an Overview grid with clear density tiers:
-  - [x] Metric cards for high-level counts
-  - [x] Status overview panel
-  - [x] Upcoming deadlines/milestones panel
-  - [x] Pending/overdue task panel
-  - [x] Recent activity panel
-  - [x] Recently accessed project cards
-  - [x] Quick-action panel
-- [x] Use solid surfaces, strong outlines, restrained shadows, and no gradients.
-- [x] Retain Fredoka for display/interface text and readable supporting text.
-- [x] Use thread motifs as small orientation details rather than decorative noise.
-- [x] Keep important information scannable before expressive decoration.
-- [x] Make placeholder and future-error states visually intentional.
-
-## Placeholder data model
-
-- [x] Create a local fixture boundary separate from UI components.
-- [x] Include at least:
-  - [x] Three sample projects across software, creative, and research work
-  - [x] Project statuses such as Active, Planning, and On Hold
-  - [x] Upcoming milestone dates
-  - [x] Pending and overdue task examples
-  - [x] Recent activity entries with timestamps and record types
-  - [x] Recently accessed project entries
-- [x] Add labels such as `Demo workspace`, `Sample data`, or `Placeholder session`.
-- [x] Keep fixture content separate from future persistence behavior.
-- [x] Do not use fake success messages that imply persistence.
-
-## Interaction exploration
-
-- [x] Make the navigation active state respond to the current placeholder route, including routes outside the compact dock subset.
-- [x] Allow navigation links to render placeholder destination views or clearly marked coming-soon states.
-- [ ] Let quick-action controls open presentation-only panels, cards, or marked non-functional states only if useful for visual evaluation.
-- [x] Keep account-menu actions presentation-only.
-- [x] Provide a clear `Back to landing page` route.
-- [x] Make `Log in` from landing and auth pages route to `/dashboard` without credentials for this exploration pass.
-- [x] Keep `Create account` linked to `/register`; do not imply account persistence.
-- [x] Preserve the legal links in the application footer:
-  - [x] Privacy Policy
-  - [x] Terms of Service
-  - [x] Cookie & Local Storage Policy
-
-## Responsive and accessibility requirements
-
-- [x] Desktop: floating navigation dock remains visible without covering key content.
-- [x] Tablet: dock compresses, wraps, or becomes an accessible expanded navigation region.
-- [x] Mobile: use a compact bottom navigation subset plus an accessible overflow/menu for remaining modules.
-- [x] Ensure the dock does not cover focused controls or important protected-page content through reserved page padding.
-- [x] Provide visible focus states for every navigation item and action.
-- [x] Use semantic navigation landmarks and `aria-current` for the active route.
-- [ ] Ensure color is not the only signal for status, urgency, or active navigation.
-- [ ] Support reduced motion by disabling non-essential dock movement, card reveals, and decorative thread animation.
-- [x] Test at 390px and desktop widths with no horizontal overflow; 320px and 768px remain follow-up checks.
-
-## Architecture preparation
-
-- [x] Keep the authenticated workspace shell separate from the public landing/auth/legal page shells.
-- [ ] Use a protected-page/workspace module naming scheme rather than treating every user page as a dashboard.
-- [x] Organize the implementation under `client/src/pages/workspace/`, distinguishing the workspace shell, Overview page, and protected user-page modules.
-- [x] Keep reusable workspace UI and placeholder fixtures separate from individual protected-page content where practical.
-- [x] Use the existing manual route map as a boundary that can later be replaced with React Router without rewriting visual components.
-- [x] Preserve the future MUI migration boundary from PROJECT-SPECS section 8; workspace and protected-page styles remain scoped and token-based.
-- [x] Do not implement backend authorization, database queries, real sessions, or protected-route enforcement in this exploration pass.
-
-## Implementation sequence after approval
-
-- [x] Confirm the navigation dock placement, icon labels, active-state treatment, and mobile behavior.
-- [x] Confirm the left floating section-navigation placement and right-side content relationship before implementation.
-- [x] Confirm each page-local section map before implementation.
-- [x] Confirm the Overview grid priority and placeholder data vocabulary.
-- [x] Create the authenticated workspace shell and Overview route entry.
-- [x] Create the floating navigation dock and responsive overflow treatment.
-- [x] Add placeholder fixtures and metric derivations.
-- [x] Build Overview cards and panels in priority order.
-- [x] Connect landing/login `Log in` actions to the placeholder `/dashboard` Overview route.
-- [x] Add placeholder destination views for the remaining navigation routes.
-- [x] Add legal references and landing-page return links.
-- [x] Validate keyboard navigation, responsive behavior, route transitions, visual hierarchy, and overflow.
-- [x] Update `README.md`, `CODEMAP.md`, and `LOG.md`.
-- [x] Rename the former dashboard implementation boundary to `client/src/pages/workspace/` and rename shared exports/classes to workspace terminology while retaining `/dashboard` as the Overview URL.
-
-## Exclusions
-
-- [x] No real authentication or authorization.
-- [x] No credential validation or password processing.
-- [x] No server/API/database integration.
-- [x] No durable session state.
-- [x] No claim that placeholder records are real user data.
-- [x] No final MUI migration or production authenticated-workspace architecture decision without a separate implementation review.
-
-## Approval gate
-
-- [ ] Owner approves the authenticated-workspace visual direction and navigation reference translation.
-- [ ] Owner approves credential-free placeholder login behavior.
-- [ ] Owner approves placeholder data categories and Overview density.
-- [x] Earlier execution was authorized before the authenticated workspace frontend code was added; this naming/division revision does not authorize new coding.
+| D1 | Global navigation placement | **Left app rail** on ≥1024px (icons + labels, collapsible to icons); **bottom tab bar with 4 items + More** on mobile. Frees vertical space and scales to 10 modules. |
+| D2 | Local section navigation | **Horizontal view tabs under the page header** (scrollable on mobile). Removes the second left column and gives content full width. Settings keeps a vertical variant of the same component. |
+| D3 | Overview local navigation | **Removed.** Overview is one composed screen. |
+| D4 | Page title voice | Module name as H1 (`Tasks`) with one descriptive line; slogan-style titles stay on the public pages. |
+| D5 | Interactive settings | Real local controls with a "Preview only — not saved" notice and **no Save button**. |
+
+## 5. Target shell
+
+```text
+Desktop ≥1024px
+┌────────┬──────────────────────────────────────────────────────────┐
+│ Rail   │ Top bar: [Project scope ▾]   [search ⌘K]   Demo • PS ▾   │
+│ 224px  ├──────────────────────────────────────────────────────────┤
+│ logo   │ Breadcrumb / eyebrow                                     │
+│ ─────  │ H1 Module name                       [Primary action]    │
+│ Overview│ one-line description                                    │
+│ Projects├─ Tab: View A | View B | View C ─────────────────────────┤
+│ Milestones│ Toolbar: search · filter chips · view toggle          │
+│ Tasks  │ Summary strip (3–4 stats, flat)                          │
+│ …      │ Content (list / board / table / chart)  │ Detail panel   │
+│ ─────  │                                         │ (≥1280px)      │
+│ Settings│                                                         │
+│ Legal  │ Footer: legal links                                      │
+└────────┴──────────────────────────────────────────────────────────┘
+
+Mobile <768px
+┌──────────────────────────────┐
+│ ☰ logo        Demo • PS ▾    │  top bar 56px
+│ Tasks               [+ New]  │  title + icon-only primary action
+│ [List][Board][Schedule] →    │  scrollable tabs
+│ search  [Filters ▾]          │
+│ records…                     │
+├──────────────────────────────┤
+│ Overview Projects Tasks Docs ⋯│ bottom tabs 56px (4 + More sheet)
+└──────────────────────────────┘
+```
+
+### Shell requirements
+
+- [ ] Left rail: logo, 9 module links with Lucide icons, Settings pinned at the bottom, collapsed (icon-only, 72px) between 1024–1279px and expanded at ≥1280px.
+- [ ] Top bar (56px): project scope switcher, global search field (non-functional, opens a "Search preview" panel), demo-session chip, account menu with presentation-only items and `Back to landing page`.
+- [ ] Project scope switcher: `All projects` or one of the fixture projects; it **filters the local fixtures** on every page and is reflected in the breadcrumb. This is frontend-only and makes the project context real across pages.
+- [ ] Mobile: bottom tab bar with Overview, Projects, Tasks, Docs and a `More` bottom sheet containing the remaining modules; the sheet is a labelled dialog with focus trap and Escape to close.
+- [ ] Main region scrolls; rail and top bar stay fixed. No fixed element overlaps content (reserve padding, not overlay).
+- [ ] Skip link, landmark roles (`nav`, `main`, `aside`, `footer`), and `aria-current="page"` on rail and tabs.
+- [ ] Footer holds Privacy, Terms, Cookie & Local Storage Policy, and `Back to landing page` once, at the end of the scroll area (rail on desktop may also link them).
+- [ ] Shell stays mounted when pages change; only the outlet re-renders.
+
+## 6. Page anatomy (shared by every module)
+
+Order of regions, top to bottom. A region is omitted only when the page plan says so.
+
+1. **Page header** — eyebrow/breadcrumb, H1, one-line description (max ~100 characters), primary action (right on desktop, icon + label; icon-only below 480px).
+2. **View tabs** — 2–4 *views* of the module (section = view, principle 2). Selected tab: ink fill + icon + `aria-current`. Scrollable on mobile; the selection is preserved on viewport change.
+3. **Toolbar** — search field, filter chips with counts, optional `More filters` popover, view-density toggle where relevant. Reset link appears only when a filter is active.
+4. **Summary strip** — 3–4 flat stats in one row (no individual cards): value, label, optional delta/qualifier. Each stat is clickable to apply the matching filter.
+5. **Content** — the view itself. Records use the shared record patterns (card, row, table row, board card).
+6. **Detail panel** — selecting a record opens a right-hand panel (≥1280px) or a bottom sheet (<1280px) with the full record, relationships, and preview-only actions. Replaces nested expansion and long cards.
+7. **State layer** — loading skeleton, empty, no results, error, unauthorized rendered in place of region 5.
+
+## 7. Shared component inventory
+
+Build once under `client/src/pages/workspace/components/`; no page may define its own copy.
+
+| Component | Purpose | Replaces |
+|---|---|---|
+| `WorkspaceShell` | Rail, top bar, outlet, footer, mobile tab bar | `NavigationDock`, header/footer blocks |
+| `PageHeader` | Eyebrow/breadcrumb, H1, description, primary action | `.workspace-heading` |
+| `ViewTabs` | Local views with icon, count, `aria-current` | `SectionNavigation` |
+| `Toolbar` | Search, `FilterChip` group, view toggle, reset | 8 copied toolbars |
+| `FilterChip` | Toggle filter with count | Section entries like *Blocked*, *Completed* |
+| `StatStrip` / `Stat` | Flat summary row, clickable | `summary article` cards |
+| `StatusBadge` | Icon + text + tone from a single status map | per-page `statusTone` |
+| `PriorityBadge` | Icon + text (Low/Medium/High/Urgent) | inline text |
+| `DueLabel` | Relative due text with overdue/today treatment and absolute date in `title` | raw strings |
+| `RecordCard`, `RecordRow`, `DataTable` | Three record densities sharing the same field order | page-specific cards |
+| `RelationChip` | Link or preview to project/milestone/task/requirement/asset/revision | text references |
+| `TraceChain` | Objective → requirement → milestone → task → revision → deliverable | `.workspace-traceability` |
+| `DetailPanel` | Side panel / bottom sheet for one record | long cards |
+| `ProgressBar` / `MiniChart` | Bar, stacked bar, ring derived from fixtures | decorative percentages |
+| `EmptyState`, `NoResults`, `ErrorState`, `UnauthorizedState`, `UnsupportedPreview`, `Skeleton` | All non-content states | repeated `.workspace-placeholder` |
+| `PreviewActionButton` | Preview-only action pattern (section 9) | dead buttons |
+| `DemoBanner` | Single demo/sample-data notice with state previewer | per-page notes |
+| `Avatar`, `AvatarStack` | Owner/assignee/collaborators | `PS` text |
+
+## 8. Visual system
+
+Keep Tsumugi's identity: warm paper, Fredoka, ink outlines, pastel accents, thread motifs. Change how much of it is applied.
+
+### Typography scale (Fredoka)
+
+| Token | Size / weight | Use |
+|---|---|---|
+| `--text-display` | 28–32px / 600 | Page H1 (module name) |
+| `--text-title` | 20px / 600 | Panel and record-group titles |
+| `--text-body` | 14px / 400 | Descriptions, record titles at 15–16px/500 |
+| `--text-meta` | 12px / 500 | Metadata, badges, captions (**floor: 12px**) |
+| `--text-eyebrow` | 12px / 600, uppercase, +0.06em | Breadcrumb/eyebrow |
+
+### Surfaces and borders
+
+- Canvas: `--canvas`; records: `--paper` with `1px --line` border and `--radius-md` (14px).
+- 2px ink outline reserved for: primary button, selected tab, selected record, focused control.
+- Radii: `--radius-sm 8`, `--radius-md 14`, `--radius-lg 20` only (replaces 22/18/16/15/12/10/9 mix).
+- Elevation: one flat offset shadow (`--shadow-card`) for raised records on hover/selection; no stacked pastel shadows on containers.
+- Spacing: 4px grid with tokens `--space-1…8`; a single `--space-page` gutter (16px mobile, 24px tablet, 32px desktop). The compact-header spacing token deferred in Revision 1 is part of this.
+
+### Semantic status system (single source of truth)
+
+Each status has a tone, an icon, and a label. Color is never the only signal; every badge shows icon + text and meets 4.5:1 text contrast on its fill.
+
+| Domain | Statuses (icon) |
+|---|---|
+| Project | Idea (lightbulb) · Planning (compass) · Active (play) · On hold (pause) · Completed (check) · Archived (archive) |
+| Milestone | Upcoming (calendar) · In progress (loader) · Overdue (alert) · Blocked (octagon) · Completed (check) |
+| Task | Backlog (inbox) · To do (circle) · In progress (loader) · In review (eye) · Blocked (octagon) · Completed (check-circle) |
+| Requirement | Specified (file) · In progress (loader) · Verified (shield-check) · Unverified (shield-alert) · Blocked · Rejected (x-circle) |
+| Revision | Recorded (clock) · Pending review (hourglass) · Approved (check) · Rejected (x) |
+| Document | Draft (pencil) · In review (eye) · Completed (check) |
+| Priority | Low (arrow-down) · Medium (minus) · High (arrow-up) · Urgent (chevrons-up) |
+
+Tone pairs map to a small palette (neutral, info, progress, warning, danger, success) defined once in tokens; each domain picks tones from it. No two *statuses in the same domain* may share a tone and icon.
+
+## 9. Preview-only action pattern
+
+For actions that would create, edit, save, delete, upload, export, or send:
+
+- The control renders normally (so the layout can be judged) and is marked `aria-haspopup="dialog"`.
+- Activating it opens a small **Preview dialog** showing the intended form or confirmation layout filled with fixture values, a chip `Preview only — nothing is saved`, and a single `Close` button. Forms inside are non-submitting.
+- No toast says "saved", "created", "sent", or "uploaded". Local-only state (filters, view, selected record, setting toggles) is allowed, labelled where it could be mistaken for persistence.
+- Destructive actions (Archive, Delete) preview as a confirmation dialog layout, never an actual removal.
+
+## 10. State coverage
+
+- [ ] The `DemoBanner` includes a **Preview state** control (Normal · Loading · Empty · Error · Unauthorized) that forces the current page into that state so all designs can be reviewed without backend behavior. It is a demo-only affordance and is removed when real data loads.
+- [ ] Loading uses skeletons that match the real layout (rows, cards, stat strip), not spinners.
+- [ ] Empty states explain what belongs here and show the page's primary action as a preview action.
+- [ ] No-results shows the active filters as chips and a `Clear filters` button.
+- [ ] Error shows a plain message, a `Try again` control (no-op in the demo), and the reference format a support message would use.
+- [ ] Unauthorized explains the missing access and offers `Back to Projects`.
+- [ ] Unsupported preview (assets/documents/revisions compare) shows file type, why no preview exists, and the allowed alternative.
+
+## 11. Responsive behavior
+
+| Width | Shell | Page |
+|---|---|---|
+| ≥1280 | Expanded rail (224px) + top bar | Content + right detail panel; tables with all columns |
+| 1024–1279 | Icon rail (72px) | Detail panel becomes a sheet; fewer table columns |
+| 768–1023 | No rail; top bar with menu button opening a drawer | Single column; toolbar wraps once |
+| 481–767 | Bottom tabs (4 + More) | Records as cards; tables become card lists |
+| ≤480 (target 320) | Bottom tabs | Icon-only primary action; filters in a sheet; stat strip scrolls horizontally with snap |
+
+- [ ] Header + tabs + toolbar must fit within ~220px at 390px so the first record is above the fold.
+- [ ] No horizontal page scroll at 320px; wide data (tables, board) scrolls inside its own container with a visible edge hint.
+- [ ] Verify 320, 390, 768, 1024, 1280, 1536.
+
+## 12. Motion (GSAP — keep, trim)
+
+- [ ] Keep `gsap.context()` + `gsap.matchMedia()` with reduced-motion bypass.
+- [ ] Page entry: one 250ms fade/translate of the content region; **no staggered header animation** (this caused the faded heading on mobile).
+- [ ] View-tab change: 150–200ms crossfade of content only.
+- [ ] Detail panel and bottom sheet: 200ms slide; focus moves into the panel and returns to the trigger on close.
+- [ ] Skeleton shimmer disabled under reduced motion.
+- [ ] Never animate data values or filter results record by record.
+
+## 13. Accessibility
+
+- [ ] Text floor 12px; body 14px; contrast ≥ 4.5:1 for text and ≥ 3:1 for UI boundaries (verify `--muted` on `--canvas`, and status tones on their fills).
+- [ ] Status, priority, and active view communicated by icon + text + shape, not color alone.
+- [ ] Tabs use `role="tablist"` semantics (or links with `aria-current`) with arrow-key navigation.
+- [ ] Detail panel: labelled region, focus management, Escape closes, does not trap focus when docked (≥1280px).
+- [ ] Tables use real `<table>` markup with scoped headers; board columns are lists with headings.
+- [ ] Charts have text equivalents (the same numbers in a table or caption).
+- [ ] Touch targets ≥ 40px on mobile.
+
+## 14. Module map (revised)
+
+Section = view. Status/type subsets move into filter chips.
+
+| Route | Primary action | Views (tabs) | Signature UI |
+|---|---|---|---|
+| `/dashboard` | New project | none (single composed screen) | Today strip, attention list, project pulse rail |
+| `/projects` | New project | Directory · Board · Recent · Archived | Card/table toggle, status board |
+| `/projects/:projectId` | Edit project | Overview · Workflow · Milestones · Tasks · Requirements · Assets · Docs · Revisions · Deliverables | Project header + trace chain + phase stepper |
+| `/milestones` | New milestone | Register · Timeline · By project | Dated timeline with today marker |
+| `/tasks` | New task | List · Board · Schedule | Kanban + due-date grouping |
+| `/requirements` | Add requirement | Register · Traceability · Coverage | Traceability matrix with gap flags |
+| `/assets` | Add asset | Library · List | Thumbnail grid with type filters |
+| `/revisions` | Log revision | History · Review queue · Compare | Change feed, side-by-side compare |
+| `/documentation` | New document | Library · Reader | Markdown reader with outline |
+| `/reports` | Export report (preview) | Overview · Progress · Workload · Coverage · Activity | Derived bars/rings with formula popovers |
+| `/settings` | none | Account · Workspace · Notifications · Appearance · Privacy & legal · Security | Real local controls, no Save |
+
+The per-page plans define each view in detail. Where a Revision 1 section disappears (for example Tasks → *Blocked*), it becomes a filter chip so no capability is lost.
+
+## 15. Source layout for the UI rebuild
+
+```text
+client/src/pages/workspace/
+  WorkspaceRoute.jsx            route → page mapping (replaceable by React Router)
+  shell/                        WorkspaceShell, Rail, TopBar, MobileTabs, MoreSheet, DemoBanner
+  components/                   shared inventory from section 7
+  pages/                        OverviewPage, ProjectsPage, ProjectWorkspacePage, MilestonesPage,
+                                TasksPage, RequirementsPage, AssetsPage, RevisionsPage,
+                                DocumentationPage, ReportsPage, SettingsPage
+  data/                         fixtures split per domain + selectors (counts, filters, sorts)
+  hooks/                        useScopedProject, usePreviewState, useViewTabs
+  styles/                       tokens.css, shell.css, components.css, pages/*.css (readable, not minified)
+```
+
+- [ ] Split the single `WorkspacePage.jsx` and the workspace rules in `index.css` into the structure above.
+- [ ] Fixtures get ISO dates + a fixed "demo today" so relative labels and sorting are computed, not hard-coded; selectors never mutate fixture arrays.
+- [ ] Derived numbers (counts, percentages) come from selectors shared by Overview and Reports so definitions cannot diverge.
+- [ ] Keep route handling behind a thin boundary so React Router can replace it without touching pages.
+- [ ] Keep the MUI migration boundary (PROJECT-SPECS section 8): components are token-driven and style-scoped.
+
+## 16. Performance and efficiency (whole client)
+
+Measured on the current build (`vite build`): one JS bundle of **467 kB (142 kB gzip)** and one CSS file of **105 kB (36 kB gzip)** are sent for every route, including legal and auth pages; GSAP + ScrollTrigger are in that bundle; four Fredoka weights ship (400/500/600/700); all links are plain anchors, so every navigation is a full document reload. The workspace will add ten pages to this, so the structure must change before it grows.
+
+| Area | Plan | Target |
+|---|---|---|
+| Routing | Introduce client-side navigation behind the existing route boundary (React Router or an equivalent thin router). Links become in-app navigations; the workspace shell stays mounted. Add a real **404 page** — unknown URLs currently render the landing page, and `/forgot-password` (linked from Login) does too. | No full reload between workspace pages; unknown routes show Not Found |
+| Code splitting | `React.lazy` per route group: landing, auth, legal, workspace; each workspace page lazy-loaded. Landing-only GSAP/ScrollTrigger imported dynamically from the landing chunk; workspace imports only `gsap` core if it needs motion. | Shared runtime (React + router + icons) is 71 kB gzip; each public route adds ≤ 25 kB gzip (landing adds GSAP separately, 27 kB). Measured 2026-11-14 |
+| CSS | Split `index.css` into `tokens.css`, `base.css`, and per-area files (`landing`, `auth`, `legal`, `workspace/*`) imported by their route chunk. Rewrite minified one-line rules as readable CSS. Remove dead rules found after the rebuild. | Initial CSS per route < 30 kB gzip |
+| Fonts | Keep Fredoka via `@fontsource`; limit to weights actually used (target 400, 500, 600; drop 700 if headings use 600), subset to latin, `font-display: swap`, preload the primary weight in `index.html`. | ≤ 3 font files per route, no layout shift on swap |
+| Rendering | Memoize derived selectors, virtualize/paginate any list over 50 rows, avoid re-running animations on filter changes, no layout-thrashing measurements in render. | Filter/typing interactions < 100 ms on fixtures |
+| Motion | Honor `prefers-reduced-motion`, avoid animating layout properties (use transform/opacity), kill ScrollTriggers on route change. | No long tasks > 50 ms from animation setup |
+| Assets | Inline SVG only for small glyphs; no raster hero images; `public/` icons optimized. | No image requests on first paint |
+| Budget check | Add `npm run build` size report to each phase; record numbers in `LOG.md`. Lighthouse (mobile) per route: Performance ≥ 90, Accessibility ≥ 95. | Recorded per phase |
+
+## 17. Implementation phases
+
+Each phase ends with `npm run lint`, `npm run build` (with bundle sizes noted), and visual checks at 390 and ≥1280.
+
+- [x] **Phase 0 — Approvals:** owner approved D1–D5. Type scale and status vocabulary are confirmed with the section 20 gate.
+- [ ] **Phase 1 — Foundations:** tokens, type scale, status/priority maps, split CSS, router + code splitting + 404 (section 16), fixture selectors, fix fixture mutation.
+- [ ] **Phase 2 — Shell:** rail, top bar, mobile tabs + More sheet, project scope switcher, demo banner with state previewer.
+- [ ] **Phase 3 — Shared components:** PageHeader, ViewTabs, Toolbar, StatStrip, badges, record patterns, DetailPanel, state components, PreviewActionButton.
+- [ ] **Phase 4 — Reference pages:** rebuild Tasks (list/board/schedule) and Overview to prove the system.
+- [ ] **Phase 5 — Remaining pages:** Projects, Project workspace, Milestones, Requirements, Assets, Revisions, Documentation, Reports, Settings.
+- [ ] **Phase 6 — Polish and QA:** motion trim, reduced motion, keyboard pass, contrast pass, 320/390/768/1024/1280/1536 sweep, update README, CODEMAP, LOG, and tick the page plans.
+
+## 18. Baseline already built (Revision 1, retained until replaced)
+
+- Credential-free `Log in` entry to `/dashboard`, placeholder session label, and `Back to landing page`.
+- Routes: `/dashboard`, `/projects`, `/projects/:projectId` (known demo projects), `/milestones`, `/tasks`, `/requirements`, `/assets`, `/revisions`, `/documentation`, `/reports`, `/settings`.
+- Fixture boundary in `workspaceData.js` with projects, milestones, tasks, requirements, assets, revisions, documents, activity, and report definitions.
+- GSAP entry/section motion with reduced-motion handling, legal links in the footer, and skip link.
+- All displayed data is explicitly placeholder; no backend behavior.
+
+## 19. Exclusions
+
+- No real authentication, authorization, credential handling, tokens, or durable session.
+- No server, API, database, object storage, upload, download, or export behavior.
+- No persistence of any control (including settings and filters across reloads).
+- No final MUI migration decision.
+- No new product features beyond the modules in PROJECT-SPECS.
+
+## 20. Approval gate
+
+- [x] Owner approved D1–D5 (section 4).
+- [ ] Owner approves the page anatomy (section 6) and the revised module map (section 14).
+- [ ] Owner approves the type scale, 12px floor, and status vocabulary (section 8).
+- [ ] Owner approves the preview-only action pattern and the demo state previewer (sections 9–10).
+- [ ] Owner authorizes implementation phases 1–6 (this revision does not authorize new code).
+
+## 21. Implementation status — 2026-11-14
+
+Revision 2 replaced the Revision 1 workspace (`WorkspacePage.jsx`, `workspaceData.js`, ~290 workspace rules in `index.css`). Frontend only; all data is fixtures and nothing is saved.
+
+| Phase / item | Result |
+|---|---|
+| Phase 1 — foundations | Done: router, lazy routes, 404 (from PLAN-A-01); `data/fixtures.js` with ISO dates, a fixed `DEMO_TODAY`, and explicit relationships; `data/selectors.js` (counts, progress, statuses, gaps, attention items — no stored percentages, no fixture mutation); `data/status.js` single status/priority vocabulary; readable `workspace.css` and `workspace-pages.css` |
+| Phase 2 — shell | Done: left rail (icons at 1024–1279px, labelled at ≥1280px), top bar with project scope switcher (filters every page), search preview, demo chip, account menu; bottom tabs (4 + More sheet) below 1024px; `DemoBanner` with the **Preview state** selector (Normal, Loading, Empty, Error, Unauthorized); the shell stays mounted between pages |
+| Phase 3 — shared components | Done: `PageHeader`, `ViewTabs`, `Toolbar` + `FilterChips`, `StatStrip`, `StatusBadge`/`PriorityBadge`/`DueLabel`, `RelationChip`, `Avatar`/`AvatarStack`, `ProgressBar`/`StackedBar`, `TraceChain`, `DetailPanel` (docked ≥1280px, sheet below), state components, `PreviewAction` with a shared preview dialog, record rows and detail panels |
+| Phases 4–5 — all pages | Done: Overview, Projects, Project workspace, Milestones, Tasks, Requirements, Assets, Revisions, Documentation, Reports, Settings (see each page plan) |
+| Phase 6 — QA | Partly done: `npm run lint` and `npm run build` pass; every route renders with no horizontal overflow at 320, 390 and 1440px; the first record is above the fold at 390px on all list pages; detail panel focus and Escape, scope switching, preview dialog, state previewer, compare diff, and settings "Edited" state were verified in a browser. **Not run:** Lighthouse, screen-reader pass, reduced-motion emulation, 768/1024/1280/1536 visual sweep, cross-browser |
+
+Measured (gzip): shared runtime 71 kB; `WorkspaceApp` 12 kB + 6.7 kB CSS; each page 1.7–3.4 kB. The workspace no longer loads GSAP.
+
+**Deviations from this plan**
+- Between 768 and 1023px the workspace uses the bottom tab bar, not a drawer.
+- Motion is one 220 ms CSS fade of page content (disabled for reduced motion); GSAP is not used in the workspace.
+- The rail collapses by breakpoint only; there is no manual collapse control.
+- View, filter, selected record, and preview state live in the URL (`?view=`, `?filter=`, `?select=`, `?preview=`) so they are linkable. Search text, sort, and layout toggles are local state.
+- Detail panels are used on Tasks, Milestones, Requirements, Assets, and Revisions. Projects link to the project page instead.
+- "Load more" boundaries for large collections, global search, and a Group-by control on Tasks were not built.

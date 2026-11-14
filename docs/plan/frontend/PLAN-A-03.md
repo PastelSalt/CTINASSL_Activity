@@ -1,172 +1,153 @@
-# PLAN-A-03 — Tsumugi Sign-up and Login Pages
+# PLAN-A-03 — Tsumugi Sign-up, Login, and Recovery Pages (Revision 2)
 
 ## Plan status
 
-**Status:** Static authentication-page pass implemented; backend authentication and legal review pending  
-**Scope:** Static sign-up and login page design, content, navigation, and implementation preparation  
-**Related plans:** [PLAN-A-01.md](PLAN-A-01.md), [PLAN-A-02.md](PLAN-A-02.md)  
-**Source specification:** [PROJECT-SPECS.md](PROJECT-SPECS.md)
+**Revision:** 2 — audit-driven re-plan  
+**Status:** Revision 2 implemented (see section 14); backend authentication remains out of scope  
+**Scope:** Static, presentation-only `/register`, `/login`, `/forgot-password`, and `/reset-password` pages  
+**Related plans:** [PLAN-A-01](PLAN-A-01.md) (shared public layout, performance) · [PLAN-A-02](PLAN-A-02.md) · [PLAN-A-04](PLAN-A-04.md) (preview-only action pattern, state previewer)  
+**Constraint:** Frontend only. No sessions, tokens, cookies, local storage, API calls, password handling, or account creation. Nothing the user types is read, stored, logged, or sent.
 
-This plan covers the future public sign-up and login pages for Tsumugi. It defines their visual and interaction direction without implementing authentication, sessions, API calls, password handling, account creation, or backend behavior.
+Layout principles from the earlier Google-style references still apply (focused centered card, clear hierarchy, quiet utility footer); no Google branding, copy, colors, or assets are used.
 
-The supplied Google sign-in and account-creation references are being used for layout principles only: restrained page chrome, a focused centered card, clear form hierarchy, progressive disclosure on login, a two-column registration composition on wide screens, and a compact utility/legal footer. Google branding, logos, colors, illustrations, copy, and proprietary assets must not be copied.
+## 1. Audit of the current pages
 
-## Goals
+| # | Finding | Evidence | Fix |
+|---|---|---|---|
+| A1 | **Dead link.** Login links to `/forgot-password`, but no such route exists; unknown paths render the landing page. | `authRoutes`, `App.jsx` | Build static recovery pages and a Not Found route |
+| A2 | **Dead primary action on Register.** `Create account` is a `type="button"` with no behavior and no feedback. | `AuthPage.jsx` | Preview-only dialog that routes to the demo workspace |
+| A3 | **Login ignores the form.** `Log in` is a link to `/dashboard`; email and password fields are editable but unused, so users may type a real password into a non-functional field. | `AuthPage.jsx` | Demo-mode treatment (section 3) |
+| A4 | **Draft notice is cramped.** The "Static presentation" pill sits on the same line as the eyebrow and wraps awkwardly at narrow widths. | Screenshot of `/register` | Full-width demo banner inside the card |
+| A5 | **Plan is stale.** Many items are built but unchecked (fields, route switch, back link, landing links); others were never decided (progressive disclosure, "Not your computer?"). | PLAN-A-03 Rev 1 | Decisions recorded in section 2 |
+| A6 | **Validation and status states do not exist** (missing, malformed, mismatch, weak password, invalid credentials, locked, unavailable, pending verification, success). | Page code | Previewable presentation states (section 5) |
+| A7 | **Duplicated shell.** Header and legal footer are re-implemented per page. | `AuthPage.jsx` | Shared `PublicHeader` / `PublicFooter` (PLAN-A-01 §5) |
+| A8 | **Form pieces are local.** Inputs, password toggle, and checkbox are inline JSX and cannot be reused by Settings (PLAN-A-04K). | `AuthPage.jsx` | Shared form components |
+| A9 | **Heavy for a form.** Auth pages ship the whole 467 kB client bundle, including GSAP. | `vite build` | Lazy auth chunk, no GSAP (PLAN-A-04 §16) |
 
-- [x] Create a welcoming, trustworthy sign-up page for new Tsumugi users.
-- [x] Create a focused, reassuring login page for returning users.
-- [x] Adapt the established Tsumugi landing and policy-page visual system.
-- [x] Link both pages from the landing page's navigation, hero, CTA, and footer surfaces where appropriate.
-- [x] Link the legal pages from both authentication pages.
-- [x] Keep all authentication controls and states explicit until real backend behavior exists.
-- [x] Preserve accessibility, responsive behavior, reduced-motion support, and the static-page boundary.
+## 2. Decisions recorded
 
-## Google layout study translated for Tsumugi
+- **Single-step login** (email + password on one screen). Progressive disclosure is declined: it implies account-lookup logic that does not exist.
+- **No "Not your computer?" or remember-me controls** until real session behavior exists; a truthful security note replaces them.
+- **Demo mode is explicit.** Authentication is simulated: entering the demo workspace requires no credentials.
+- **Static recovery pages are built** (`/forgot-password`, `/reset-password`) so no link is dead; both are preview-only.
+- **Two layouts:** login and recovery are single-column cards; register is two columns at ≥ 900px with the thread illustration after the form on narrow screens (hidden below 480px if it pushes the form down).
 
-- [x] Use a quiet, pale page canvas with one dominant centered authentication surface rather than an immersive landing-page composition.
-- [x] Keep the authentication surface wide enough for comfortable desktop spacing but constrained enough to maintain focus.
-- [x] Place Tsumugi branding at the upper-left of the card or page shell, with the product name and a small Moeko Works context line.
-- [x] Use a large, plain-language heading, one short supporting sentence, and generous whitespace before the first field.
-- [x] Keep primary actions visually clear and aligned to the form's lower action row.
-- [x] Use compact secondary links near the action row, including the route switch and recovery link where applicable.
-- [x] Keep utility/legal links in a quiet footer below the card, adapting Google's language/help/privacy/terms grouping into Tsumugi's policy links.
-- [x] Do not reproduce Google's blue color system, multicolor logo, exact proportions, exact text, account illustrations, or visual identity.
+## 3. Demo-mode behavior (frontend-only)
 
-### Login layout direction
+- [ ] Every auth card shows a **demo banner** on its own row: icon + "Demo mode — nothing is sent or saved. You can continue without entering details."
+- [ ] Fields remain for layout evaluation, are optional, and carry help text "Don't enter a real password — this demo does not receive it." The form's submit handler never reads field values.
+- [ ] **Login:** primary `Log in` submits and navigates to `/dashboard`; secondary `Continue as demo user` does the same without touching the form.
+- [ ] **Register:** primary `Create account` opens a **Preview dialog** (PLAN-A-04 §9): "Account creation isn't connected yet", with `Continue to demo workspace` and `Close`. No success message claims an account exists.
+- [ ] **Forgot password:** `Send reset link` opens a preview dialog explaining that no email is sent; the page's success layout is available through the state previewer.
+- [ ] `autocomplete` tokens stay correct (`username`/`email`, `current-password`, `new-password`) so the layout is evaluated realistically; inputs are `spellcheck="false"` and `autocapitalize="none"` where relevant.
+- [ ] No `localStorage`, `sessionStorage`, cookies, or query strings carry any entered value.
 
-- [x] Use a single-column focused card on desktop and mobile.
-- [ ] Use progressive disclosure as the preferred interaction model:
-  - [ ] Initial state requests email address only.
-  - [ ] A future functional flow may reveal password and account actions after email continuation.
-  - [ ] The static implementation may show the complete email/password presentation if progressive behavior would imply unsupported authentication logic.
-- [x] Present `Forgot password?` as a compact supporting link below or beside the email/password area.
-- [ ] Place `Not your computer?`-style guidance only if Tsumugi has a real guest/private-session concept; otherwise replace it with a truthful static security note.
-- [x] Keep the route switch and `Log in` action in one visually stable lower action row.
-- [x] Keep the legal footer outside the primary card so it remains available without distracting from sign-in.
+## 4. Routes
 
-### Sign-up layout direction
+| Route | Purpose | Layout |
+|---|---|---|
+| `/login` | Returning user | Single column card |
+| `/register` | New user | Two-column card ≥ 900px |
+| `/forgot-password` | Request recovery link (preview) | Single column card |
+| `/reset-password` | Set a new password (preview) | Single column card |
+| `*` | Not Found (PLAN-A-01 §5) | Public layout |
 
-- [x] Use a two-column desktop card inspired by the supplied account-creation reference:
-  - [ ] Left column: form heading, name/email/password fields, agreement language, and primary action.
-  - [ ] Right column: a Tsumugi-specific static illustration or thread composition explaining the product value.
-- [x] Collapse to one column on narrow screens, placing the product-value illustration after the form or hiding it when it harms focus.
-- [ ] Keep the sign-up form visually denser than login while preserving generous field spacing and clear grouping.
-- [x] Use a Tsumugi thread/objective-to-deliverable visual rather than a copied account-security illustration.
-- [x] Keep the sign-up action row aligned with the login page's action language and route-switch pattern.
+Cross-links: login ↔ register in the action row; `Forgot password?` under the password field; every page has `Back to home` and the shared legal footer.
 
-### Shared responsive behavior
+## 5. Form and state design
 
-- [x] Desktop target: centered card with stable maximum width, balanced outer whitespace, and no unnecessary page scrolling.
-- [x] Tablet target: reduce card padding and illustration scale while preserving the two-column sign-up hierarchy where space allows.
-- [x] Mobile target: full-width card within a narrow page gutter, one-column forms, wrapped footer links, and no horizontal overflow.
-- [x] Keep the brand/header and legal footer readable at 320px minimum width.
-- [x] Use no gradients; solid paper, pastel, and ink surfaces should carry the visual hierarchy.
-- [x] Keep any motion limited to subtle card/illustration entrance and focus orientation; disable non-essential motion for reduced-motion users.
+### Shared form components (`components/forms/`, reused by Settings)
 
-## Planned routes
+`TextField`, `PasswordField` (show/hide, caps-lock hint, optional strength meter), `Checkbox`, `FormBanner` (info/success/error with icon + text), `FieldError`, `SubmitRow`, `PreviewDialog`. Labels are programmatically associated; errors use `aria-describedby`; banners use `role="status"` or `role="alert"` appropriately; the error summary receives focus after a failed submit.
 
-| Route | Purpose |
-| --- | --- |
-| `/register` | Create-account / sign-up page |
-| `/login` | Returning-user login page |
-| `/forgot-password` | Existing planned route; remain a future recovery flow unless separately planned |
-| `/reset-password` | Existing planned route; remain a future recovery flow unless separately planned |
+### Presentation states (previewable, never real)
 
-## Shared page direction
+States are reachable through the shared preview-state hook (`?preview=<state>`), the same mechanism as the workspace state previewer, and are excluded from production builds or hidden unless demo mode is on.
 
-- [x] Use the Tsumugi identity, Fredoka typography, paper background, woven pattern, solid ink outlines, and pastel accents.
-- [x] Use a compact branded header with a link back to the landing page.
-- [x] Use a centered, readable form card with strong outline, soft solid-color depth, and no gradients.
-- [x] Provide a short product-oriented message without overpromising implemented functionality.
-- [x] Keep the form area visually calm and more focused than the immersive landing page.
-- [ ] Provide a secondary route switch:
-  - [ ] Sign-up page links to `/login` for existing users.
-  - [ ] Login page links to `/register` for new users.
-- [x] Include a visible static draft/presentation notice until real authentication is implemented.
-- [x] Include the legal policy links:
-  - [x] `/privacy-policy`
-  - [x] `/terms-of-service`
-  - [x] `/cookie-and-local-storage-policy`
-- [x] Ensure policy links remain available below or adjacent to the form without competing with the primary action.
-- [ ] Adapt the footer grouping from the reference layout into `Privacy Policy`, `Terms of Service`, and `Cookie & Local Storage Policy`.
-- [ ] Add a clear `Back to Tsumugi` or brand link that returns to `/`.
+| Page | States |
+|---|---|
+| Login | Default · Field errors (missing email, malformed email, missing password) · Invalid credentials · Locked account · Service unavailable |
+| Register | Default · Field errors (missing name, malformed email, weak password, mismatch, terms not accepted, email already used) · Pending email verification · Success layout |
+| Forgot password | Default · Malformed email · "If an account exists, a link was sent" confirmation · Service unavailable |
+| Reset password | Default · Weak password · Mismatch · Expired link · Success layout |
 
-## Sign-up page
+Error text states the problem and the fix, is attached to its field, and uses icon + text (not color alone). The password requirements checklist and strength meter are computed locally and never stored.
 
-- [ ] Use a clear title such as `Start your next thread`.
-- [ ] Explain that the page is for creating a Tsumugi workspace account.
-- [ ] Use the Google-style compact field grouping as inspiration, while retaining Tsumugi's stronger outlines, Fredoka typography, and thread motif.
-- [ ] Plan fields for:
-  - [ ] Name or display name
-  - [ ] Email address
-  - [ ] Password
-  - [ ] Password confirmation
-- [ ] Add an explicit agreement control for the Terms of Service and Privacy Policy before real account creation is enabled.
-- [ ] Link the Cookie & Local Storage Policy where browser-storage disclosure is relevant.
-- [ ] Plan validation states for missing, malformed, mismatched, weak, or already-used values.
-- [ ] Plan a clear success, pending-verification, and failure state without implementing them in this static pass.
-- [ ] Keep `Create account` as the primary action label.
+## 6. Visual and responsive spec
 
-## Login page
+- Quiet canvas with one dominant card (max-width 440px login/recovery, 880px register); Fredoka, solid paper surface, ink outline, no gradients.
+- Brand and `Back to home` in the compact `PublicHeader`; legal links in `PublicFooter` below the card.
+- Primary action in the lower action row, with route switch on the left; 48px control height; labels above inputs (never placeholder-only).
+- Motion limited to a subtle card entrance via CSS; no GSAP on auth routes; disabled under `prefers-reduced-motion`.
+- Breakpoints: ≥ 900px two-column register; < 900px single column with illustration after the form; < 480px illustration hidden and card padding reduced; verified at 320px.
+- Keep the whole login card within one 390×720 viewport without scrolling.
 
-- [ ] Use a clear title such as `Welcome back to the thread`.
-- [ ] Use the Google-style single-step focus and quiet supporting copy as inspiration, while keeping Tsumugi-specific wording and visuals.
-- [ ] Plan fields for:
-  - [ ] Email address
-  - [ ] Password
-- [x] Add a `Forgot password?` reference to `/forgot-password` as a planned recovery route.
-- [ ] Plan a remember-session option only after the cookie/session behavior is defined.
-- [ ] Plan invalid-credentials, locked-account, unavailable-service, and success states.
-- [ ] Keep `Log in` as the primary action label.
-- [ ] Provide a visible route to `/register` for users without an account.
+## 7. Accessibility and security preparation
 
-## Landing-page integration
+- [ ] Visible `:focus-visible`, logical order, 40px+ touch targets, visible labels, error association.
+- [ ] Password visibility toggle exposes `aria-pressed` and a clear label; password fields never auto-reveal.
+- [ ] Terms checkbox links to Terms and Privacy; Cookie & Local Storage Policy linked in the footer.
+- [ ] Page titles via `usePageMeta`; auth routes are `noindex`.
+- [ ] Defer to the backend plan: CSRF, rate limiting, session storage, email verification, password hashing, recovery tokens, lockout logic, secure cookies.
+- [ ] The static pages must not log, persist, or transmit any entered value (verified by code review and network panel check).
 
-- [ ] Replace presentation-only `Log in` controls with links to `/login`.
-- [ ] Replace presentation-only `Create account` or `Create your workspace` controls with links to `/register`.
-- [ ] Update the floating navigation, hero actions, closing CTA, and footer consistently.
-- [ ] Match the authentication pages' compact action language with the landing-page CTA hierarchy.
-- [ ] Preserve the current landing-page story and avoid making authentication calls before implementation is authorized.
-- [ ] Keep legal links in the landing-page footer pointing to the three policy routes.
-- [ ] Verify keyboard focus, link labels, responsive wrapping, and no horizontal overflow after integration.
+## 8. Landing and workspace integration
 
-## Accessibility and security preparation
+- [ ] Landing `Log in` → `/login`; `Create your workspace` and `Create account` → `/register` (implemented; verify consistency across header, hero, closing, footer).
+- [ ] Login's `Log in` / `Continue as demo user` → `/dashboard`; workspace account menu `Back to landing page` → `/`.
+- [ ] Auth pages never imply a signed-in state; the workspace keeps its demo-session chip (PLAN-A-04).
 
-- [ ] Use real labels associated with every form control.
-- [ ] Use appropriate input types, autocomplete tokens, and password visibility guidance.
-- [ ] Provide error text that is connected to its field and does not rely on color alone.
-- [ ] Preserve visible `:focus-visible` states and logical keyboard order.
-- [ ] Ensure the page works at mobile and desktop widths without clipping.
-- [ ] Respect `prefers-reduced-motion` and never hide form controls or legal notices behind animation.
-- [ ] Do not log, expose, or persist passwords in the static implementation.
-- [ ] Defer CSRF, rate limiting, session storage, email verification, password hashing, and account recovery implementation to the backend/authentication plan.
+## 9. Implementation phases
 
-## Implementation sequence
+- [ ] **Phase 1:** shared public layout, Not Found, lazy auth chunk, form components.
+- [ ] **Phase 2:** demo-mode treatment, dialogs, login and register refinement, demo banner placement.
+- [ ] **Phase 3:** forgot-password and reset-password pages.
+- [ ] **Phase 4:** presentation states and previewer, validation copy.
+- [ ] **Phase 5:** QA (320/390/768/900/1440, keyboard, screen-reader labels, reduced motion, network panel shows no auth requests), then update `README.md`, `CODEMAP.md`, `LOG.md`.
 
-- [ ] Confirm the sign-up and login copy, fields, legal-consent wording, and owner-approved visual direction.
-- [ ] Confirm the Google-inspired layout adaptation, including single-column login, two-column desktop sign-up, progressive-disclosure decision, and utility footer.
-- [ ] Decide whether shared authentication form components belong under `client/src/components/` or `client/src/pages/`.
-- [x] Create shared auth-page layout and route entry components.
-- [x] Create `/register` and `/login` static pages.
-- [x] Add landing-page route links and preserve legal-page references.
-- [ ] Add static validation and status examples only if they are clearly labeled as presentation states.
-- [x] Add branded metadata and responsive/reduced-motion styling.
-- [x] Validate headings, labels, keyboard navigation, focus states, route links, mobile wrapping, contrast, and overflow.
-- [ ] Update `README.md`, `CODEMAP.md`, and `LOG.md`.
+## 10. Acceptance checklist
 
-## Exclusions
+- [ ] No dead links or dead primary buttons on any auth route.
+- [ ] Demo banner is on its own row and readable at 320px.
+- [ ] No page reads, stores, or sends typed values; none claims an account exists.
+- [ ] Every listed state is previewable and uses icon + text.
+- [x] Auth route adds ≈ 15 kB gzip on the 71 kB shared runtime (total ≈ 86 kB vs 142 kB before); no GSAP loaded.
+- [ ] Keyboard-only completion of every page; errors announced to assistive technology.
 
-- [ ] No user registration or login API calls.
-- [ ] No session, token, cookie, or local-storage authentication behavior.
-- [ ] No password transmission, hashing, reset, verification, or recovery implementation.
-- [ ] No account database, authorization middleware, or protected-route behavior.
-- [x] No claim that an account has been created or authenticated from a static button.
-- [x] No use of Google logos, trademarks, copied illustrations, copied text, or exact visual identity.
+## 11. Exclusions
 
-## Approval gate
+- No registration/login API calls, tokens, cookies, local-storage authentication, or protected-route behavior.
+- No password transmission, hashing, reset, verification, or recovery implementation.
+- No account database or authorization middleware.
+- No Google logos, trademarks, copied illustrations, copied text, or exact visual identity.
 
-- [ ] Owner approves the page structure, copy, fields, and legal-consent presentation.
-- [ ] Owner approves the Google-inspired layout adaptation and Tsumugi-specific visual translation.
+## 12. Baseline already built (Revision 1)
+
+`/login` and `/register` pages with shared auth layout, display-name/email/password/confirm fields, password visibility toggle, terms checkbox, route switch, `Forgot password?` link, thread illustration on register, legal footer, branded titles, responsive and reduced-motion styling, and landing-page links.
+
+## 13. Approval gate
+
+- [x] Owner authorized the Revision 1 static auth pages.
+- [ ] Owner approves demo-mode behavior and the static recovery pages (sections 2–4).
+- [ ] Owner approves the presentation-state list (section 5).
 - [ ] Legal review confirms the agreement and policy-link language.
-- [ ] Product implementation confirms the future authentication behavior and data practices.
-- [x] Execution is authorized before auth-page frontend code is added.
+- [ ] Product implementation confirms future authentication behavior and data practices.
+
+## 14. Implementation status — 2026-11-14
+
+| Item | Result |
+|---|---|
+| Shared public layout and `AuthShell` | Done |
+| Demo banner on its own row in every auth card | Done |
+| Login: `Log in` and `Continue as demo user` both go to `/dashboard`; submit handler never reads values | Done |
+| Register: `Create account` opens a preview dialog (native `<dialog>`) with `Continue to demo workspace` | Done |
+| `/forgot-password` and `/reset-password` static pages | Done; no dead links remain |
+| Not Found route | Done |
+| Shared form components (`TextField`, `PasswordField` with caps-lock hint and requirements list, `Checkbox`, `FormBanner`, `StatusPanel`, `PreviewDialog`) | Done in `components/forms/` |
+| Presentation states via `?preview=` with a collapsible "Preview states (demo)" list | Done for login, register, forgot, reset; error banners take focus |
+| Lazy auth chunk, no GSAP | Done |
+| No storage or network use by auth pages | Verified in code; no `fetch`, storage, or cookie calls |
+
+**Notes:** the password requirements checklist reads the typed value in local component state only to tick rules; it is never stored or sent. Success and pending layouts are previews, not results.
+
+**Not done:** screen-reader pass, network-panel capture, legal review of consent wording.
